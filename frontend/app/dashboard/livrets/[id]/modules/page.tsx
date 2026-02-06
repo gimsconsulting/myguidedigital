@@ -61,7 +61,7 @@ function SortableModuleItem({ module, livretId, onToggleActive, onDelete, getMod
   livretId: string;
   onToggleActive: (id: string, currentStatus: boolean) => void;
   onDelete: (id: string) => void;
-  getModuleInfo: (type: string) => { name: string; icon: string; description: string };
+  getModuleInfo: (type: string, moduleName?: string) => { name: string; icon: string; description: string };
 }) {
   const {
     attributes,
