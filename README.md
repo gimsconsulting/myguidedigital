@@ -141,14 +141,20 @@ Les 17 modules disponibles:
 - 🇷🇺 Русский
 - 🇳🇱 Nederlands
 
+## 🚀 Déploiement
+
+Pour déployer votre application sur Hostinger, consultez le guide complet :
+- **[Guide de Déploiement Hostinger](docs/DEPLOIEMENT_HOSTINGER.md)** - Guide détaillé
+- **[Guide Simplifié](docs/DEPLOIEMENT_HOSTINGER_SIMPLIFIE.md)** - Version rapide
+
 ## 📝 Prochaines Étapes
 
-1. Créer la structure de base du projet
-2. Configurer l'authentification
-3. Implémenter la gestion des livrets
-4. Ajouter les modules d'information
-5. Intégrer le système de paiement
-6. Déployer l'application
+1. ✅ Créer la structure de base du projet
+2. ✅ Configurer l'authentification
+3. ✅ Implémenter la gestion des livrets
+4. ✅ Ajouter les modules d'information
+5. ✅ Intégrer le système de paiement
+6. 🚀 Déployer l'application
 
 ## 📄 Licence
 
