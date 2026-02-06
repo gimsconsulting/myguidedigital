@@ -39,7 +39,6 @@ if (!i18n.isInitialized) {
       .use(initReactI18next)
       .init({
         resources,
-        fallbackLng: 'fr',
         debug: false,
         interpolation: {
           escapeValue: false,
