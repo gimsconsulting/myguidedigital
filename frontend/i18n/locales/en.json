@@ -1,0 +1,562 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "close": "Close",
+    "test": "Test",
+    "update": "Update"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Remember me",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phone": "Phone"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "myBooklets": "My Booklets",
+    "myBookletsDescription": "Manage your digital welcome booklets",
+    "createBooklet": "+ Create a booklet",
+    "noBooklets": "No booklets yet",
+    "active": "Active",
+    "inactive": "Inactive",
+    "trialMessage": "You are currently benefiting from the free trial period.",
+    "trialDaysLeft": "Number of days remaining:",
+    "bookletActivated": "Booklet activated successfully",
+    "bookletDeactivated": "Booklet deactivated successfully",
+    "bookletDeleted": "Booklet deleted successfully",
+    "updateError": "Error updating",
+    "deleteError": "Error deleting booklet",
+    "deleteConfirm": "Are you sure you want to delete this booklet? This action is irreversible.",
+    "deleteConfirmTitle": "Delete booklet",
+    "upgrade": {
+      "title": "Upgrade your subscription",
+      "description": "Switch to a higher plan and save even more!",
+      "toYearly": "Upgrade to Yearly (99€/year)",
+      "toLifetime": "Upgrade to Lifetime (199€)",
+      "error": "Error during upgrade"
+    }
+  },
+  "livret": {
+    "title": "Booklet",
+    "name": "Booklet name",
+    "nameRequired": "Booklet name is required",
+    "namePlaceholder": "Ex: My apartment in Paris",
+    "nameVisibleOnly": "Booklet name (visible only to you)",
+    "address": "Postal address of the accommodation",
+    "addressPlaceholder": "Your accommodation address",
+    "createNew": "Create a new booklet",
+    "create": "Create booklet",
+    "createSuccess": "Booklet created successfully!",
+    "createError": "Error creating booklet",
+    "basicInfo": "Basic information",
+    "editBooklet": "Edit booklet",
+    "backToDashboard": "Back to dashboard",
+    "loading": "Loading...",
+    "notFound": "Booklet not found",
+    "updateSuccess": "Booklet updated successfully",
+    "updateError": "Error updating booklet",
+    "loadError": "Error loading booklet",
+    "modules": "Information modules",
+    "modulesDescription": "Choose which information blocks you want to activate for your travelers. You can modify the order of modules by holding the ⋮⋮ button present on each block.",
+    "manageModules": "Manage modules",
+    "personalization": "Visual personalization",
+    "personalizationDescription": "Customize the colors, font and background image of your booklet.",
+    "customizeDesign": "Customize design",
+    "statistics": "Statistics",
+    "statisticsDescription": "View usage statistics for your booklet: number of openings, consultations by module, and detailed history.",
+    "viewStatistics": "View statistics",
+    "qrCode": "QR Code",
+    "qrCodeDescription": "Scan (with your smartphone) or click on the QR code to access your booklet",
+    "qrCodeUrl": "Booklet URL:",
+    "qrCodeWifiTip": "Make sure your smartphone is on the same Wi-Fi network as your computer",
+    "viewTravelerGuide": "View traveler's guide",
+    "updateQrCode": "Update QR code (for smartphone)",
+    "qrCodeUpdateSuccess": "QR code updated!",
+    "qrCodeUpdateError": "Error updating QR code",
+    "qrCodeNotAvailable": "QR code not available",
+    "guideOpenError": "Error opening guide",
+    "welcomeTitle": "Homepage text 1 (Booklet title)",
+    "welcomeSubtitle": "Homepage text 2 (Subtitle)",
+    "welcomeTitlePlaceholder": "French (Français)",
+    "welcomeSubtitlePlaceholder": "French (Français)",
+    "languages": "Booklet languages",
+    "autoTranslation": "Automatic translation is enabled on this field",
+    "autoTranslationInfo": "We offer you the possibility to automatically translate each field into the languages you have selected.",
+    "testTranslation": "Test automatic translation",
+    "translationTestError": "Please fill in at least one of the text fields first",
+    "translationTestError2": "Select at least 2 languages to test translation",
+    "translationInProgress": "Translation in progress to",
+    "translationSuccess": "Translation successful:",
+    "translationError": "Error during translation",
+    "atLeastOneLanguage": "At least one language must be selected",
+    "save": "Save",
+    "poster": {
+      "title": "Customize your printable poster",
+      "description": "Customize, download and print your poster. Your visitors will be able to scan the QR code to access your guide.",
+      "wallPlaque": "Custom wall plaque:",
+      "wallPlaqueDescription": "We can create an aluminum wall plaque with the WiFi code QR CODE and your suite's booklet QR code, contact us for more information.",
+      "customize": "Customize poster"
+    },
+    "businessCard": {
+      "title": "Customize your digital business card",
+      "description": "Create a professional business card online easily! Share your information and social networks in one link.",
+      "customize": "Customize business card"
+    },
+    "qrCodeUpdate": {
+      "localhostPrompt": "Your computer is on localhost.",
+      "ipRequired": "For the QR code to work on smartphone, enter your local IP (e.g. 192.168.0.126):",
+      "ipCommand": "You can find your IP with the command: ipconfig (Windows) or ifconfig (Mac/Linux)",
+      "ipRequiredError": "Local IP required for smartphone QR code"
+    }
+  },
+  "modules": {
+    "title": "Modules",
+    "addModule": "Add module",
+    "manageModules": "Manage modules",
+    "reorder": "Reorder modules",
+    "active": "Active module",
+    "activeModules": "active modules"
+  },
+  "poster": {
+    "title": "Customize your printable poster",
+    "description": "Customize, download and print your poster. Your visitors will be able to scan the QR code to access your guide.",
+    "customize": "Customize poster"
+  },
+  "businessCard": {
+    "title": "Customize your digital business card",
+    "description": "Create a professional business card online easily! Share your information and social networks in one link.",
+    "customize": "Customize business card"
+  },
+  "profile": {
+    "title": "Profile"
+  },
+  "subscription": {
+    "title": "Subscription"
+  },
+  "invoices": {
+    "title": "Invoices"
+  },
+  "nav": {
+    "logout": "Logout",
+    "appName": "Welcome Booklets",
+    "home": "Home",
+    "airbnbHost": "Airbnb Host",
+    "pricing": "Our Pricing",
+    "blog": "Blog",
+    "contact": "Contact",
+    "login": "Login",
+    "testApp": "Try our App for free"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We are here to help. Feel free to contact us.",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address"
+  },
+  "chatDocuments": {
+    "title": "PDF Documents for Chat",
+    "description": "Add PDF files to enrich the chat's knowledge. These documents will be used to answer travelers' questions.",
+    "uploadText": "Click to upload a PDF",
+    "maxSize": "Maximum size: 10MB",
+    "uploading": "Uploading...",
+    "uploadSuccess": "PDF uploaded successfully",
+    "uploadError": "Error uploading PDF",
+    "loadError": "Error loading documents",
+    "noDocuments": "No PDF documents yet",
+    "invalidFile": "Only PDF files are allowed",
+    "fileTooLarge": "File must not exceed 10MB",
+    "deleteSuccess": "PDF deleted successfully",
+    "deleteError": "Error deleting PDF",
+    "deleteConfirmTitle": "Delete PDF",
+    "deleteConfirm": "Are you sure you want to delete this PDF? This action is irreversible."
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "subtitle": "Application overview"
+    },
+    "loading": "Loading admin dashboard...",
+    "retry": "Retry",
+    "error": {
+      "authVerification": "Error during authentication verification",
+      "loadingData": "Error loading data"
+    },
+    "nav": {
+      "users": "Users",
+      "revenue": "Revenue",
+      "subscriptions": "Subscriptions",
+      "livrets": "Booklets",
+      "invoices": "Invoices"
+    },
+    "sections": {
+      "users": "Users",
+      "revenue": "Revenue",
+      "livrets": "Booklets"
+    },
+    "users": {
+      "title": "User Management",
+      "subtitle": "List of all application users",
+      "backToDashboard": "Back to dashboard",
+      "back": "Back",
+      "searchPlaceholder": "Search by name/email...",
+      "allPlans": "All plans",
+      "allStatuses": "All statuses",
+      "na": "N/A",
+      "admin": "ADMIN",
+      "pageInfo": "Page {{page}} of {{totalPages}}",
+      "total": "Total users",
+      "active": "Active users",
+      "trial": "On trial period",
+      "paid": "Paid users",
+      "plans": {
+        "trial": "Trial",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "lifetime": "Lifetime"
+      },
+      "statuses": {
+        "active": "Active",
+        "expired": "Expired",
+        "cancelled": "Cancelled"
+      },
+      "table": {
+        "user": "User",
+        "email": "Email",
+        "plan": "Plan",
+        "status": "Status",
+        "livrets": "Booklets",
+        "registration": "Registration"
+      }
+    },
+    "revenue": {
+      "title": "Financial Statistics",
+      "subtitle": "Revenue and subscriptions by plan",
+      "backToDashboard": "Back to dashboard",
+      "total": "Total revenue",
+      "totalRevenue": "Total revenue",
+      "monthly": "Monthly revenue",
+      "mrr": "MRR",
+      "mrrSubtitle": "Monthly Recurring Revenue",
+      "arr": "ARR",
+      "arrSubtitle": "Annual Recurring Revenue",
+      "activeSubscriptions": "Active subscriptions",
+      "revenueByPlan": "Revenue by plan",
+      "planMonthly": "Monthly Plan",
+      "planYearly": "Yearly Plan",
+      "planLifetime": "Lifetime Plan",
+      "subscription": "subscription",
+      "subscriptionsPlural": "subscriptions",
+      "monthlyRevenue": "Monthly revenue (last 12 months)",
+      "planMonthlySubtitle": "Monthly plan revenue",
+      "planYearlySubtitle": "Yearly plan revenue",
+      "planLifetimeSubtitle": "Lifetime plan revenue",
+      "conversionRate": "Conversion rate",
+      "conversionRateSubtitle": "Trial → Paid"
+    },
+    "subscriptions": {
+      "title": "Subscription Management",
+      "backToDashboard": "Back to dashboard",
+      "user": "User",
+      "plan": "Plan",
+      "statusLabel": "Status",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "na": "N/A",
+      "pageInfo": "Page {{page}} of {{totalPages}}",
+      "status": {
+        "active": "Active",
+        "expired": "Expired",
+        "cancelled": "Cancelled",
+        "trial": "Trial"
+      }
+    },
+    "livrets": {
+      "title": "Booklet Statistics",
+      "backToDashboard": "Back to dashboard",
+      "total": "Total booklets",
+      "active": "Active booklets",
+      "inactive": "Inactive booklets",
+      "topLivrets": "Top 10 most viewed booklets",
+      "views": "views",
+      "modules": "modules",
+      "moduleTypes": "Distribution by module type"
+    },
+    "invoices": {
+      "title": "Invoice Management",
+      "backToDashboard": "Back to dashboard",
+      "user": "User",
+      "amount": "Amount",
+      "plan": "Plan",
+      "statusLabel": "Status",
+      "date": "Date",
+      "na": "N/A",
+      "pageInfo": "Page {{page}} of {{totalPages}}",
+      "status": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "failed": "Failed",
+        "cancelled": "Cancelled"
+      }
+    },
+    "alerts": {
+      "expiringSoon": "subscription expiring in the next 7 days",
+      "expiringSoonPlural": "subscriptions expiring in the next 7 days",
+      "actionRequired": "Action required: Contact concerned clients"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Smart digital welcome guide",
+      "subtitle": "for Airbnb, rentals and hosts",
+      "description": "Transform your travelers' experience with modern and interactive welcome booklets",
+      "cta": "Try our App for free",
+      "login": "Login",
+      "freeTrial": "Free trial",
+      "noCard": "No card required",
+      "setup": "5 min setup"
+    },
+    "features": {
+      "title": "Everything you need",
+      "subtitle": "A complete platform to create, customize and share your digital welcome booklets",
+      "qrCode": {
+        "title": "Instant QR Code",
+        "description": "Generate a unique QR code for each booklet. Your travelers scan and instantly access all information."
+      },
+      "customization": {
+        "title": "Total Customization",
+        "description": "Choose your colors, fonts and images. Create a unique experience that reflects your establishment's identity."
+      },
+      "statistics": {
+        "title": "Detailed Statistics",
+        "description": "Track consultations, most viewed modules and your travelers' engagement in real time."
+      },
+      "chat": {
+        "title": "Integrated Chat",
+        "description": "An intelligent chat widget to answer your travelers' frequently asked questions 24/7."
+      },
+      "multilang": {
+        "title": "Multi-language",
+        "description": "Offer your booklets in multiple languages to welcome travelers from around the world."
+      },
+      "secure": {
+        "title": "Secure & Reliable",
+        "description": "Your data is protected with the latest security technologies. 99.9% availability guaranteed."
+      }
+    },
+    "chat": {
+      "title": "Revolutionize your travelers' welcome with AI",
+      "description1": "Finally rest! Let",
+      "description1Cont": "take care of your clients for you.",
+      "description2": "Our intelligent conversational assistant allows travelers to quickly find the information they need, while giving you complete peace of mind.",
+      "available": "Available permanently, without interruption",
+      "native": "Native in every digital welcome booklet",
+      "adaptable": "Adaptable to your establishment and your services",
+      "botMessage1": "Hi! I'm MGD, your digital assistant. What can I do for you today?",
+      "botMessage2": "It's located in the laundry room, on the ground floor! 🏠",
+      "botMessage3": "Absolutely! I'm here to help you day and night 🌙",
+      "userMessage1": "Where is the dryer?",
+      "userMessage2": "Are you available at any time?",
+      "placeholder": "Type your message..."
+    },
+    "benefits": {
+      "title": "Why choose our digital booklets?",
+      "economic": {
+        "title": "Economical & Ecological",
+        "description": "Reduce your printing costs and environmental impact. No need to reprint with every change."
+      },
+      "realtime": {
+        "title": "Real-time updates",
+        "description": "Modify your information instantly. Your travelers always see the latest updates."
+      },
+      "ux": {
+        "title": "Optimal user experience",
+        "description": "Intuitive and modern interface. Your travelers quickly find what they're looking for."
+      },
+      "modules": "Available modules",
+      "availability": "Availability",
+      "configuration": "Configuration",
+      "customizable": "Customizable"
+    },
+    "pricing": {
+      "title": "Simple and transparent pricing",
+      "subtitle": "Choose the plan that fits your needs",
+      "launchOffer": "LAUNCH OFFER",
+      "launchOfferSubtitle": "Valid for a limited time",
+      "monthly": {
+        "title": "Monthly",
+        "price": "15€",
+        "oldPrice": "19€",
+        "period": "/month",
+        "savings": "SAVE 21%",
+        "unlimited": "Unlimited booklets",
+        "allModules": "All modules",
+        "support": "Support included",
+        "cta": "Get started"
+      },
+      "yearly": {
+        "title": "Yearly",
+        "price": "99€",
+        "oldPrice": "149€",
+        "period": "/year",
+        "monthlyPrice": "That's 8.25€/month",
+        "savings": "SAVE 34%",
+        "allMonthly": "Everything from the monthly plan",
+        "savingsYear": "Save 31€/year",
+        "priority": "Priority support",
+        "cta": "Get started"
+      },
+      "lifetime": {
+        "title": "Lifetime",
+        "price": "199€",
+        "oldPrice": "299€",
+        "period": "/one-time",
+        "savings": "SAVE 33%",
+        "permanent": "Permanent access",
+        "allFeatures": "All features",
+        "updates": "Updates included",
+        "cta": "Get started"
+      }
+    },
+    "testimonials": {
+      "title": "What our clients say",
+      "rating": "5/5 based on our client feedback",
+      "testimonial1": {
+        "name": "Sophie Martin",
+        "role": "Rural guesthouse",
+        "text": "Creating our digital booklets has transformed how we communicate with our guests. No need to print with every change, and our clients access all info via their smartphone. Huge time saver!"
+      },
+      "testimonial2": {
+        "name": "Pierre Lambert",
+        "role": "4-star hotel",
+        "text": "The integrated MGD assistant answers our clients' questions even at night. No need to have someone at reception 24/7. Our travelers are autonomous and we save hours of work every week."
+      },
+      "testimonial3": {
+        "name": "Marie Dubois",
+        "role": "Bed & breakfast",
+        "text": "The customization of colors and design allows us to create booklets that perfectly match our identity. Our clients love the modern and intuitive interface. The QR code is a real plus for quick access!"
+      },
+      "testimonial4": {
+        "name": "Jean Tremblay",
+        "role": "Vacation rental",
+        "text": "The consultation statistics give us a clear vision of what our clients are really looking for. We can adapt our booklets based on the most viewed modules. It's a valuable tool for improving the customer experience!"
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "subtitle": "Everything you need to know about My Guide Digital",
+      "q1": "What is My Guide Digital?",
+      "a1": "My Guide Digital is an AI-powered digital welcome booklet that centralizes all useful information for your travelers and makes them autonomous during their stay.",
+      "q2": "Who is My Guide Digital for?",
+      "a2": "My Guide Digital is for Airbnb hosts, concierge managers and travel professionals who want to digitize their welcome and optimize their relationship with travelers.",
+      "q3": "What are the main benefits for an Airbnb host?",
+      "a3": "An Airbnb host can create a professional welcome booklet in minutes, reduce repetitive questions, save several hours per week and increase their 5-star reviews thanks to My Guide Digital.",
+      "q4": "How does My Guide Digital's AI help me daily?",
+      "a4": "My Guide Digital's AI automatically answers your travelers' frequently asked questions, guides them in using the accommodation or services and avoids you being constantly solicited.",
+      "q5": "Can I test My Guide Digital for free?",
+      "a5": "Yes, you can test the solution for free using the \"Try the solution for free\" button present in several places on the site.",
+      "q6": "How does My Guide Digital improve the customer experience?",
+      "a6": "By providing clear and instant access to all information, My Guide Digital improves traveler comfort, reduces friction and helps you get more 5-star reviews.",
+      "q7": "Is My Guide Digital suitable for concierges with multiple properties?",
+      "a7": "Yes, My Guide Digital allows concierge managers to automate communication for multiple accommodations and standardize welcome quality across the entire portfolio.",
+      "q8": "Does My Guide Digital help reduce my operational costs?",
+      "a8": "By automating responses and digitizing the welcome booklet, My Guide Digital reduces time spent on traveler support and therefore your operational costs.",
+      "q9": "Is there an affiliate or referral program with My Guide Digital?",
+      "a9": "Yes, you can offer a promo code to your community to give them 15% off the subscription, which allows you to earn money with My Guide Digital.",
+      "q10": "Where can I find My Guide Digital pricing and terms of use?",
+      "a10": "Pricing is available via the \"Our Pricing\" page and legal information via the \"Legal Notice\" and \"Terms and Conditions\" pages at the bottom of the site."
+    },
+    "cta": {
+      "title": "Ready to transform your travelers' experience?",
+      "subtitle": "Join hundreds of establishments that trust our platform",
+      "cta": "Try our App for free",
+      "login": "I already have an account"
+    },
+    "footer": {
+      "description": "The modern solution to create and share your digital welcome booklets.",
+      "navigation": "Navigation",
+      "support": "Support",
+      "documentation": "Documentation",
+      "contact": "Contact",
+      "copyright": "© 2026 My Guide Digital. All rights reserved."
+    }
+  },
+  "login": {
+    "title": "Welcome",
+    "subtitle": "Log in to your account",
+    "backHome": "Back to home",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "submit": "Log in",
+    "noAccount": "Don't have an account yet?",
+    "signup": "Sign up",
+    "success": "Login successful!",
+    "error": "Error during login",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "register": {
+    "title": "Create an account",
+    "subtitle": "Start your free 30-day trial",
+    "backHome": "Back to home",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign up",
+    "hasAccount": "Already have an account?",
+    "login": "Log in",
+    "success": "Registration successful! Welcome!",
+    "error": "Error during registration",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "minLength": "Minimum 6 characters"
+  },
+  "blog": {
+    "title": "My Guide Digital Blog",
+    "subtitle": "Tips, tricks and news to optimize your hosting activity",
+    "readMore": "Read more"
+  },
+  "airbnb": {
+    "title": "For Airbnb hosts",
+    "subtitle": "Simplify your rental management and offer an exceptional experience to your travelers",
+    "whyTitle": "Why choose My Guide Digital for your Airbnb rental?",
+    "why1": "As an Airbnb host, you know how important it is to provide a memorable experience to your travelers. My Guide Digital allows you to create personalized digital welcome guides that make life easier for your guests and yourself.",
+    "why2": "No need to print documents on each arrival. A simple QR code allows your travelers to instantly access all the information they need: house rules, local recommendations, WiFi codes, and much more.",
+    "time": {
+      "title": "Time saving",
+      "description": "Create your guide once, use it for all your reservations. Update information in real time without reprinting."
+    },
+    "autonomy": {
+      "title": "Traveler autonomy",
+      "description": "The MGD assistant answers frequently asked questions 24/7, reducing the number of messages you receive."
+    },
+    "professional": {
+      "title": "Professionalism",
+      "description": "Show your guests that you are a professional host with a modern and well-organized guide."
+    },
+    "multilang": {
+      "title": "Multi-language",
+      "description": "Welcome travelers from around the world by offering your guide in multiple languages."
+    }
+  }
+}

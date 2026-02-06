@@ -1,0 +1,572 @@
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "test": "Testar",
+    "update": "Atualizar"
+  },
+  "auth": {
+    "login": "Entrar",
+    "register": "Registrar",
+    "logout": "Sair",
+    "email": "Email",
+    "password": "Senha",
+    "forgotPassword": "Esqueceu a senha?",
+    "rememberMe": "Lembrar-me",
+    "firstName": "Nome",
+    "lastName": "Sobrenome",
+    "phone": "Telefone"
+  },
+  "dashboard": {
+    "title": "Painel",
+    "myBooklets": "Meus guias",
+    "myBookletsDescription": "Gerencie seus guias digitais de boas-vindas",
+    "createBooklet": "+ Criar um guia",
+    "noBooklets": "Ainda não há guias",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "trialMessage": "Você está atualmente se beneficiando do período de teste gratuito.",
+    "trialDaysLeft": "Número de dias restantes:",
+    "bookletActivated": "Guia ativado com sucesso",
+    "bookletDeactivated": "Guia desativado com sucesso",
+    "bookletDeleted": "Guia excluído com sucesso",
+    "updateError": "Erro ao atualizar",
+    "deleteError": "Erro ao excluir o guia",
+    "deleteConfirm": "Tem certeza de que deseja excluir este guia? Esta ação é irreversível.",
+    "deleteConfirmTitle": "Excluir o guia",
+    "upgrade": {
+      "title": "Melhore sua assinatura",
+      "description": "Mude para um plano superior e economize ainda mais!",
+      "toYearly": "Atualizar para Anual (99€/ano)",
+      "toLifetime": "Atualizar para Vitalício (199€)",
+      "error": "Erro durante a atualização"
+    }
+  },
+  "livret": {
+    "title": "Guia",
+    "name": "Nome do guia",
+    "nameRequired": "O nome do guia é obrigatório",
+    "namePlaceholder": "Ex: Meu apartamento em Paris",
+    "nameVisibleOnly": "Nome do guia (visível apenas para você)",
+    "address": "Endereço postal do alojamento",
+    "addressPlaceholder": "Endereço do seu alojamento",
+    "createNew": "Criar um novo guia",
+    "create": "Criar o guia",
+    "createSuccess": "Guia criado com sucesso!",
+    "createError": "Erro ao criar o guia",
+    "basicInfo": "Informações básicas",
+    "editBooklet": "Editar o guia",
+    "editTitle": "Editar o guia",
+    "backToDashboard": "Voltar ao painel",
+    "loading": "Carregando...",
+    "notFound": "Guia não encontrado",
+    "updateSuccess": "Guia atualizado com sucesso",
+    "updateError": "Erro ao atualizar",
+    "loadError": "Erro ao carregar o guia",
+    "modules": "Módulos de informação",
+    "modulesDescription": "Escolha quais blocos de informação você deseja ativar para seus viajantes. Você pode modificar a ordem dos módulos mantendo pressionado o botão ⋮⋮ presente em cada bloco.",
+    "manageModules": "Gerenciar módulos",
+    "personalization": "Personalização visual",
+    "personalizationDescription": "Personalize as cores, a fonte e a imagem de fundo do seu guia.",
+    "customizeDesign": "Personalizar design",
+    "statistics": "Estatísticas",
+    "statisticsDescription": "Consulte as estatísticas de uso do seu guia: número de aberturas, consultas por módulo e histórico detalhado.",
+    "viewStatistics": "Ver estatísticas",
+    "qrCode": "Código QR",
+    "qrCodeDescription": "Escaneie (com seu smartphone) ou clique no código QR para acessar seu guia",
+    "qrCodeUrl": "URL do guia:",
+    "qrCodeUrlLabel": "URL do guia:",
+    "qrCodeWifiTip": "Certifique-se de que seu smartphone está na mesma rede Wi-Fi que seu computador",
+    "viewTravelerGuide": "Ver o guia do viajante",
+    "viewGuide": "Ver o guia",
+    "updateQrCode": "Atualizar código QR (para smartphone)",
+    "qrCodeUpdateSuccess": "Código QR atualizado!",
+    "qrCodeUpdateError": "Erro ao atualizar o código QR",
+    "qrCodeNotAvailable": "Código QR não disponível",
+    "guideOpenError": "Erro ao abrir o guia",
+    "welcomeTitle": "Texto 1 página inicial (Título do guia)",
+    "welcomeSubtitle": "Texto 2 página inicial (Subtítulo)",
+    "welcomeTitlePlaceholder": "Português",
+    "welcomeSubtitlePlaceholder": "Português",
+    "languages": "Idiomas do guia",
+    "autoTranslation": "A tradução automática está habilitada neste campo",
+    "autoTranslationInfo": "Oferecemos a possibilidade de traduzir automaticamente cada campo nos idiomas que você selecionou.",
+    "autoTranslationDescription": "Oferecemos a possibilidade de traduzir automaticamente cada campo nos idiomas que você selecionou.",
+    "testTranslation": "Testar tradução automática",
+    "translationTestError": "Por favor, preencha pelo menos um dos campos de texto primeiro",
+    "translationTestError2": "Selecione pelo menos 2 idiomas para testar a tradução",
+    "translationInProgress": "Tradução em andamento para",
+    "translationSuccess": "Tradução bem-sucedida:",
+    "translationError": "Erro durante a tradução",
+    "atLeastOneLanguage": "Pelo menos um idioma deve ser selecionado",
+    "save": "Salvar",
+    "nameLabel": "Nome do guia (visível apenas para você)",
+    "addressLabel": "Endereço postal do alojamento",
+    "wallPlaquePromo": "Placa de parede personalizada:",
+    "qrCodePromptTitle": "Atualizar código QR para smartphone",
+    "qrCodePromptMessage": "Digite seu IP local",
+    "qrCodePromptError": "IP local necessário",
+    "poster": {
+      "title": "Personalize seu pôster imprimível",
+      "description": "Personalize, baixe e imprima seu pôster. Seus visitantes poderão escanear o código QR para acessar seu guia.",
+      "wallPlaque": "Placa de parede personalizada:",
+      "wallPlaqueDescription": "Podemos criar uma placa de parede de alumínio com o código QR do WiFi e o código QR do guia da sua suíte, entre em contato conosco para mais informações.",
+      "customize": "Personalizar pôster"
+    },
+    "businessCard": {
+      "title": "Personalize seu cartão de visita digital",
+      "description": "Crie um cartão de visita profissional online facilmente! Compartilhe suas informações e redes sociais em um único link.",
+      "customize": "Personalizar cartão de visita"
+    },
+    "qrCodeUpdate": {
+      "localhostPrompt": "Seu computador está em localhost.",
+      "ipRequired": "Para que o código QR funcione no smartphone, digite seu IP local (ex: 192.168.0.126):",
+      "ipCommand": "Você pode encontrar seu IP com o comando: ipconfig (Windows) ou ifconfig (Mac/Linux)",
+      "ipRequiredError": "IP local necessário para o código QR do smartphone"
+    }
+  },
+  "modules": {
+    "title": "Módulos",
+    "addModule": "Adicionar módulo",
+    "manageModules": "Gerenciar módulos",
+    "reorder": "Reordenar módulos",
+    "active": "Módulo ativo",
+    "activeModules": "módulos ativos"
+  },
+  "poster": {
+    "title": "Personalize seu pôster imprimível",
+    "description": "Personalize, baixe e imprima seu pôster. Seus visitantes poderão escanear o código QR para acessar seu guia.",
+    "customize": "Personalizar pôster"
+  },
+  "businessCard": {
+    "title": "Personalize seu cartão de visita digital",
+    "description": "Crie um cartão de visita profissional online facilmente! Compartilhe suas informações e redes sociais em um único link.",
+    "customize": "Personalizar cartão de visita"
+  },
+  "profile": {
+    "title": "Perfil"
+  },
+  "subscription": {
+    "title": "Assinatura"
+  },
+  "invoices": {
+    "title": "Faturas"
+  },
+  "nav": {
+    "logout": "Sair",
+    "appName": "Guias de Boas-vindas",
+    "home": "Início",
+    "airbnbHost": "Anfitrião Airbnb",
+    "pricing": "Nossos preços",
+    "blog": "Blog",
+    "contact": "Contato",
+    "login": "Entrar",
+    "testApp": "Teste nossa App gratuitamente"
+  },
+  "contact": {
+    "title": "Entre em contato",
+    "subtitle": "Estamos aqui para ajudar. Sinta-se à vontade para nos contatar.",
+    "email": "E-mail",
+    "phone": "Telefone",
+    "address": "Endereço"
+  },
+  "chatDocuments": {
+    "title": "Documentos PDF para o Chat",
+    "description": "Adicione arquivos PDF para enriquecer o conhecimento do chat. Esses documentos serão usados para responder às perguntas dos viajantes.",
+    "uploadText": "Clique para fazer upload de um PDF",
+    "maxSize": "Tamanho máximo: 10MB",
+    "uploading": "Fazendo upload...",
+    "uploadSuccess": "PDF enviado com sucesso",
+    "uploadError": "Erro ao fazer upload do PDF",
+    "loadError": "Erro ao carregar documentos",
+    "noDocuments": "Ainda não há documentos PDF",
+    "invalidFile": "Apenas arquivos PDF são permitidos",
+    "fileTooLarge": "O arquivo não deve exceder 10MB",
+    "deleteSuccess": "PDF excluído com sucesso",
+    "deleteError": "Erro ao excluir PDF",
+    "deleteConfirmTitle": "Excluir PDF",
+    "deleteConfirm": "Tem certeza de que deseja excluir este PDF? Esta ação é irreversível."
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Painel Administrativo",
+      "subtitle": "Visão geral da aplicação"
+    },
+    "loading": "Carregando painel administrativo...",
+    "retry": "Tentar novamente",
+    "error": {
+      "authVerification": "Erro durante a verificação de autenticação",
+      "loadingData": "Erro ao carregar os dados"
+    },
+    "nav": {
+      "users": "Usuários",
+      "revenue": "Receita",
+      "subscriptions": "Assinaturas",
+      "livrets": "Guias",
+      "invoices": "Faturas"
+    },
+    "sections": {
+      "users": "Usuários",
+      "revenue": "Receita",
+      "livrets": "Guias"
+    },
+    "users": {
+      "title": "Gestão de Usuários",
+      "subtitle": "Lista de todos os usuários da aplicação",
+      "backToDashboard": "Voltar ao painel",
+      "back": "Voltar",
+      "searchPlaceholder": "Pesquisar por nome/email...",
+      "allPlans": "Todos os planos",
+      "allStatuses": "Todos os status",
+      "na": "N/A",
+      "admin": "ADMIN",
+      "pageInfo": "Página {{page}} de {{totalPages}}",
+      "total": "Total de usuários",
+      "active": "Usuários ativos",
+      "trial": "Em período de teste",
+      "paid": "Usuários pagantes",
+      "plans": {
+        "trial": "Teste",
+        "monthly": "Mensal",
+        "yearly": "Anual",
+        "lifetime": "Vitalício"
+      },
+      "statuses": {
+        "active": "Ativo",
+        "expired": "Expirado",
+        "cancelled": "Cancelado"
+      },
+      "table": {
+        "user": "Usuário",
+        "email": "Email",
+        "plan": "Plano",
+        "status": "Status",
+        "livrets": "Guias",
+        "registration": "Registro"
+      }
+    },
+    "revenue": {
+      "title": "Estatísticas Financeiras",
+      "subtitle": "Receita e assinaturas por plano",
+      "backToDashboard": "Voltar ao painel",
+      "total": "Receita total",
+      "totalRevenue": "Receita total",
+      "monthly": "Receita do mês",
+      "mrr": "MRR",
+      "mrrSubtitle": "Monthly Recurring Revenue",
+      "arr": "ARR",
+      "arrSubtitle": "Annual Recurring Revenue",
+      "activeSubscriptions": "Assinaturas ativas",
+      "revenueByPlan": "Receita por plano",
+      "planMonthly": "Plano Mensal",
+      "planYearly": "Plano Anual",
+      "planLifetime": "Plano Vitalício",
+      "subscription": "assinatura",
+      "subscriptionsPlural": "assinaturas",
+      "monthlyRevenue": "Receita mensal (últimos 12 meses)",
+      "planMonthlySubtitle": "Receita plano mensal",
+      "planYearlySubtitle": "Receita plano anual",
+      "planLifetimeSubtitle": "Receita plano vitalício",
+      "conversionRate": "Taxa de conversão",
+      "conversionRateSubtitle": "Teste → Pago"
+    },
+    "subscriptions": {
+      "title": "Gestão de Assinaturas",
+      "backToDashboard": "Voltar ao painel",
+      "user": "Usuário",
+      "plan": "Plano",
+      "statusLabel": "Status",
+      "startDate": "Data início",
+      "endDate": "Data fim",
+      "na": "N/A",
+      "pageInfo": "Página {{page}} de {{totalPages}}",
+      "status": {
+        "active": "Ativo",
+        "expired": "Expirado",
+        "cancelled": "Cancelado",
+        "trial": "Teste"
+      }
+    },
+    "livrets": {
+      "title": "Estatísticas de Guias",
+      "backToDashboard": "Voltar ao painel",
+      "total": "Total de guias",
+      "active": "Guias ativos",
+      "inactive": "Guias inativos",
+      "topLivrets": "Top 10 guias mais visualizados",
+      "views": "visualizações",
+      "modules": "módulos",
+      "moduleTypes": "Distribuição por tipo de módulo"
+    },
+    "invoices": {
+      "title": "Gestão de Faturas",
+      "backToDashboard": "Voltar ao painel",
+      "user": "Usuário",
+      "amount": "Valor",
+      "plan": "Plano",
+      "statusLabel": "Status",
+      "date": "Data",
+      "na": "N/A",
+      "pageInfo": "Página {{page}} de {{totalPages}}",
+      "status": {
+        "paid": "Pago",
+        "pending": "Pendente",
+        "failed": "Falhou",
+        "cancelled": "Cancelado"
+      }
+    },
+    "alerts": {
+      "expiringSoon": "assinatura expirando nos próximos 7 dias",
+      "expiringSoonPlural": "assinaturas expirando nos próximos 7 dias",
+      "actionRequired": "Ação necessária: Contatar clientes afetados"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Guia digital inteligente de boas-vindas",
+      "subtitle": "para Airbnb, aluguéis e anfitriões",
+      "description": "Transforme a experiência dos seus viajantes com folhetos de boas-vindas modernos e interativos",
+      "cta": "Teste nossa App grátis",
+      "login": "Entrar",
+      "freeTrial": "Teste gratuito",
+      "noCard": "Sem cartão necessário",
+      "setup": "Configuração em 5 min"
+    },
+    "features": {
+      "title": "Tudo que você precisa",
+      "subtitle": "Uma plataforma completa para criar, personalizar e compartilhar seus folhetos de boas-vindas digitais",
+      "qrCode": {
+        "title": "Código QR Instantâneo",
+        "description": "Gere um código QR único para cada folheto. Seus viajantes escaneiam e acessam instantaneamente todas as informações."
+      },
+      "customization": {
+        "title": "Personalização Total",
+        "description": "Escolha suas cores, fontes e imagens. Crie uma experiência única que reflita a identidade do seu estabelecimento."
+      },
+      "statistics": {
+        "title": "Estatísticas Detalhadas",
+        "description": "Acompanhe consultas, módulos mais visualizados e o engajamento dos seus viajantes em tempo real."
+      },
+      "chat": {
+        "title": "Chat Integrado",
+        "description": "Um widget de chat inteligente para responder perguntas frequentes dos seus viajantes 24/7."
+      },
+      "multilang": {
+        "title": "Multi-idioma",
+        "description": "Ofereça seus folhetos em vários idiomas para receber viajantes do mundo todo."
+      },
+      "secure": {
+        "title": "Seguro e Confiável",
+        "description": "Seus dados estão protegidos com as últimas tecnologias de segurança. Disponibilidade garantida 99.9%."
+      }
+    },
+    "chat": {
+      "title": "Revolucione a recepção dos seus viajantes com IA",
+      "description1": "Finalmente descanse! Deixe",
+      "description1Cont": "cuidar dos seus clientes por você.",
+      "description2": "Nosso assistente conversacional inteligente permite que viajantes encontrem rapidamente as informações de que precisam, oferecendo total tranquilidade.",
+      "available": "Disponível permanentemente, sem interrupções",
+      "native": "Nativo em cada folheto de boas-vindas digital",
+      "adaptable": "Adaptável ao seu estabelecimento e serviços",
+      "botMessage1": "Olá! Sou MGD, seu assistente digital. O que posso fazer por você hoje?",
+      "botMessage2": "Está localizado na lavanderia, no térreo! 🏠",
+      "botMessage3": "Absolutamente! Estou aqui para ajudá-lo dia e noite 🌙",
+      "userMessage1": "Onde está a secadora?",
+      "userMessage2": "Você está disponível a qualquer hora?",
+      "placeholder": "Digite sua mensagem..."
+    },
+    "benefits": {
+      "title": "Por que escolher nossos folhetos digitais?",
+      "economic": {
+        "title": "Econômico e Ecológico",
+        "description": "Reduza seus custos de impressão e seu impacto ambiental. Não é mais necessário reimprimir a cada mudança."
+      },
+      "realtime": {
+        "title": "Atualizações em tempo real",
+        "description": "Modifique suas informações instantaneamente. Seus viajantes sempre veem as últimas atualizações."
+      },
+      "ux": {
+        "title": "Experiência do usuário otimizada",
+        "description": "Interface intuitiva e moderna. Seus viajantes encontram rapidamente o que procuram."
+      },
+      "modules": "Módulos disponíveis",
+      "availability": "Disponibilidade",
+      "configuration": "Configuração",
+      "customizable": "Personalizável"
+    },
+    "pricing": {
+      "title": "Preços simples e transparentes",
+      "subtitle": "Escolha o plano que se adapta às suas necessidades",
+      "launchOffer": "OFERTA DE LANÇAMENTO",
+      "launchOfferSubtitle": "Válida por tempo limitado",
+      "monthly": {
+        "title": "Mensal",
+        "price": "15€",
+        "oldPrice": "19€",
+        "period": "/mês",
+        "savings": "ECONOMIZE 21%",
+        "unlimited": "Folhetos ilimitados",
+        "allModules": "Todos os módulos",
+        "support": "Suporte incluído",
+        "cta": "Começar"
+      },
+      "yearly": {
+        "title": "Anual",
+        "price": "99€",
+        "oldPrice": "149€",
+        "period": "/ano",
+        "monthlyPrice": "Ou seja 8,25€/mês",
+        "savings": "ECONOMIZE 34%",
+        "allMonthly": "Tudo do plano mensal",
+        "savingsYear": "Economia de 31€/ano",
+        "priority": "Suporte prioritário",
+        "cta": "Começar"
+      },
+      "lifetime": {
+        "title": "Vitalício",
+        "price": "199€",
+        "oldPrice": "299€",
+        "period": "/única vez",
+        "savings": "ECONOMIZE 33%",
+        "permanent": "Acesso permanente",
+        "allFeatures": "Todas as funcionalidades",
+        "updates": "Atualizações incluídas",
+        "cta": "Começar"
+      }
+    },
+    "testimonials": {
+      "title": "O que nossos clientes dizem",
+      "rating": "5/5 baseado no feedback dos nossos clientes",
+      "testimonial1": {
+        "name": "Sophie Martin",
+        "role": "Casa rural",
+        "text": "A criação dos nossos folhetos digitais transformou a forma como nos comunicamos com nossos hóspedes. Não é mais necessário imprimir a cada mudança, e nossos clientes acessam todas as informações pelo smartphone. Uma enorme economia de tempo!"
+      },
+      "testimonial2": {
+        "name": "Pierre Lambert",
+        "role": "Hotel 4 estrelas",
+        "text": "O assistente MGD integrado responde às perguntas dos nossos clientes mesmo à noite. Não é mais necessário ter alguém na recepção 24/7. Nossos viajantes são autônomos e economizamos horas de trabalho toda semana."
+      },
+      "testimonial3": {
+        "name": "Marie Dubois",
+        "role": "Bed & breakfast",
+        "text": "A personalização de cores e design nos permite criar folhetos que correspondem perfeitamente à nossa identidade. Nossos clientes adoram a interface moderna e intuitiva. O código QR é um verdadeiro plus para acesso rápido!"
+      },
+      "testimonial4": {
+        "name": "Jean Tremblay",
+        "role": "Residência de férias",
+        "text": "As estatísticas de consulta nos dão uma visão clara do que nossos clientes realmente procuram. Podemos adaptar nossos folhetos com base nos módulos mais visualizados. É uma ferramenta valiosa para melhorar a experiência do cliente!"
+      }
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "subtitle": "Tudo que você precisa saber sobre My Guide Digital",
+      "q1": "O que é My Guide Digital?",
+      "a1": "My Guide Digital é um folheto de boas-vindas digital alimentado por IA que centraliza todas as informações úteis para seus viajantes e os torna autônomos durante a estadia.",
+      "q2": "Para quem é My Guide Digital?",
+      "a2": "My Guide Digital é para anfitriões do Airbnb, gerentes de concierge e profissionais de viagem que desejam digitalizar sua recepção e otimizar o relacionamento com seus viajantes.",
+      "q3": "Quais são os principais benefícios para um anfitrião do Airbnb?",
+      "a3": "Um anfitrião do Airbnb pode criar um folheto de boas-vindas profissional em minutos, reduzir perguntas repetitivas, economizar várias horas por semana e aumentar suas avaliações de 5 estrelas graças ao My Guide Digital.",
+      "q4": "Como a IA do My Guide Digital me ajuda diariamente?",
+      "a4": "A IA do My Guide Digital responde automaticamente às perguntas frequentes dos seus viajantes, os guia no uso do alojamento ou serviços e evita que você seja solicitado constantemente.",
+      "q5": "Posso testar My Guide Digital gratuitamente?",
+      "a5": "Sim, você pode testar a solução gratuitamente usando o botão \"Teste a solução gratuitamente\" presente em vários lugares do site.",
+      "q6": "Como My Guide Digital melhora a experiência do cliente?",
+      "a6": "Ao fornecer acesso claro e instantâneo a todas as informações, My Guide Digital melhora o conforto dos viajantes, reduz atritos e ajuda você a obter mais avaliações de 5 estrelas.",
+      "q7": "My Guide Digital é adequado para concierges com várias propriedades?",
+      "a7": "Sim, My Guide Digital permite que gerentes de concierge automatizem a comunicação para vários alojamentos e padronizem a qualidade da recepção em todo o portfólio.",
+      "q8": "My Guide Digital ajuda a reduzir meus custos operacionais?",
+      "a8": "Ao automatizar respostas e digitalizar o folheto de boas-vindas, My Guide Digital reduz o tempo gasto no suporte aos viajantes e, portanto, seus custos operacionais.",
+      "q9": "Existe um programa de afiliados ou indicação com My Guide Digital?",
+      "a9": "Sim, você pode oferecer um código promocional à sua comunidade para dar 15% de desconto na assinatura, o que permite ganhar dinheiro com My Guide Digital.",
+      "q10": "Onde posso encontrar os preços e condições de uso do My Guide Digital?",
+      "a10": "Os preços estão disponíveis através da página \"Nossos preços\" e as informações legais através das páginas \"Aviso legal\" e \"Termos e condições\" na parte inferior do site."
+    },
+    "cta": {
+      "title": "Pronto para transformar a experiência dos seus viajantes?",
+      "subtitle": "Junte-se a centenas de estabelecimentos que confiam em nossa plataforma",
+      "cta": "Teste nossa App grátis",
+      "login": "Já tenho uma conta"
+    },
+    "footer": {
+      "description": "A solução moderna para criar e compartilhar seus folhetos de boas-vindas digitais.",
+      "navigation": "Navegação",
+      "support": "Suporte",
+      "documentation": "Documentação",
+      "contact": "Contato",
+      "copyright": "© 2026 My Guide Digital. Todos os direitos reservados."
+    }
+  },
+  "login": {
+    "title": "Bem-vindo",
+    "subtitle": "Entre na sua conta",
+    "backHome": "Voltar ao início",
+    "email": "Email",
+    "password": "Senha",
+    "rememberMe": "Lembrar-me",
+    "forgotPassword": "Esqueceu a senha?",
+    "submit": "Entrar",
+    "noAccount": "Ainda não tem conta?",
+    "signup": "Cadastrar",
+    "success": "Login bem-sucedido!",
+    "error": "Erro ao fazer login",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha"
+  },
+  "register": {
+    "title": "Criar uma conta",
+    "subtitle": "Comece sua avaliação gratuita de 30 dias",
+    "backHome": "Voltar ao início",
+    "firstName": "Nome",
+    "lastName": "Sobrenome",
+    "email": "Email",
+    "password": "Senha",
+    "submit": "Cadastrar",
+    "hasAccount": "Já tem conta?",
+    "login": "Entrar",
+    "success": "Cadastro bem-sucedido! Bem-vindo!",
+    "error": "Erro ao se cadastrar",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "minLength": "Mínimo 6 caracteres"
+  },
+  "blog": {
+    "title": "Blog My Guide Digital",
+    "subtitle": "Dicas, truques e notícias para otimizar sua atividade de anfitrião",
+    "readMore": "Ler mais"
+  },
+  "airbnb": {
+    "title": "Para anfitriões do Airbnb",
+    "subtitle": "Simplifique o gerenciamento dos seus aluguéis e ofereça uma experiência excepcional aos seus viajantes",
+    "whyTitle": "Por que escolher My Guide Digital para seu aluguel do Airbnb?",
+    "why1": "Como anfitrião do Airbnb, você sabe o quanto é importante fornecer uma experiência memorável aos seus viajantes. My Guide Digital permite criar guias de boas-vindas digitais personalizados que facilitam a vida dos seus convidados e a sua.",
+    "why2": "Não é mais necessário imprimir documentos a cada chegada. Um simples código QR permite que seus viajantes acessem instantaneamente todas as informações de que precisam: regras da casa, recomendações locais, códigos WiFi e muito mais.",
+    "time": {
+      "title": "Economia de tempo",
+      "description": "Crie seu guia uma vez, use-o para todas as suas reservas. Atualize informações em tempo real sem reimprimir."
+    },
+    "autonomy": {
+      "title": "Autonomia dos viajantes",
+      "description": "O assistente MGD responde perguntas frequentes 24/7, reduzindo o número de mensagens que você recebe."
+    },
+    "professional": {
+      "title": "Profissionalismo",
+      "description": "Mostre aos seus convidados que você é um anfitrião profissional com um guia moderno e bem organizado."
+    },
+    "multilang": {
+      "title": "Multi-idioma",
+      "description": "Receba viajantes do mundo todo oferecendo seu guia em vários idiomas."
+    }
+  }
+}

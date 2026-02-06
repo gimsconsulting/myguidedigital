@@ -1,0 +1,572 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "confirm": "确认",
+    "close": "关闭",
+    "test": "测试",
+    "update": "更新"
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "email": "电子邮件",
+    "password": "密码",
+    "forgotPassword": "忘记密码？",
+    "rememberMe": "记住我",
+    "firstName": "名",
+    "lastName": "姓",
+    "phone": "电话"
+  },
+  "dashboard": {
+    "title": "仪表板",
+    "myBooklets": "我的指南",
+    "myBookletsDescription": "管理您的数字欢迎指南",
+    "createBooklet": "+ 创建指南",
+    "noBooklets": "还没有指南",
+    "active": "活跃",
+    "inactive": "非活跃",
+    "trialMessage": "您目前正在享受免费试用期。",
+    "trialDaysLeft": "剩余天数：",
+    "bookletActivated": "指南已成功激活",
+    "bookletDeactivated": "指南已成功停用",
+    "bookletDeleted": "指南已成功删除",
+    "updateError": "更新时出错",
+    "deleteError": "删除指南时出错",
+    "deleteConfirm": "您确定要删除此指南吗？此操作不可逆。",
+    "deleteConfirmTitle": "删除指南",
+    "upgrade": {
+      "title": "升级您的订阅",
+      "description": "切换到更高级的计划，节省更多！",
+      "toYearly": "升级到年度 (99€/年)",
+      "toLifetime": "升级到终身 (199€)",
+      "error": "升级时出错"
+    }
+  },
+  "livret": {
+    "title": "指南",
+    "name": "指南名称",
+    "nameRequired": "指南名称是必需的",
+    "namePlaceholder": "例如：我在巴黎的公寓",
+    "nameVisibleOnly": "指南名称（仅您可见）",
+    "address": "住宿地址",
+    "addressPlaceholder": "您的住宿地址",
+    "createNew": "创建新指南",
+    "create": "创建指南",
+    "createSuccess": "指南创建成功！",
+    "createError": "创建指南时出错",
+    "basicInfo": "基本信息",
+    "editBooklet": "编辑指南",
+    "editTitle": "编辑指南",
+    "backToDashboard": "返回仪表板",
+    "loading": "加载中...",
+    "notFound": "未找到指南",
+    "updateSuccess": "指南更新成功",
+    "updateError": "更新时出错",
+    "loadError": "加载指南时出错",
+    "modules": "信息模块",
+    "modulesDescription": "选择您想为旅行者激活的信息块。您可以通过按住每个块上的 ⋮⋮ 按钮来修改模块顺序。",
+    "manageModules": "管理模块",
+    "personalization": "视觉个性化",
+    "personalizationDescription": "自定义指南的颜色、字体和背景图像。",
+    "customizeDesign": "自定义设计",
+    "statistics": "统计",
+    "statisticsDescription": "查看指南的使用统计：打开次数、按模块的咨询次数和详细历史记录。",
+    "viewStatistics": "查看统计",
+    "qrCode": "二维码",
+    "qrCodeDescription": "扫描（使用您的智能手机）或点击二维码以访问您的指南",
+    "qrCodeUrl": "指南URL：",
+    "qrCodeUrlLabel": "指南URL：",
+    "qrCodeWifiTip": "确保您的智能手机与计算机在同一Wi-Fi网络上",
+    "viewTravelerGuide": "查看旅行者指南",
+    "viewGuide": "查看指南",
+    "updateQrCode": "更新二维码（用于智能手机）",
+    "qrCodeUpdateSuccess": "二维码已更新！",
+    "qrCodeUpdateError": "更新二维码时出错",
+    "qrCodeNotAvailable": "二维码不可用",
+    "guideOpenError": "打开指南时出错",
+    "welcomeTitle": "首页文本1（指南标题）",
+    "welcomeSubtitle": "首页文本2（副标题）",
+    "welcomeTitlePlaceholder": "中文",
+    "welcomeSubtitlePlaceholder": "中文",
+    "languages": "指南语言",
+    "autoTranslation": "此字段已启用自动翻译",
+    "autoTranslationInfo": "我们为您提供将每个字段自动翻译为您选择的语言的功能。",
+    "autoTranslationDescription": "我们为您提供将每个字段自动翻译为您选择的语言的功能。",
+    "testTranslation": "测试自动翻译",
+    "translationTestError": "请先填写至少一个文本字段",
+    "translationTestError2": "选择至少2种语言以测试翻译",
+    "translationInProgress": "正在翻译到",
+    "translationSuccess": "翻译成功：",
+    "translationError": "翻译时出错",
+    "atLeastOneLanguage": "必须选择至少一种语言",
+    "save": "保存",
+    "nameLabel": "指南名称（仅您可见）",
+    "addressLabel": "住宿地址",
+    "wallPlaquePromo": "个性化墙牌：",
+    "qrCodePromptTitle": "更新智能手机二维码",
+    "qrCodePromptMessage": "输入您的本地IP",
+    "qrCodePromptError": "需要本地IP",
+    "poster": {
+      "title": "自定义您的可打印海报",
+      "description": "自定义、下载和打印您的海报。您的访客可以扫描二维码访问您的指南。",
+      "wallPlaque": "个性化墙牌：",
+      "wallPlaqueDescription": "我们可以创建一个带有WiFi二维码和您套间指南二维码的铝制墙牌，请联系我们了解更多信息。",
+      "customize": "自定义海报"
+    },
+    "businessCard": {
+      "title": "自定义您的数字名片",
+      "description": "轻松在线创建专业名片！在一个链接中分享您的信息和社交网络。",
+      "customize": "自定义名片"
+    },
+    "qrCodeUpdate": {
+      "localhostPrompt": "您的计算机在localhost上。",
+      "ipRequired": "要使二维码在智能手机上工作，请输入您的本地IP（例如：192.168.0.126）：",
+      "ipCommand": "您可以使用命令查找您的IP：ipconfig（Windows）或ifconfig（Mac/Linux）",
+      "ipRequiredError": "智能手机二维码需要本地IP"
+    }
+  },
+  "modules": {
+    "title": "模块",
+    "addModule": "添加模块",
+    "manageModules": "管理模块",
+    "reorder": "重新排序模块",
+    "active": "活动模块",
+    "activeModules": "活动模块"
+  },
+  "poster": {
+    "title": "自定义您的可打印海报",
+    "description": "自定义、下载和打印您的海报。您的访客可以扫描二维码访问您的指南。",
+    "customize": "自定义海报"
+  },
+  "businessCard": {
+    "title": "自定义您的数字名片",
+    "description": "轻松在线创建专业名片！在一个链接中分享您的信息和社交网络。",
+    "customize": "自定义名片"
+  },
+  "profile": {
+    "title": "个人资料"
+  },
+  "subscription": {
+    "title": "订阅"
+  },
+  "invoices": {
+    "title": "发票"
+  },
+  "nav": {
+    "logout": "退出",
+    "appName": "欢迎指南",
+    "home": "首页",
+    "airbnbHost": "Airbnb房东",
+    "pricing": "我们的价格",
+    "blog": "博客",
+    "contact": "联系",
+    "login": "登录",
+    "testApp": "免费试用我们的应用"
+  },
+  "contact": {
+    "title": "联系我们",
+    "subtitle": "我们随时为您提供帮助。请随时与我们联系。",
+    "email": "电子邮件",
+    "phone": "电话",
+    "address": "地址"
+  },
+  "chatDocuments": {
+    "title": "聊天PDF文档",
+    "description": "添加PDF文件以丰富聊天知识。这些文档将用于回答旅行者的问题。",
+    "uploadText": "点击上传PDF",
+    "maxSize": "最大大小：10MB",
+    "uploading": "上传中...",
+    "uploadSuccess": "PDF上传成功",
+    "uploadError": "上传PDF时出错",
+    "loadError": "加载文档时出错",
+    "noDocuments": "暂无PDF文档",
+    "invalidFile": "仅允许PDF文件",
+    "fileTooLarge": "文件不得超过10MB",
+    "deleteSuccess": "PDF删除成功",
+    "deleteError": "删除PDF时出错",
+    "deleteConfirmTitle": "删除PDF",
+    "deleteConfirm": "您确定要删除此PDF吗？此操作不可逆。"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "管理员仪表板",
+      "subtitle": "应用程序概览"
+    },
+    "loading": "正在加载管理员仪表板...",
+    "retry": "重试",
+    "error": {
+      "authVerification": "身份验证验证时出错",
+      "loadingData": "加载数据时出错"
+    },
+    "nav": {
+      "users": "用户",
+      "revenue": "收入",
+      "subscriptions": "订阅",
+      "livrets": "指南",
+      "invoices": "发票"
+    },
+    "sections": {
+      "users": "用户",
+      "revenue": "收入",
+      "livrets": "指南"
+    },
+    "users": {
+      "title": "用户管理",
+      "subtitle": "所有应用程序用户的列表",
+      "backToDashboard": "返回仪表板",
+      "back": "返回",
+      "searchPlaceholder": "按姓名/电子邮件搜索...",
+      "allPlans": "所有计划",
+      "allStatuses": "所有状态",
+      "na": "N/A",
+      "admin": "ADMIN",
+      "pageInfo": "第 {{page}} 页，共 {{totalPages}} 页",
+      "total": "总用户数",
+      "active": "活跃用户",
+      "trial": "试用期",
+      "paid": "付费用户",
+      "plans": {
+        "trial": "试用",
+        "monthly": "月度",
+        "yearly": "年度",
+        "lifetime": "终身"
+      },
+      "statuses": {
+        "active": "活跃",
+        "expired": "已过期",
+        "cancelled": "已取消"
+      },
+      "table": {
+        "user": "用户",
+        "email": "电子邮件",
+        "plan": "计划",
+        "status": "状态",
+        "livrets": "指南",
+        "registration": "注册"
+      }
+    },
+    "revenue": {
+      "title": "财务统计",
+      "subtitle": "按计划的收入和订阅",
+      "backToDashboard": "返回仪表板",
+      "total": "总收入",
+      "totalRevenue": "总收入",
+      "monthly": "月收入",
+      "mrr": "MRR",
+      "mrrSubtitle": "Monthly Recurring Revenue",
+      "arr": "ARR",
+      "arrSubtitle": "Annual Recurring Revenue",
+      "activeSubscriptions": "活跃订阅",
+      "revenueByPlan": "按计划的收入",
+      "planMonthly": "月度计划",
+      "planYearly": "年度计划",
+      "planLifetime": "终身计划",
+      "subscription": "订阅",
+      "subscriptionsPlural": "订阅",
+      "monthlyRevenue": "月收入（过去12个月）",
+      "planMonthlySubtitle": "月度计划收入",
+      "planYearlySubtitle": "年度计划收入",
+      "planLifetimeSubtitle": "终身计划收入",
+      "conversionRate": "转化率",
+      "conversionRateSubtitle": "试用 → 付费"
+    },
+    "subscriptions": {
+      "title": "订阅管理",
+      "backToDashboard": "返回仪表板",
+      "user": "用户",
+      "plan": "计划",
+      "statusLabel": "状态",
+      "startDate": "开始日期",
+      "endDate": "结束日期",
+      "na": "N/A",
+      "pageInfo": "第 {{page}} 页，共 {{totalPages}} 页",
+      "status": {
+        "active": "活跃",
+        "expired": "已过期",
+        "cancelled": "已取消",
+        "trial": "试用"
+      }
+    },
+    "livrets": {
+      "title": "指南统计",
+      "backToDashboard": "返回仪表板",
+      "total": "总指南数",
+      "active": "活跃指南",
+      "inactive": "非活跃指南",
+      "topLivrets": "访问量前10的指南",
+      "views": "次查看",
+      "modules": "个模块",
+      "moduleTypes": "按模块类型分布"
+    },
+    "invoices": {
+      "title": "发票管理",
+      "backToDashboard": "返回仪表板",
+      "user": "用户",
+      "amount": "金额",
+      "plan": "计划",
+      "statusLabel": "状态",
+      "date": "日期",
+      "na": "N/A",
+      "pageInfo": "第 {{page}} 页，共 {{totalPages}} 页",
+      "status": {
+        "paid": "已支付",
+        "pending": "待处理",
+        "failed": "失败",
+        "cancelled": "已取消"
+      }
+    },
+    "alerts": {
+      "expiringSoon": "订阅将在未来7天内到期",
+      "expiringSoonPlural": "订阅将在未来7天内到期",
+      "actionRequired": "需要采取行动：联系相关客户"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "智能数字欢迎指南",
+      "subtitle": "适用于Airbnb、租赁和房东",
+      "description": "用现代交互式欢迎手册改变您的旅行者体验",
+      "cta": "免费试用我们的应用",
+      "login": "登录",
+      "freeTrial": "免费试用",
+      "noCard": "无需信用卡",
+      "setup": "5分钟设置"
+    },
+    "features": {
+      "title": "您需要的一切",
+      "subtitle": "创建、定制和分享数字欢迎手册的完整平台",
+      "qrCode": {
+        "title": "即时二维码",
+        "description": "为每个手册生成唯一的二维码。您的旅行者扫描即可立即访问所有信息。"
+      },
+      "customization": {
+        "title": "完全定制",
+        "description": "选择您的颜色、字体和图片。创建反映您企业身份的独特体验。"
+      },
+      "statistics": {
+        "title": "详细统计",
+        "description": "实时跟踪咨询、最受关注的模块和旅行者的参与度。"
+      },
+      "chat": {
+        "title": "集成聊天",
+        "description": "智能聊天小部件，24/7回答旅行者的常见问题。"
+      },
+      "multilang": {
+        "title": "多语言",
+        "description": "以多种语言提供您的手册，欢迎来自世界各地的旅行者。"
+      },
+      "secure": {
+        "title": "安全可靠",
+        "description": "您的数据受到最新安全技术的保护。保证99.9%的可用性。"
+      }
+    },
+    "chat": {
+      "title": "用AI革新您的旅行者欢迎体验",
+      "description1": "终于可以休息了！让",
+      "description1Cont": "为您照顾客户。",
+      "description2": "我们的智能对话助手让旅行者快速找到所需信息，同时让您完全放心。",
+      "available": "永久可用，无中断",
+      "native": "每个数字欢迎手册原生支持",
+      "adaptable": "可适应您的企业和服务",
+      "botMessage1": "你好！我是MGD，您的数字助手。今天我能为您做什么？",
+      "botMessage2": "它位于一楼的洗衣房！🏠",
+      "botMessage3": "当然！我随时为您提供帮助，白天和黑夜🌙",
+      "userMessage1": "烘干机在哪里？",
+      "userMessage2": "您随时都可以使用吗？",
+      "placeholder": "输入您的消息..."
+    },
+    "benefits": {
+      "title": "为什么选择我们的数字手册？",
+      "economic": {
+        "title": "经济环保",
+        "description": "降低打印成本和环境影响。每次更改无需重新打印。"
+      },
+      "realtime": {
+        "title": "实时更新",
+        "description": "即时修改您的信息。旅行者始终看到最新更新。"
+      },
+      "ux": {
+        "title": "最佳用户体验",
+        "description": "直观现代的界面。旅行者快速找到所需内容。"
+      },
+      "modules": "可用模块",
+      "availability": "可用性",
+      "configuration": "配置",
+      "customizable": "可定制"
+    },
+    "pricing": {
+      "title": "简单透明的价格",
+      "subtitle": "选择适合您需求的计划",
+      "launchOffer": "启动优惠",
+      "launchOfferSubtitle": "限时有效",
+      "monthly": {
+        "title": "月度",
+        "price": "15€",
+        "oldPrice": "19€",
+        "period": "/月",
+        "savings": "节省21%",
+        "unlimited": "无限手册",
+        "allModules": "所有模块",
+        "support": "包含支持",
+        "cta": "开始"
+      },
+      "yearly": {
+        "title": "年度",
+        "price": "99€",
+        "oldPrice": "149€",
+        "period": "/年",
+        "monthlyPrice": "即8.25€/月",
+        "savings": "节省34%",
+        "allMonthly": "月度计划的所有内容",
+        "savingsYear": "每年节省31€",
+        "priority": "优先支持",
+        "cta": "开始"
+      },
+      "lifetime": {
+        "title": "终身",
+        "price": "199€",
+        "oldPrice": "299€",
+        "period": "/一次性",
+        "savings": "节省33%",
+        "permanent": "永久访问",
+        "allFeatures": "所有功能",
+        "updates": "包含更新",
+        "cta": "开始"
+      }
+    },
+    "testimonials": {
+      "title": "客户评价",
+      "rating": "5/5基于客户反馈",
+      "testimonial1": {
+        "name": "Sophie Martin",
+        "role": "乡村民宿",
+        "text": "创建我们的数字手册改变了我们与客人的沟通方式。每次更改无需打印，客户通过智能手机访问所有信息。节省大量时间！"
+      },
+      "testimonial2": {
+        "name": "Pierre Lambert",
+        "role": "四星级酒店",
+        "text": "集成的MGD助手甚至在夜间回答客户问题。无需24/7在前台安排人员。我们的旅行者是自主的，每周节省数小时工作时间。"
+      },
+      "testimonial3": {
+        "name": "Marie Dubois",
+        "role": "住宿加早餐",
+        "text": "颜色和设计的定制使我们能够创建完美匹配我们身份的手册。客户喜欢现代直观的界面。二维码是快速访问的真正优势！"
+      },
+      "testimonial4": {
+        "name": "Jean Tremblay",
+        "role": "度假租赁",
+        "text": "咨询统计数据让我们清楚地了解客户真正寻找的内容。我们可以根据最受关注的模块调整手册。这是改善客户体验的宝贵工具！"
+      }
+    },
+    "faq": {
+      "title": "常见问题",
+      "subtitle": "关于My Guide Digital您需要了解的一切",
+      "q1": "什么是My Guide Digital？",
+      "a1": "My Guide Digital是由AI驱动的数字欢迎手册，集中所有对旅行者有用的信息，让他们在住宿期间自主。",
+      "q2": "My Guide Digital适合谁？",
+      "a2": "My Guide Digital适用于Airbnb房东、礼宾经理和希望数字化欢迎并优化与旅行者关系的旅行专业人士。",
+      "q3": "Airbnb房东的主要好处是什么？",
+      "a3": "Airbnb房东可以在几分钟内创建专业的欢迎手册，减少重复问题，每周节省数小时，并借助My Guide Digital增加5星评价。",
+      "q4": "My Guide Digital的AI如何每天帮助我？",
+      "a4": "My Guide Digital的AI自动回答旅行者的常见问题，指导他们使用住宿或服务，避免您不断被询问。",
+      "q5": "我可以免费试用My Guide Digital吗？",
+      "a5": "是的，您可以使用网站上多处出现的“免费试用解决方案”按钮免费试用。",
+      "q6": "My Guide Digital如何改善客户体验？",
+      "a6": "通过提供清晰即时的信息访问，My Guide Digital提高旅行者舒适度，减少摩擦，帮助您获得更多5星评价。",
+      "q7": "My Guide Digital适合拥有多处房产的礼宾服务吗？",
+      "a7": "是的，My Guide Digital允许礼宾经理为多个住宿自动化通信，并在整个投资组合中标准化欢迎质量。",
+      "q8": "My Guide Digital有助于降低我的运营成本吗？",
+      "a8": "通过自动化响应和数字化欢迎手册，My Guide Digital减少花在旅行者支持上的时间，从而降低运营成本。",
+      "q9": "My Guide Digital有联盟或推荐计划吗？",
+      "a9": "是的，您可以向您的社区提供促销代码，为他们提供15%的订阅折扣，这使您可以通过My Guide Digital赚钱。",
+      "q10": "在哪里可以找到My Guide Digital的价格和使用条款？",
+      "a10": "价格可通过“我们的价格”页面获取，法律信息可通过网站底部的“法律声明”和“条款和条件”页面获取。"
+    },
+    "cta": {
+      "title": "准备好改变您的旅行者体验了吗？",
+      "subtitle": "加入数百家信任我们平台的企业",
+      "cta": "免费试用我们的应用",
+      "login": "我已有账户"
+    },
+    "footer": {
+      "description": "创建和分享数字欢迎手册的现代解决方案。",
+      "navigation": "导航",
+      "support": "支持",
+      "documentation": "文档",
+      "contact": "联系",
+      "copyright": "© 2026 My Guide Digital. 保留所有权利。"
+    }
+  },
+  "login": {
+    "title": "欢迎",
+    "subtitle": "登录您的账户",
+    "backHome": "返回首页",
+    "email": "电子邮件",
+    "password": "密码",
+    "rememberMe": "记住我",
+    "forgotPassword": "忘记密码？",
+    "submit": "登录",
+    "noAccount": "还没有账户？",
+    "signup": "注册",
+    "success": "登录成功！",
+    "error": "登录时出错",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码"
+  },
+  "register": {
+    "title": "创建账户",
+    "subtitle": "开始您的30天免费试用",
+    "backHome": "返回首页",
+    "firstName": "名",
+    "lastName": "姓",
+    "email": "电子邮件",
+    "password": "密码",
+    "submit": "注册",
+    "hasAccount": "已有账户？",
+    "login": "登录",
+    "success": "注册成功！欢迎！",
+    "error": "注册时出错",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "minLength": "最少6个字符"
+  },
+  "blog": {
+    "title": "My Guide Digital博客",
+    "subtitle": "优化您的主持活动的技巧、窍门和新闻",
+    "readMore": "阅读更多"
+  },
+  "airbnb": {
+    "title": "适用于Airbnb房东",
+    "subtitle": "简化您的租赁管理，为旅行者提供卓越体验",
+    "whyTitle": "为什么为您的Airbnb租赁选择My Guide Digital？",
+    "why1": "作为Airbnb房东，您知道为旅行者提供难忘体验的重要性。My Guide Digital让您创建个性化的数字欢迎指南，让您的客人和您的生活更轻松。",
+    "why2": "每次到达时无需打印文档。简单的二维码让您的旅行者立即访问所需的所有信息：房屋规则、当地推荐、WiFi代码等等。",
+    "time": {
+      "title": "节省时间",
+      "description": "创建一次指南，用于所有预订。实时更新信息，无需重新打印。"
+    },
+    "autonomy": {
+      "title": "旅行者自主性",
+      "description": "MGD助手24/7回答常见问题，减少您收到的消息数量。"
+    },
+    "professional": {
+      "title": "专业性",
+      "description": "向您的客人展示您是一位专业房东，拥有现代且组织良好的指南。"
+    },
+    "multilang": {
+      "title": "多语言",
+      "description": "通过以多种语言提供指南，欢迎来自世界各地的旅行者。"
+    }
+  }
+}

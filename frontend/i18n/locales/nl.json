@@ -1,0 +1,572 @@
+{
+  "common": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "create": "Aanmaken",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "confirm": "Bevestigen",
+    "close": "Sluiten",
+    "test": "Testen",
+    "update": "Bijwerken"
+  },
+  "auth": {
+    "login": "Inloggen",
+    "register": "Registreren",
+    "logout": "Uitloggen",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "rememberMe": "Onthoud mij",
+    "firstName": "Voornaam",
+    "lastName": "Achternaam",
+    "phone": "Telefoon"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "myBooklets": "Mijn gidsen",
+    "myBookletsDescription": "Beheer uw digitale welkomstgidsen",
+    "createBooklet": "+ Gids aanmaken",
+    "noBooklets": "Nog geen gidsen",
+    "active": "Actief",
+    "inactive": "Inactief",
+    "trialMessage": "U profiteert momenteel van de gratis proefperiode.",
+    "trialDaysLeft": "Aantal resterende dagen:",
+    "bookletActivated": "Gids succesvol geactiveerd",
+    "bookletDeactivated": "Gids succesvol gedeactiveerd",
+    "bookletDeleted": "Gids succesvol verwijderd",
+    "updateError": "Fout bij bijwerken",
+    "deleteError": "Fout bij verwijderen van gids",
+    "deleteConfirm": "Weet u zeker dat u deze gids wilt verwijderen? Deze actie is onomkeerbaar.",
+    "deleteConfirmTitle": "Gids verwijderen",
+    "upgrade": {
+      "title": "Upgrade uw abonnement",
+      "description": "Wissel naar een hoger plan en bespaar nog meer!",
+      "toYearly": "Upgraden naar Jaarlijks (99€/jaar)",
+      "toLifetime": "Upgraden naar Levenslang (199€)",
+      "error": "Fout tijdens upgrade"
+    }
+  },
+  "livret": {
+    "title": "Gids",
+    "name": "Naam van de gids",
+    "nameRequired": "De naam van de gids is verplicht",
+    "namePlaceholder": "Bijv: Mijn appartement in Parijs",
+    "nameVisibleOnly": "Naam van de gids (alleen zichtbaar voor u)",
+    "address": "Postadres van de accommodatie",
+    "addressPlaceholder": "Adres van uw accommodatie",
+    "createNew": "Nieuwe gids aanmaken",
+    "create": "Gids aanmaken",
+    "createSuccess": "Gids succesvol aangemaakt!",
+    "createError": "Fout bij aanmaken van gids",
+    "basicInfo": "Basisinformatie",
+    "editBooklet": "Gids bewerken",
+    "editTitle": "Gids bewerken",
+    "backToDashboard": "Terug naar dashboard",
+    "loading": "Laden...",
+    "notFound": "Gids niet gevonden",
+    "updateSuccess": "Gids succesvol bijgewerkt",
+    "updateError": "Fout bij bijwerken",
+    "loadError": "Fout bij laden van gids",
+    "modules": "Informatiemodules",
+    "modulesDescription": "Kies welke informatieblokken u wilt activeren voor uw reizigers. U kunt de volgorde van de modules wijzigen door de knop ⋮⋮ op elk blok ingedrukt te houden.",
+    "manageModules": "Modules beheren",
+    "personalization": "Visuele personalisatie",
+    "personalizationDescription": "Personaliseer de kleuren, het lettertype en de achtergrondafbeelding van uw gids.",
+    "customizeDesign": "Design aanpassen",
+    "statistics": "Statistieken",
+    "statisticsDescription": "Bekijk de gebruiksstatistieken van uw gids: aantal openingen, consultaties per module en gedetailleerde geschiedenis.",
+    "viewStatistics": "Statistieken bekijken",
+    "qrCode": "QR-code",
+    "qrCodeDescription": "Scan (met uw smartphone) of klik op de QR-code om toegang te krijgen tot uw gids",
+    "qrCodeUrl": "URL van de gids:",
+    "qrCodeUrlLabel": "URL van de gids:",
+    "qrCodeWifiTip": "Zorg ervoor dat uw smartphone op hetzelfde Wi-Fi-netwerk staat als uw computer",
+    "viewTravelerGuide": "Reizigersgids bekijken",
+    "viewGuide": "Gids bekijken",
+    "updateQrCode": "QR-code bijwerken (voor smartphone)",
+    "qrCodeUpdateSuccess": "QR-code bijgewerkt!",
+    "qrCodeUpdateError": "Fout bij bijwerken van QR-code",
+    "qrCodeNotAvailable": "QR-code niet beschikbaar",
+    "guideOpenError": "Fout bij openen van gids",
+    "welcomeTitle": "Tekst 1 homepage (Gidstitel)",
+    "welcomeSubtitle": "Tekst 2 homepage (Ondertitel)",
+    "welcomeTitlePlaceholder": "Nederlands",
+    "welcomeSubtitlePlaceholder": "Nederlands",
+    "languages": "Gidstalen",
+    "autoTranslation": "Automatische vertaling is ingeschakeld voor dit veld",
+    "autoTranslationInfo": "Wij bieden u de mogelijkheid om elk veld automatisch te vertalen naar de door u geselecteerde talen.",
+    "autoTranslationDescription": "Wij bieden u de mogelijkheid om elk veld automatisch te vertalen naar de door u geselecteerde talen.",
+    "testTranslation": "Automatische vertaling testen",
+    "translationTestError": "Vul eerst ten minste een van de tekstvelden in",
+    "translationTestError2": "Selecteer ten minste 2 talen om de vertaling te testen",
+    "translationInProgress": "Vertaling in uitvoering naar",
+    "translationSuccess": "Vertaling succesvol:",
+    "translationError": "Fout tijdens vertaling",
+    "atLeastOneLanguage": "Ten minste één taal moet worden geselecteerd",
+    "save": "Opslaan",
+    "nameLabel": "Naam van de gids (alleen zichtbaar voor u)",
+    "addressLabel": "Postadres van de accommodatie",
+    "wallPlaquePromo": "Gepersonaliseerde wandplaat:",
+    "qrCodePromptTitle": "QR-code voor smartphone bijwerken",
+    "qrCodePromptMessage": "Voer uw lokale IP in",
+    "qrCodePromptError": "Lokaal IP vereist",
+    "poster": {
+      "title": "Personaliseer uw afdrukbare poster",
+      "description": "Personaliseer, download en print uw poster. Uw bezoekers kunnen de QR-code scannen om toegang te krijgen tot uw gids.",
+      "wallPlaque": "Gepersonaliseerde wandplaat:",
+      "wallPlaqueDescription": "Wij kunnen een aluminium wandplaat maken met de WiFi QR-code en de QR-code van uw suite-gids, neem contact met ons op voor meer informatie.",
+      "customize": "Poster personaliseren"
+    },
+    "businessCard": {
+      "title": "Personaliseer uw digitale visitekaartje",
+      "description": "Maak eenvoudig een professioneel visitekaartje online! Deel uw informatie en sociale netwerken in één link.",
+      "customize": "Visitekaartje personaliseren"
+    },
+    "qrCodeUpdate": {
+      "localhostPrompt": "Uw computer staat op localhost.",
+      "ipRequired": "Om de QR-code op smartphone te laten werken, voer uw lokale IP in (bijv. 192.168.0.126):",
+      "ipCommand": "U kunt uw IP vinden met het commando: ipconfig (Windows) of ifconfig (Mac/Linux)",
+      "ipRequiredError": "Lokaal IP vereist voor smartphone QR-code"
+    }
+  },
+  "modules": {
+    "title": "Modules",
+    "addModule": "Module toevoegen",
+    "manageModules": "Modules beheren",
+    "reorder": "Modules herordenen",
+    "active": "Actieve module",
+    "activeModules": "actieve modules"
+  },
+  "poster": {
+    "title": "Personaliseer uw afdrukbare poster",
+    "description": "Personaliseer, download en print uw poster. Uw bezoekers kunnen de QR-code scannen om toegang te krijgen tot uw gids.",
+    "customize": "Poster personaliseren"
+  },
+  "businessCard": {
+    "title": "Personaliseer uw digitale visitekaartje",
+    "description": "Maak eenvoudig een professioneel visitekaartje online! Deel uw informatie en sociale netwerken in één link.",
+    "customize": "Visitekaartje personaliseren"
+  },
+  "profile": {
+    "title": "Profiel"
+  },
+  "subscription": {
+    "title": "Abonnement"
+  },
+  "invoices": {
+    "title": "Facturen"
+  },
+  "nav": {
+    "logout": "Uitloggen",
+    "appName": "Welkomstgidsen",
+    "home": "Home",
+    "airbnbHost": "Airbnb Host",
+    "pricing": "Onze prijzen",
+    "blog": "Blog",
+    "contact": "Contact",
+    "login": "Inloggen",
+    "testApp": "Probeer onze App gratis"
+  },
+  "contact": {
+    "title": "Neem contact met ons op",
+    "subtitle": "We zijn er om te helpen. Neem gerust contact met ons op.",
+    "email": "E-mail",
+    "phone": "Telefoon",
+    "address": "Adres"
+  },
+  "chatDocuments": {
+    "title": "PDF-documenten voor Chat",
+    "description": "Voeg PDF-bestanden toe om de kennis van de chat te verrijken. Deze documenten worden gebruikt om vragen van reizigers te beantwoorden.",
+    "uploadText": "Klik om een PDF te uploaden",
+    "maxSize": "Maximale grootte: 10MB",
+    "uploading": "Uploaden...",
+    "uploadSuccess": "PDF succesvol geüpload",
+    "uploadError": "Fout bij het uploaden van PDF",
+    "loadError": "Fout bij het laden van documenten",
+    "noDocuments": "Nog geen PDF-documenten",
+    "invalidFile": "Alleen PDF-bestanden zijn toegestaan",
+    "fileTooLarge": "Het bestand mag niet groter zijn dan 10MB",
+    "deleteSuccess": "PDF succesvol verwijderd",
+    "deleteError": "Fout bij het verwijderen van PDF",
+    "deleteConfirmTitle": "PDF verwijderen",
+    "deleteConfirm": "Weet u zeker dat u dit PDF wilt verwijderen? Deze actie is onomkeerbaar."
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Beheerdersdashboard",
+      "subtitle": "Overzicht van de applicatie"
+    },
+    "loading": "Beheerdersdashboard laden...",
+    "retry": "Opnieuw proberen",
+    "error": {
+      "authVerification": "Fout bij verificatie van authenticatie",
+      "loadingData": "Fout bij laden van gegevens"
+    },
+    "nav": {
+      "users": "Gebruikers",
+      "revenue": "Inkomsten",
+      "subscriptions": "Abonnementen",
+      "livrets": "Gidsen",
+      "invoices": "Facturen"
+    },
+    "sections": {
+      "users": "Gebruikers",
+      "revenue": "Inkomsten",
+      "livrets": "Gidsen"
+    },
+    "users": {
+      "title": "Gebruikersbeheer",
+      "subtitle": "Lijst van alle applicatiegebruikers",
+      "backToDashboard": "Terug naar dashboard",
+      "back": "Terug",
+      "searchPlaceholder": "Zoeken op naam/email...",
+      "allPlans": "Alle abonnementen",
+      "allStatuses": "Alle statussen",
+      "na": "N/A",
+      "admin": "ADMIN",
+      "pageInfo": "Pagina {{page}} van {{totalPages}}",
+      "total": "Totaal gebruikers",
+      "active": "Actieve gebruikers",
+      "trial": "In proefperiode",
+      "paid": "Betalende gebruikers",
+      "plans": {
+        "trial": "Proef",
+        "monthly": "Maandelijks",
+        "yearly": "Jaarlijks",
+        "lifetime": "Levenslang"
+      },
+      "statuses": {
+        "active": "Actief",
+        "expired": "Verlopen",
+        "cancelled": "Geannuleerd"
+      },
+      "table": {
+        "user": "Gebruiker",
+        "email": "Email",
+        "plan": "Abonnement",
+        "status": "Status",
+        "livrets": "Gidsen",
+        "registration": "Registratie"
+      }
+    },
+    "revenue": {
+      "title": "Financiële Statistieken",
+      "subtitle": "Inkomsten en abonnementen per plan",
+      "backToDashboard": "Terug naar dashboard",
+      "total": "Totale inkomsten",
+      "totalRevenue": "Totale inkomsten",
+      "monthly": "Maandelijkse inkomsten",
+      "mrr": "MRR",
+      "mrrSubtitle": "Monthly Recurring Revenue",
+      "arr": "ARR",
+      "arrSubtitle": "Annual Recurring Revenue",
+      "activeSubscriptions": "Actieve abonnementen",
+      "revenueByPlan": "Inkomsten per plan",
+      "planMonthly": "Maandelijks Plan",
+      "planYearly": "Jaarlijks Plan",
+      "planLifetime": "Levenslang Plan",
+      "subscription": "abonnement",
+      "subscriptionsPlural": "abonnementen",
+      "monthlyRevenue": "Maandelijkse inkomsten (laatste 12 maanden)",
+      "planMonthlySubtitle": "Inkomsten maandelijks abonnement",
+      "planYearlySubtitle": "Inkomsten jaarlijks abonnement",
+      "planLifetimeSubtitle": "Inkomsten levenslang abonnement",
+      "conversionRate": "Conversiepercentage",
+      "conversionRateSubtitle": "Proef → Betaald"
+    },
+    "subscriptions": {
+      "title": "Abonnementbeheer",
+      "backToDashboard": "Terug naar dashboard",
+      "user": "Gebruiker",
+      "plan": "Plan",
+      "statusLabel": "Status",
+      "startDate": "Startdatum",
+      "endDate": "Einddatum",
+      "na": "N/A",
+      "pageInfo": "Pagina {{page}} van {{totalPages}}",
+      "status": {
+        "active": "Actief",
+        "expired": "Verlopen",
+        "cancelled": "Geannuleerd",
+        "trial": "Proef"
+      }
+    },
+    "livrets": {
+      "title": "Gidsstatistieken",
+      "backToDashboard": "Terug naar dashboard",
+      "total": "Totaal gidsen",
+      "active": "Actieve gidsen",
+      "inactive": "Inactieve gidsen",
+      "topLivrets": "Top 10 meest bekeken gidsen",
+      "views": "weergaven",
+      "modules": "modules",
+      "moduleTypes": "Verdeling per moduletype"
+    },
+    "invoices": {
+      "title": "Factuurbeheer",
+      "backToDashboard": "Terug naar dashboard",
+      "user": "Gebruiker",
+      "amount": "Bedrag",
+      "plan": "Plan",
+      "statusLabel": "Status",
+      "date": "Datum",
+      "na": "N/A",
+      "pageInfo": "Pagina {{page}} van {{totalPages}}",
+      "status": {
+        "paid": "Betaald",
+        "pending": "In afwachting",
+        "failed": "Mislukt",
+        "cancelled": "Geannuleerd"
+      }
+    },
+    "alerts": {
+      "expiringSoon": "abonnement verloopt in de komende 7 dagen",
+      "expiringSoonPlural": "abonnementen verlopen in de komende 7 dagen",
+      "actionRequired": "Actie vereist: Neem contact op met betrokken klanten"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Slimme digitale welkomstgids",
+      "subtitle": "voor Airbnb, verhuur en hosts",
+      "description": "Transformeer de ervaring van uw reizigers met moderne en interactieve welkomstboekjes",
+      "cta": "Probeer onze App gratis",
+      "login": "Inloggen",
+      "freeTrial": "Gratis proefperiode",
+      "noCard": "Geen kaart vereist",
+      "setup": "5 min setup"
+    },
+    "features": {
+      "title": "Alles wat u nodig heeft",
+      "subtitle": "Een compleet platform om uw digitale welkomstboekjes te maken, aan te passen en te delen",
+      "qrCode": {
+        "title": "Directe QR-code",
+        "description": "Genereer een unieke QR-code voor elk boekje. Uw reizigers scannen en krijgen direct toegang tot alle informatie."
+      },
+      "customization": {
+        "title": "Totale aanpassing",
+        "description": "Kies uw kleuren, lettertypes en afbeeldingen. Creëer een unieke ervaring die de identiteit van uw bedrijf weerspiegelt."
+      },
+      "statistics": {
+        "title": "Gedetailleerde statistieken",
+        "description": "Volg consultaties, meest bekeken modules en betrokkenheid van uw reizigers in realtime."
+      },
+      "chat": {
+        "title": "Geïntegreerde chat",
+        "description": "Een intelligente chatwidget om veelgestelde vragen van uw reizigers 24/7 te beantwoorden."
+      },
+      "multilang": {
+        "title": "Meertalig",
+        "description": "Bied uw boekjes aan in meerdere talen om reizigers van over de hele wereld te verwelkomen."
+      },
+      "secure": {
+        "title": "Veilig en betrouwbaar",
+        "description": "Uw gegevens zijn beschermd met de nieuwste beveiligingstechnologieën. 99,9% beschikbaarheid gegarandeerd."
+      }
+    },
+    "chat": {
+      "title": "Revolutie in de verwelkoming van uw reizigers met AI",
+      "description1": "Eindelijk rust! Laat",
+      "description1Cont": "zorgen voor uw klanten.",
+      "description2": "Onze intelligente gespreksassistent stelt reizigers in staat om snel de informatie te vinden die ze nodig hebben, terwijl u volledige gemoedsrust krijgt.",
+      "available": "Permanent beschikbaar, zonder onderbreking",
+      "native": "Native in elk digitaal welkomstboekje",
+      "adaptable": "Aanpasbaar aan uw bedrijf en diensten",
+      "botMessage1": "Hallo! Ik ben MGD, uw digitale assistent. Wat kan ik vandaag voor u doen?",
+      "botMessage2": "Het bevindt zich in de wasruimte, op de begane grond! 🏠",
+      "botMessage3": "Absoluut! Ik ben hier om u dag en nacht te helpen 🌙",
+      "userMessage1": "Waar is de droger?",
+      "userMessage2": "Bent u op elk moment beschikbaar?",
+      "placeholder": "Typ uw bericht..."
+    },
+    "benefits": {
+      "title": "Waarom onze digitale boekjes kiezen?",
+      "economic": {
+        "title": "Economisch en ecologisch",
+        "description": "Verminder uw drukkosten en uw milieu-impact. Geen herprinten meer bij elke wijziging."
+      },
+      "realtime": {
+        "title": "Realtime updates",
+        "description": "Wijzig uw informatie direct. Uw reizigers zien altijd de nieuwste updates."
+      },
+      "ux": {
+        "title": "Optimale gebruikerservaring",
+        "description": "Intuïtieve en moderne interface. Uw reizigers vinden snel wat ze zoeken."
+      },
+      "modules": "Beschikbare modules",
+      "availability": "Beschikbaarheid",
+      "configuration": "Configuratie",
+      "customizable": "Aanpasbaar"
+    },
+    "pricing": {
+      "title": "Eenvoudige en transparante prijzen",
+      "subtitle": "Kies het plan dat bij uw behoeften past",
+      "launchOffer": "LANCERINGSAANBIEDING",
+      "launchOfferSubtitle": "Geldig voor beperkte tijd",
+      "monthly": {
+        "title": "Maandelijks",
+        "price": "15€",
+        "oldPrice": "19€",
+        "period": "/maand",
+        "savings": "BESPAAR 21%",
+        "unlimited": "Onbeperkte boekjes",
+        "allModules": "Alle modules",
+        "support": "Ondersteuning inbegrepen",
+        "cta": "Aan de slag"
+      },
+      "yearly": {
+        "title": "Jaarlijks",
+        "price": "99€",
+        "oldPrice": "149€",
+        "period": "/jaar",
+        "monthlyPrice": "Dat is 8,25€/maand",
+        "savings": "BESPAAR 34%",
+        "allMonthly": "Alles van het maandplan",
+        "savingsYear": "Bespaar 31€/jaar",
+        "priority": "Prioriteitsondersteuning",
+        "cta": "Aan de slag"
+      },
+      "lifetime": {
+        "title": "Levenslang",
+        "price": "199€",
+        "oldPrice": "299€",
+        "period": "/eenmalig",
+        "savings": "BESPAAR 33%",
+        "permanent": "Permanente toegang",
+        "allFeatures": "Alle functies",
+        "updates": "Updates inbegrepen",
+        "cta": "Aan de slag"
+      }
+    },
+    "testimonials": {
+      "title": "Wat onze klanten zeggen",
+      "rating": "5/5 gebaseerd op feedback van onze klanten",
+      "testimonial1": {
+        "name": "Sophie Martin",
+        "role": "Landelijk pension",
+        "text": "Het maken van onze digitale boekjes heeft de manier waarop we met onze gasten communiceren getransformeerd. Geen printen meer bij elke wijziging, en onze klanten krijgen toegang tot alle informatie via hun smartphone. Enorme tijdsbesparing!"
+      },
+      "testimonial2": {
+        "name": "Pierre Lambert",
+        "role": "4-sterren hotel",
+        "text": "De geïntegreerde MGD-assistent beantwoordt vragen van onze klanten zelfs 's nachts. Geen noodzaak meer om iemand 24/7 aan de receptie te hebben. Onze reizigers zijn autonoom en we besparen elke week uren werk."
+      },
+      "testimonial3": {
+        "name": "Marie Dubois",
+        "role": "Bed & breakfast",
+        "text": "De aanpassing van kleuren en ontwerp stelt ons in staat boekjes te maken die perfect bij onze identiteit passen. Onze klanten houden van de moderne en intuïtieve interface. De QR-code is een echte plus voor snelle toegang!"
+      },
+      "testimonial4": {
+        "name": "Jean Tremblay",
+        "role": "Vakantieverhuur",
+        "text": "De consultatiestatistieken geven ons een duidelijk beeld van wat onze klanten echt zoeken. We kunnen onze boekjes aanpassen op basis van de meest bekeken modules. Het is een waardevol hulpmiddel om de klantervaring te verbeteren!"
+      }
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "subtitle": "Alles wat u moet weten over My Guide Digital",
+      "q1": "Wat is My Guide Digital?",
+      "a1": "My Guide Digital is een AI-aangedreven digitaal welkomstboekje dat alle nuttige informatie voor uw reizigers centraliseert en hen autonoom maakt tijdens hun verblijf.",
+      "q2": "Voor wie is My Guide Digital?",
+      "a2": "My Guide Digital is voor Airbnb-hosts, conciërge-managers en reisprofessionals die hun verwelkoming willen digitaliseren en hun relatie met reizigers willen optimaliseren.",
+      "q3": "Wat zijn de belangrijkste voordelen voor een Airbnb-host?",
+      "a3": "Een Airbnb-host kan in enkele minuten een professioneel welkomstboekje maken, repetitieve vragen verminderen, meerdere uren per week besparen en zijn 5-sterrenbeoordelingen verhogen dankzij My Guide Digital.",
+      "q4": "Hoe helpt de AI van My Guide Digital mij dagelijks?",
+      "a4": "De AI van My Guide Digital beantwoordt automatisch veelgestelde vragen van uw reizigers, begeleidt hen bij het gebruik van de accommodatie of diensten en voorkomt dat u constant wordt benaderd.",
+      "q5": "Kan ik My Guide Digital gratis testen?",
+      "a5": "Ja, u kunt de oplossing gratis testen met de knop \"Probeer de oplossing gratis\" die op verschillende plaatsen op de site staat.",
+      "q6": "Hoe verbetert My Guide Digital de klantervaring?",
+      "a6": "Door duidelijke en directe toegang tot alle informatie te bieden, verbetert My Guide Digital het comfort van reizigers, vermindert wrijving en helpt u meer 5-sterrenbeoordelingen te krijgen.",
+      "q7": "Is My Guide Digital geschikt voor conciërges met meerdere eigendommen?",
+      "a7": "Ja, My Guide Digital stelt conciërge-managers in staat de communicatie voor meerdere accommodaties te automatiseren en de kwaliteit van de verwelkoming in het hele portfolio te standaardiseren.",
+      "q8": "Helpt My Guide Digital mijn operationele kosten te verlagen?",
+      "a8": "Door antwoorden te automatiseren en het welkomstboekje te digitaliseren, vermindert My Guide Digital de tijd die wordt besteed aan ondersteuning van reizigers en dus uw operationele kosten.",
+      "q9": "Is er een affiliate- of verwijzingsprogramma met My Guide Digital?",
+      "a9": "Ja, u kunt een promotiecode aanbieden aan uw gemeenschap om hen 15% korting op het abonnement te geven, waardoor u geld kunt verdienen met My Guide Digital.",
+      "q10": "Waar kan ik de prijzen en gebruiksvoorwaarden van My Guide Digital vinden?",
+      "a10": "De prijzen zijn beschikbaar via de pagina \"Onze prijzen\" en de juridische informatie via de pagina's \"Juridische kennisgeving\" en \"Algemene voorwaarden\" onderaan de site."
+    },
+    "cta": {
+      "title": "Klaar om de ervaring van uw reizigers te transformeren?",
+      "subtitle": "Sluit u aan bij honderden bedrijven die op ons platform vertrouwen",
+      "cta": "Probeer onze App gratis",
+      "login": "Ik heb al een account"
+    },
+    "footer": {
+      "description": "De moderne oplossing om uw digitale welkomstboekjes te maken en te delen.",
+      "navigation": "Navigatie",
+      "support": "Ondersteuning",
+      "documentation": "Documentatie",
+      "contact": "Contact",
+      "copyright": "© 2026 My Guide Digital. Alle rechten voorbehouden."
+    }
+  },
+  "login": {
+    "title": "Welkom",
+    "subtitle": "Log in op uw account",
+    "backHome": "Terug naar start",
+    "email": "Email",
+    "password": "Wachtwoord",
+    "rememberMe": "Onthoud mij",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "submit": "Inloggen",
+    "noAccount": "Nog geen account?",
+    "signup": "Registreren",
+    "success": "Inloggen succesvol!",
+    "error": "Fout bij inloggen",
+    "showPassword": "Wachtwoord tonen",
+    "hidePassword": "Wachtwoord verbergen"
+  },
+  "register": {
+    "title": "Maak een account",
+    "subtitle": "Begin uw gratis 30-dagen proefperiode",
+    "backHome": "Terug naar start",
+    "firstName": "Voornaam",
+    "lastName": "Achternaam",
+    "email": "Email",
+    "password": "Wachtwoord",
+    "submit": "Registreren",
+    "hasAccount": "Heeft u al een account?",
+    "login": "Inloggen",
+    "success": "Registratie succesvol! Welkom!",
+    "error": "Fout bij registratie",
+    "showPassword": "Wachtwoord tonen",
+    "hidePassword": "Wachtwoord verbergen",
+    "minLength": "Minimaal 6 tekens"
+  },
+  "blog": {
+    "title": "My Guide Digital Blog",
+    "subtitle": "Tips, trucs en nieuws om uw hostingactiviteit te optimaliseren",
+    "readMore": "Lees meer"
+  },
+  "airbnb": {
+    "title": "Voor Airbnb-hosts",
+    "subtitle": "Vereenvoudig uw verhuurbeheer en bied uw reizigers een uitzonderlijke ervaring",
+    "whyTitle": "Waarom My Guide Digital kiezen voor uw Airbnb-verhuur?",
+    "why1": "Als Airbnb-host weet u hoe belangrijk het is om uw reizigers een onvergetelijke ervaring te bieden. My Guide Digital stelt u in staat gepersonaliseerde digitale welkomstgidsen te maken die het leven van uw gasten en uzelf gemakkelijker maken.",
+    "why2": "Geen noodzaak meer om bij elke aankomst documenten af te drukken. Een eenvoudige QR-code stelt uw reizigers in staat direct toegang te krijgen tot alle informatie die ze nodig hebben: huisregels, lokale aanbevelingen, WiFi-codes en nog veel meer.",
+    "time": {
+      "title": "Tijdsbesparing",
+      "description": "Maak uw gids eenmaal, gebruik deze voor al uw reserveringen. Werk informatie in realtime bij zonder opnieuw af te drukken."
+    },
+    "autonomy": {
+      "title": "Autonomie van reizigers",
+      "description": "De MGD-assistent beantwoordt veelgestelde vragen 24/7, waardoor het aantal berichten dat u ontvangt wordt verminderd."
+    },
+    "professional": {
+      "title": "Professionaliteit",
+      "description": "Laat uw gasten zien dat u een professionele host bent met een moderne en goed georganiseerde gids."
+    },
+    "multilang": {
+      "title": "Meertalig",
+      "description": "Verwelkom reizigers van over de hele wereld door uw gids in meerdere talen aan te bieden."
+    }
+  }
+}

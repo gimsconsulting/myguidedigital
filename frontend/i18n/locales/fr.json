@@ -1,0 +1,562 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "test": "Tester",
+    "update": "Mettre à jour"
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "rememberMe": "Rester connecté",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "phone": "Téléphone"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "myBooklets": "Mes Livrets",
+    "myBookletsDescription": "Gérez vos livrets d'accueil digitaux",
+    "createBooklet": "+ Créer un livret",
+    "noBooklets": "Aucun livret pour le moment",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "trialMessage": "Vous bénéficiez actuellement de la période d'essai gratuite.",
+    "trialDaysLeft": "Nombre de jours restants :",
+    "bookletActivated": "Livret activé avec succès",
+    "bookletDeactivated": "Livret désactivé avec succès",
+    "bookletDeleted": "Livret supprimé avec succès",
+    "updateError": "Erreur lors de la mise à jour",
+    "deleteError": "Erreur lors de la suppression du livret",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce livret ? Cette action est irréversible.",
+    "deleteConfirmTitle": "Supprimer le livret",
+    "upgrade": {
+      "title": "Améliorez votre abonnement",
+      "description": "Passez à un plan supérieur et économisez encore plus !",
+      "toYearly": "Passer à Annuel (99€/an)",
+      "toLifetime": "Passer à À vie (199€)",
+      "error": "Erreur lors de l'upgrade"
+    }
+  },
+  "livret": {
+    "title": "Livret",
+    "name": "Nom du livret",
+    "nameRequired": "Le nom du livret est requis",
+    "namePlaceholder": "Ex: Mon appartement à Paris",
+    "nameVisibleOnly": "Nom du livret (visible uniquement par vous)",
+    "address": "Adresse postale du logement",
+    "addressPlaceholder": "Adresse de votre logement",
+    "createNew": "Créer un nouveau livret",
+    "create": "Créer le livret",
+    "createSuccess": "Livret créé avec succès !",
+    "createError": "Erreur lors de la création du livret",
+    "basicInfo": "Informations de base",
+    "editBooklet": "Éditer le livret",
+    "backToDashboard": "Retour au dashboard",
+    "loading": "Chargement...",
+    "notFound": "Livret non trouvé",
+    "updateSuccess": "Livret mis à jour avec succès",
+    "updateError": "Erreur lors de la mise à jour",
+    "loadError": "Erreur lors du chargement du livret",
+    "modules": "Modules d'information",
+    "modulesDescription": "Choisissez quels blocs d'informations vous souhaitez activer pour vos voyageurs. Vous pouvez modifier l'ordre des modules en maintenant le bouton ⋮⋮ présent sur chaque bloc.",
+    "manageModules": "Gérer les modules",
+    "personalization": "Personnalisation visuelle",
+    "personalizationDescription": "Personnalisez les couleurs, la police et l'image de fond de votre livret.",
+    "customizeDesign": "Personnaliser le design",
+    "statistics": "Statistiques",
+    "statisticsDescription": "Consultez les statistiques d'utilisation de votre livret : nombre d'ouvertures, consultations par module, et historique détaillé.",
+    "viewStatistics": "Voir les statistiques",
+    "qrCode": "QR Code",
+    "qrCodeDescription": "Scannez (avec votre smartphone) ou cliquez sur le QR code pour accéder à votre livret",
+    "qrCodeUrl": "URL du livret :",
+    "qrCodeWifiTip": "Assurez-vous que votre smartphone est sur le même réseau Wi-Fi que votre ordinateur",
+    "viewTravelerGuide": "Voir le guide côté voyageur",
+    "updateQrCode": "Mettre à jour le QR code (pour smartphone)",
+    "qrCodeUpdateSuccess": "QR code mis à jour !",
+    "qrCodeUpdateError": "Erreur lors de la mise à jour du QR code",
+    "qrCodeNotAvailable": "QR code non disponible",
+    "guideOpenError": "Erreur lors de l'ouverture du guide",
+    "welcomeTitle": "Texte 1 page d'accueil (Titre du livret)",
+    "welcomeSubtitle": "Texte 2 page d'accueil (Sous titre)",
+    "welcomeTitlePlaceholder": "Français (French)",
+    "welcomeSubtitlePlaceholder": "Français (French)",
+    "languages": "Langues du livret",
+    "autoTranslation": "La traduction automatique est activée sur ce champ",
+    "autoTranslationInfo": "Nous vous offrons la possibilité de traduire automatiquement chaque champ dans les langues que vous aurez sélectionnées.",
+    "testTranslation": "Tester la traduction automatique",
+    "translationTestError": "Veuillez d'abord remplir au moins un des champs de texte",
+    "translationTestError2": "Sélectionnez au moins 2 langues pour tester la traduction",
+    "translationInProgress": "Traduction en cours vers",
+    "translationSuccess": "Traduction réussie :",
+    "translationError": "Erreur lors de la traduction",
+    "atLeastOneLanguage": "Au moins une langue doit être sélectionnée",
+    "save": "Enregistrer",
+    "poster": {
+      "title": "Personnalisez votre affiche imprimable",
+      "description": "Personnalisez, téléchargez et imprimez votre affiche. Vos visiteurs pourront scanner le QR code pour accéder à votre guide.",
+      "wallPlaque": "Plaque murale personnalisée :",
+      "wallPlaqueDescription": "Nous pouvons vous créer une plaque murale en alu avec le QR CODE du code wifi et QR code du livret de votre suite, contactez-nous pour plus de renseignements.",
+      "customize": "Personnaliser l'affiche"
+    },
+    "businessCard": {
+      "title": "Personnalisez votre carte de visite numérique",
+      "description": "Créez une carte de visite professionnelle en ligne facilement ! Partagez vos informations et vos réseaux sociaux en un seul lien.",
+      "customize": "Personnaliser la carte de visite"
+    },
+    "qrCodeUpdate": {
+      "localhostPrompt": "Votre ordinateur est sur localhost.",
+      "ipRequired": "Pour que le QR code fonctionne sur smartphone, entrez votre IP locale (ex: 192.168.0.126):",
+      "ipCommand": "Vous pouvez trouver votre IP avec la commande: ipconfig (Windows) ou ifconfig (Mac/Linux)",
+      "ipRequiredError": "IP locale requise pour le QR code smartphone"
+    }
+  },
+  "modules": {
+    "title": "Modules",
+    "addModule": "Ajouter un module",
+    "manageModules": "Gérer les modules",
+    "reorder": "Réorganiser les modules",
+    "active": "Module actif",
+    "activeModules": "modules actifs"
+  },
+  "poster": {
+    "title": "Personnalisez votre affiche imprimable",
+    "description": "Personnalisez, téléchargez et imprimez votre affiche. Vos visiteurs pourront scanner le QR code pour accéder à votre guide.",
+    "customize": "Personnaliser l'affiche"
+  },
+  "businessCard": {
+    "title": "Personnalisez votre carte de visite numérique",
+    "description": "Créez une carte de visite professionnelle en ligne facilement ! Partagez vos informations et vos réseaux sociaux en un seul lien.",
+    "customize": "Personnaliser la carte de visite"
+  },
+  "profile": {
+    "title": "Profil"
+  },
+  "subscription": {
+    "title": "Abonnement"
+  },
+  "invoices": {
+    "title": "Factures"
+  },
+  "nav": {
+    "logout": "Déconnexion",
+    "appName": "Livrets d'Accueil",
+    "home": "Accueil",
+    "airbnbHost": "Hôte AirBnB",
+    "pricing": "Nos tarifs",
+    "blog": "Blog",
+    "contact": "Contact",
+    "login": "Connexion",
+    "testApp": "Testez notre App gratuitement"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Nous sommes là pour vous aider. N'hésitez pas à nous contacter.",
+    "email": "Email",
+    "phone": "Téléphone",
+    "address": "Adresse"
+  },
+  "chatDocuments": {
+    "title": "Documents PDF pour le Chat",
+    "description": "Ajoutez des fichiers PDF pour enrichir les connaissances du chat. Ces documents seront utilisés pour répondre aux questions des voyageurs.",
+    "uploadText": "Cliquez pour uploader un PDF",
+    "maxSize": "Taille maximale : 10MB",
+    "uploading": "Upload en cours...",
+    "uploadSuccess": "PDF uploadé avec succès",
+    "uploadError": "Erreur lors de l'upload du PDF",
+    "loadError": "Erreur lors du chargement des documents",
+    "noDocuments": "Aucun document PDF pour le moment",
+    "invalidFile": "Seuls les fichiers PDF sont autorisés",
+    "fileTooLarge": "Le fichier ne doit pas dépasser 10MB",
+    "deleteSuccess": "PDF supprimé avec succès",
+    "deleteError": "Erreur lors de la suppression du PDF",
+    "deleteConfirmTitle": "Supprimer le PDF",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce PDF ? Cette action est irréversible."
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Dashboard Administrateur",
+      "subtitle": "Vue d'ensemble de l'application"
+    },
+    "loading": "Chargement du dashboard admin...",
+    "retry": "Réessayer",
+    "error": {
+      "authVerification": "Erreur lors de la vérification de l'authentification",
+      "loadingData": "Erreur lors du chargement des données"
+    },
+    "nav": {
+      "users": "Utilisateurs",
+      "revenue": "Revenus",
+      "subscriptions": "Abonnements",
+      "livrets": "Livrets",
+      "invoices": "Factures"
+    },
+    "sections": {
+      "users": "Utilisateurs",
+      "revenue": "Revenus",
+      "livrets": "Livrets"
+    },
+    "users": {
+      "title": "Gestion des Utilisateurs",
+      "subtitle": "Liste de tous les utilisateurs de l'application",
+      "backToDashboard": "Retour au dashboard",
+      "back": "Retour",
+      "searchPlaceholder": "Rechercher par nom/email...",
+      "allPlans": "Tous les plans",
+      "allStatuses": "Tous les statuts",
+      "na": "N/A",
+      "admin": "ADMIN",
+      "pageInfo": "Page {{page}} sur {{totalPages}}",
+      "total": "Total utilisateurs",
+      "active": "Utilisateurs actifs",
+      "trial": "En période d'essai",
+      "paid": "Utilisateurs payants",
+      "plans": {
+        "trial": "Essai",
+        "monthly": "Mensuel",
+        "yearly": "Annuel",
+        "lifetime": "À vie"
+      },
+      "statuses": {
+        "active": "Actif",
+        "expired": "Expiré",
+        "cancelled": "Annulé"
+      },
+      "table": {
+        "user": "Utilisateur",
+        "email": "Email",
+        "plan": "Plan",
+        "status": "Statut",
+        "livrets": "Livrets",
+        "registration": "Inscription"
+      }
+    },
+    "revenue": {
+      "title": "Statistiques Financières",
+      "subtitle": "Revenus et abonnements par plan",
+      "backToDashboard": "Retour au dashboard",
+      "total": "Revenus totaux",
+      "totalRevenue": "Revenus totaux",
+      "monthly": "Revenus du mois",
+      "mrr": "MRR",
+      "mrrSubtitle": "Monthly Recurring Revenue",
+      "arr": "ARR",
+      "arrSubtitle": "Annual Recurring Revenue",
+      "activeSubscriptions": "Abonnements actifs",
+      "revenueByPlan": "Revenus par plan",
+      "planMonthly": "Plan Mensuel",
+      "planYearly": "Plan Annuel",
+      "planLifetime": "Plan À vie",
+      "subscription": "abonnement",
+      "subscriptionsPlural": "abonnements",
+      "monthlyRevenue": "Revenus mensuels (12 derniers mois)",
+      "planMonthlySubtitle": "Revenus plan mensuel",
+      "planYearlySubtitle": "Revenus plan annuel",
+      "planLifetimeSubtitle": "Revenus plan à vie",
+      "conversionRate": "Taux de conversion",
+      "conversionRateSubtitle": "Essai → Payant"
+    },
+    "subscriptions": {
+      "title": "Gestion des Abonnements",
+      "backToDashboard": "Retour au dashboard",
+      "user": "Utilisateur",
+      "plan": "Plan",
+      "statusLabel": "Statut",
+      "startDate": "Date début",
+      "endDate": "Date fin",
+      "na": "N/A",
+      "pageInfo": "Page {{page}} sur {{totalPages}}",
+      "status": {
+        "active": "Actif",
+        "expired": "Expiré",
+        "cancelled": "Annulé",
+        "trial": "Essai"
+      }
+    },
+    "livrets": {
+      "title": "Statistiques des Livrets",
+      "backToDashboard": "Retour au dashboard",
+      "total": "Total livrets",
+      "active": "Livrets actifs",
+      "inactive": "Livrets inactifs",
+      "topLivrets": "Top 10 des livrets les plus consultés",
+      "views": "vues",
+      "modules": "modules",
+      "moduleTypes": "Répartition par type de module"
+    },
+    "invoices": {
+      "title": "Gestion des Factures",
+      "backToDashboard": "Retour au dashboard",
+      "user": "Utilisateur",
+      "amount": "Montant",
+      "plan": "Plan",
+      "statusLabel": "Statut",
+      "date": "Date",
+      "na": "N/A",
+      "pageInfo": "Page {{page}} sur {{totalPages}}",
+      "status": {
+        "paid": "Payé",
+        "pending": "En attente",
+        "failed": "Échoué",
+        "cancelled": "Annulé"
+      }
+    },
+    "alerts": {
+      "expiringSoon": "abonnement expirant dans les 7 prochains jours",
+      "expiringSoonPlural": "abonnements expirant dans les 7 prochains jours",
+      "actionRequired": "Action requise : Contacter les clients concernés"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Guide d'accueil digital intelligent",
+      "subtitle": "pour Airbnb, locations et hôtes",
+      "description": "Transformez l'expérience de vos voyageurs avec des livrets d'accueil modernes et interactifs",
+      "cta": "Testez notre App gratuitement",
+      "login": "Se connecter",
+      "freeTrial": "Essai gratuit",
+      "noCard": "Aucune carte requise",
+      "setup": "Configuration en 5 min"
+    },
+    "features": {
+      "title": "Tout ce dont vous avez besoin",
+      "subtitle": "Une plateforme complète pour créer, personnaliser et partager vos livrets d'accueil digitaux",
+      "qrCode": {
+        "title": "QR Code Instantané",
+        "description": "Générez un QR code unique pour chaque livret. Vos voyageurs scannent et accèdent instantanément à toutes les informations."
+      },
+      "customization": {
+        "title": "Personnalisation Totale",
+        "description": "Choisissez vos couleurs, polices et images. Créez une expérience unique qui reflète l'identité de votre établissement."
+      },
+      "statistics": {
+        "title": "Statistiques Détaillées",
+        "description": "Suivez les consultations, les modules les plus consultés et l'engagement de vos voyageurs en temps réel."
+      },
+      "chat": {
+        "title": "Chat Intégré",
+        "description": "Un widget de chat intelligent pour répondre aux questions fréquentes de vos voyageurs 24/7."
+      },
+      "multilang": {
+        "title": "Multi-langues",
+        "description": "Proposez vos livrets dans plusieurs langues pour accueillir des voyageurs du monde entier."
+      },
+      "secure": {
+        "title": "Sécurisé & Fiable",
+        "description": "Vos données sont protégées avec les dernières technologies de sécurité. Disponibilité garantie 99.9%."
+      }
+    },
+    "chat": {
+      "title": "Révolutionnez l'accueil de vos voyageurs grâce à l'IA",
+      "description1": "Reposez-vous enfin ! Laissez",
+      "description1Cont": "prendre soin de vos clients à votre place.",
+      "description2": "Notre assistant conversationnel intelligent permet aux voyageurs de trouver rapidement les informations dont ils ont besoin, tout en vous offrant une tranquillité d'esprit totale.",
+      "available": "Disponible en permanence, sans interruption",
+      "native": "Natif dans chaque livret d'accueil digital",
+      "adaptable": "Adaptable à votre établissement et vos services",
+      "botMessage1": "Salut ! Moi c'est MGD, votre assistant digital. Que puis-je faire pour vous aujourd'hui ?",
+      "botMessage2": "Il est situé dans la buanderie, au rez-de-chaussée ! 🏠",
+      "botMessage3": "Absolument ! Je suis là pour vous aider jour et nuit 🌙",
+      "userMessage1": "Où se trouve le sèche-linge ?",
+      "userMessage2": "Vous êtes disponible à toute heure ?",
+      "placeholder": "Tapez votre message..."
+    },
+    "benefits": {
+      "title": "Pourquoi choisir nos livrets digitaux ?",
+      "economic": {
+        "title": "Économique & Écologique",
+        "description": "Réduisez vos coûts d'impression et votre impact environnemental. Plus besoin de réimprimer à chaque changement."
+      },
+      "realtime": {
+        "title": "Mise à jour en temps réel",
+        "description": "Modifiez vos informations instantanément. Vos voyageurs voient toujours les dernières mises à jour."
+      },
+      "ux": {
+        "title": "Expérience utilisateur optimale",
+        "description": "Interface intuitive et moderne. Vos voyageurs trouvent rapidement ce qu'ils cherchent."
+      },
+      "modules": "Modules disponibles",
+      "availability": "Disponibilité",
+      "configuration": "Configuration",
+      "customizable": "Personnalisable"
+    },
+    "pricing": {
+      "title": "Tarifs simples et transparents",
+      "subtitle": "Choisissez le plan qui correspond à vos besoins",
+      "launchOffer": "OFFRE DE LANCEMENT",
+      "launchOfferSubtitle": "Valable pendant une durée limitée",
+      "monthly": {
+        "title": "Mensuel",
+        "price": "15€",
+        "oldPrice": "19€",
+        "period": "/mois",
+        "savings": "ÉCONOMIE 21%",
+        "unlimited": "Livrets illimités",
+        "allModules": "Tous les modules",
+        "support": "Support inclus",
+        "cta": "Commencer"
+      },
+      "yearly": {
+        "title": "Annuel",
+        "price": "99€",
+        "oldPrice": "149€",
+        "period": "/an",
+        "monthlyPrice": "Soit 8,25€/mois",
+        "savings": "ÉCONOMIE 34%",
+        "allMonthly": "Tout du plan mensuel",
+        "savingsYear": "Économie de 31€/an",
+        "priority": "Support prioritaire",
+        "cta": "Commencer"
+      },
+      "lifetime": {
+        "title": "À vie",
+        "price": "199€",
+        "oldPrice": "299€",
+        "period": "/unique",
+        "savings": "ÉCONOMIE 33%",
+        "permanent": "Accès permanent",
+        "allFeatures": "Toutes les fonctionnalités",
+        "updates": "Mises à jour incluses",
+        "cta": "Commencer"
+      }
+    },
+    "testimonials": {
+      "title": "Ce que nos clients disent",
+      "rating": "5/5 basé sur nos retours clients",
+      "testimonial1": {
+        "name": "Sophie Martin",
+        "role": "Gîte rural",
+        "text": "La création de nos livrets digitaux a transformé notre façon de communiquer avec nos hôtes. Plus besoin d'imprimer à chaque changement, et nos clients accèdent à toutes les infos via leur smartphone. Un gain de temps énorme !"
+      },
+      "testimonial2": {
+        "name": "Pierre Lambert",
+        "role": "Hôtel 4 étoiles",
+        "text": "L'assistant MGD intégré répond aux questions de nos clients même la nuit. Plus besoin d'avoir quelqu'un à la réception 24/7. Nos voyageurs sont autonomes et nous économisons des heures de travail chaque semaine."
+      },
+      "testimonial3": {
+        "name": "Marie Dubois",
+        "role": "Chambres d'hôtes",
+        "text": "La personnalisation des couleurs et du design nous permet de créer des livrets qui correspondent parfaitement à notre identité. Nos clients adorent l'interface moderne et intuitive. Le QR code est un vrai plus pour l'accès rapide !"
+      },
+      "testimonial4": {
+        "name": "Jean Tremblay",
+        "role": "Résidence de vacances",
+        "text": "Les statistiques de consultation nous donnent une vision claire de ce que nos clients recherchent vraiment. On peut adapter nos livrets en fonction des modules les plus consultés. C'est un outil précieux pour améliorer l'expérience client !"
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "subtitle": "Tout ce que vous devez savoir sur My Guide Digital",
+      "q1": "Qu'est-ce que My Guide Digital ?",
+      "a1": "My Guide Digital est un livret d'accueil numérique alimenté par l'IA qui permet de centraliser toutes les informations utiles pour vos voyageurs et de les rendre autonomes pendant leur séjour.",
+      "q2": "À qui s'adresse la solution My Guide Digital ?",
+      "a2": "My Guide Digital s'adresse aux hôtes AirBnB, gestionnaires de conciergerie et professionnels du voyage qui souhaitent digitaliser leur accueil et optimiser la relation avec leurs voyageurs.",
+      "q3": "Quels sont les principaux bénéfices pour un hôte AirBnB ?",
+      "a3": "Un hôte AirBnB peut créer un livret d'accueil professionnel en quelques minutes, réduire les questions répétitives, gagner plusieurs heures par semaine et augmenter ses avis 5 étoiles grâce à My Guide Digital.",
+      "q4": "Comment l'IA de My Guide Digital m'aide‑t‑elle au quotidien ?",
+      "a4": "L'IA de My Guide Digital répond automatiquement aux questions fréquentes de vos voyageurs, les guide dans l'utilisation du logement ou des services et vous évite d'être sollicité en permanence.",
+      "q5": "Puis‑je tester My Guide Digital gratuitement ?",
+      "a5": "Oui, vous pouvez tester la solution gratuitement grâce au bouton « Testez la solution gratuitement » présent à plusieurs endroits sur le site.",
+      "q6": "En quoi My Guide Digital améliore‑t‑il l'expérience client ?",
+      "a6": "En donnant un accès clair et instantané à toutes les informations, My Guide Digital améliore le confort des voyageurs, réduit les frictions et vous aide à obtenir davantage d'avis 5 étoiles.",
+      "q7": "La solution My Guide Digital convient‑elle aux conciergeries avec plusieurs biens ?",
+      "a7": "Oui, My Guide Digital permet aux gestionnaires de conciergerie d'automatiser la communication pour plusieurs logements et de standardiser la qualité d'accueil sur l'ensemble du parc.",
+      "q8": "My Guide Digital permet‑il de réduire mes coûts opérationnels ?",
+      "a8": "En automatisant les réponses et en digitalisant le livret d'accueil, My Guide Digital réduit le temps passé sur le support aux voyageurs et donc vos coûts opérationnels.",
+      "q9": "Existe‑t‑il un programme d'affiliation ou de parrainage avec My Guide Digital ?",
+      "a9": "Oui, vous pouvez proposer un code promo à votre communauté pour leur faire bénéficier de 15% de réduction sur l'abonnement, ce qui vous permet de gagner de l'argent grâce à My Guide Digital.",
+      "q10": "Où puis‑je trouver les tarifs et les conditions d'utilisation de My Guide Digital ?",
+      "a10": "Les tarifs sont accessibles via la page « Nos tarifs » et les informations légales via les pages « Mentions légales » et « Conditions Générales » en bas du site."
+    },
+    "cta": {
+      "title": "Prêt à transformer l'expérience de vos voyageurs ?",
+      "subtitle": "Rejoignez des centaines d'établissements qui font confiance à notre plateforme",
+      "cta": "Testez notre App gratuitement",
+      "login": "J'ai déjà un compte"
+    },
+    "footer": {
+      "description": "La solution moderne pour créer et partager vos livrets d'accueil digitaux.",
+      "navigation": "Navigation",
+      "support": "Support",
+      "documentation": "Documentation",
+      "contact": "Contact",
+      "copyright": "© 2026 My Guide Digital. Tous droits réservés."
+    }
+  },
+  "login": {
+    "title": "Bienvenue",
+    "subtitle": "Connectez-vous à votre compte",
+    "backHome": "Retour à l'accueil",
+    "email": "Email",
+    "password": "Mot de passe",
+    "rememberMe": "Rester connecté",
+    "forgotPassword": "Mot de passe oublié ?",
+    "submit": "Se connecter",
+    "noAccount": "Pas encore de compte ?",
+    "signup": "S'inscrire",
+    "success": "Connexion réussie !",
+    "error": "Erreur lors de la connexion",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
+  },
+  "register": {
+    "title": "Créer un compte",
+    "subtitle": "Commencez votre essai gratuit de 30 jours",
+    "backHome": "Retour à l'accueil",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "S'inscrire",
+    "hasAccount": "Déjà un compte ?",
+    "login": "Se connecter",
+    "success": "Inscription réussie ! Bienvenue !",
+    "error": "Erreur lors de l'inscription",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "minLength": "Minimum 6 caractères"
+  },
+  "blog": {
+    "title": "Blog My Guide Digital",
+    "subtitle": "Conseils, astuces et actualités pour optimiser votre activité d'hôte",
+    "readMore": "Lire la suite"
+  },
+  "airbnb": {
+    "title": "Pour les hôtes Airbnb",
+    "subtitle": "Simplifiez la gestion de vos locations et offrez une expérience exceptionnelle à vos voyageurs",
+    "whyTitle": "Pourquoi choisir My Guide Digital pour votre location Airbnb ?",
+    "why1": "En tant qu'hôte Airbnb, vous savez à quel point il est important de fournir une expérience mémorable à vos voyageurs. My Guide Digital vous permet de créer des guides d'accueil digitaux personnalisés qui facilitent la vie de vos invités et la vôtre.",
+    "why2": "Plus besoin d'imprimer des documents à chaque arrivée. Un simple QR code permet à vos voyageurs d'accéder instantanément à toutes les informations dont ils ont besoin : règles de la maison, recommandations locales, codes WiFi, et bien plus encore.",
+    "time": {
+      "title": "Gain de temps",
+      "description": "Créez votre guide une fois, utilisez-le pour toutes vos réservations. Mettez à jour les informations en temps réel sans réimprimer."
+    },
+    "autonomy": {
+      "title": "Autonomie des voyageurs",
+      "description": "L'assistant MGD répond aux questions fréquentes 24/7, réduisant le nombre de messages que vous recevez."
+    },
+    "professional": {
+      "title": "Professionnalisme",
+      "description": "Montrez à vos invités que vous êtes un hôte professionnel avec un guide moderne et bien organisé."
+    },
+    "multilang": {
+      "title": "Multi-langues",
+      "description": "Accueillez des voyageurs du monde entier en proposant votre guide dans plusieurs langues."
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "livrets-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000 -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@types/node": "^20.10.5",
+    "@types/pdfkit": "^0.17.4",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.16",
+    "axios": "^1.6.2",
+    "date-fns": "^3.0.6",
+    "html2canvas": "^1.4.1",
+    "i18next": "^23.7.6",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "lucide-react": "^0.303.0",
+    "next": "14.0.4",
+    "pdfkit": "^0.17.2",
+    "postcss": "^8.4.32",
+    "qrcode.react": "^4.2.0",
+    "react": "^18.2.0",
+    "react-color": "^2.19.3",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.49.2",
+    "react-i18next": "^14.0.0",
+    "react-qr-code": "^2.0.12",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3",
+    "zustand": "^4.5.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.0.4"
+  }
+}

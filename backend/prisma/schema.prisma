@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  phone         String?
+  userType      String         @default("PARTICULIER")
+  role          String         @default("USER") // USER ou ADMIN
+  profilePhoto  String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  invoices      Invoice[]
+  livrets       Livret[]
+  subscriptions Subscription[]
+
+  @@map("users")
+}
+
+model Livret {
+  id               String         @id @default(uuid())
+  name             String
+  address          String?
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  userId           String
+  welcomeTitle     String?
+  welcomeSubtitle  String?
+  backgroundImage  String?
+  showProfilePhoto Boolean        @default(true)
+  titleFont        String?
+  titleColor       String?        @default("#FFFFFF")
+  subtitleColor    String?        @default("#FFFFFF")
+  tileColor        String?        @default("#000000B3")
+  iconColor        String?        @default("#FFFFFF")
+  languages        String?
+  qrCode           String?        @unique
+  translations     String?
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  modules          Module[]
+  statistics       Statistic[]
+  chatDocuments    ChatDocument[]
+
+  @@map("livrets")
+}
+
+model Module {
+  id           String   @id @default(uuid())
+  type         String
+  name         String?
+  isActive     Boolean  @default(true)
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  livretId     String
+  content      String?
+  translations String?
+  livret       Livret   @relation(fields: [livretId], references: [id], onDelete: Cascade)
+
+  @@map("modules")
+}
+
+model Statistic {
+  id         String   @id @default(uuid())
+  moduleType String?
+  livretId   String
+  viewedAt   DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+  livret     Livret   @relation(fields: [livretId], references: [id], onDelete: Cascade)
+
+  @@map("statistics")
+}
+
+model Subscription {
+  id                   String    @id @default(uuid())
+  userId               String
+  plan                 String    @default("TRIAL")
+  status               String    @default("ACTIVE")
+  startDate            DateTime  @default(now())
+  endDate              DateTime?
+  trialDaysLeft        Int?      @default(30)
+  stripeSubscriptionId String?   @unique
+  stripeCustomerId     String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  stripeSessionId      String?
+  invoices             Invoice[]
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id                    String        @id @default(uuid())
+  userId                String
+  subscriptionId        String?
+  amount                Float
+  currency              String        @default("EUR")
+  status                String        @default("PENDING")
+  stripeInvoiceId       String?       @unique
+  stripePaymentIntentId String?
+  pdfUrl                String?
+  createdAt             DateTime      @default(now())
+  paidAt                DateTime?
+  subscription          Subscription? @relation(fields: [subscriptionId], references: [id])
+  user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
+}
+
+model ChatDocument {
+  id          String   @id @default(uuid())
+  livretId    String
+  fileName    String
+  filePath    String
+  fileSize    Int      // Taille en bytes
+  mimeType    String   @default("application/pdf")
+  uploadedAt  DateTime @default(now())
+  livret      Livret   @relation(fields: [livretId], references: [id], onDelete: Cascade)
+
+  @@map("chat_documents")
+}
