@@ -2,9 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'my-guidedigital-backend',
-      script: './backend/src/index.ts',
+      script: './backend/dist/index.js',
       interpreter: 'node',
-      interpreter_args: '--loader ts-node/esm',
       cwd: process.cwd(),
       env: {
         NODE_ENV: 'production',
