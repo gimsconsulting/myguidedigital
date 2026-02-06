@@ -361,6 +361,10 @@ export default function ModuleDetailPage() {
   };
 
   const renderModuleContent = () => {
+    if (!module) {
+      return <p className="text-gray-600">Module non trouvé.</p>;
+    }
+    
     const content = getTranslatedContent();
     
     if (!content) {
@@ -498,7 +502,7 @@ export default function ModuleDetailPage() {
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10 animate-fade-in">
           <div className="mb-8 pb-6 border-b border-gray-200">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-              {MODULE_NAMES[module.type]?.[selectedLanguage] || MODULE_NAMES[module.type]?.['fr'] || module.type}
+              {module ? (MODULE_NAMES[module.type]?.[selectedLanguage] || MODULE_NAMES[module.type]?.['fr'] || module.type) : 'Module'}
             </h1>
           </div>
           <div className="prose prose-lg max-w-none">
