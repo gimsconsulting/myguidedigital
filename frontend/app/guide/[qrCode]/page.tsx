@@ -27,6 +27,7 @@ interface Livret {
   subtitleColor?: string;
   tileColor?: string;
   iconColor?: string;
+  titleFont?: string;
   languages?: string[];
   translations?: Record<string, { welcomeTitle?: string; welcomeSubtitle?: string }>;
   modules: Module[];
