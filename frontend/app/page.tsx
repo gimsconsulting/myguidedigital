@@ -1012,7 +1012,7 @@ export default function Home() {
             {t('home.cta.title', 'Prêt à transformer l\'expérience de vos voyageurs ?')}
           </h2>
           <p className="text-xl sm:text-2xl mb-8 text-white/90">
-            {t('home.cta.subtitle', 'Rejoignez des centaines d\'établissements qui font confiance à notre plateforme')}
+            {t('home.cta.subtitle', 'Rejoignez des dizaines d\'établissements qui font confiance à notre plateforme')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
