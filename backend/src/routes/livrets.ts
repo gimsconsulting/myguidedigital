@@ -40,7 +40,7 @@ async function translateText(text: string, sourceLang: string, targetLang: strin
 }
 
 // Get all livrets for user
-router.get('/', authenticateToken, async (req: any, res) => {
+router.get('/', authenticateToken, async (req: any, res: express.Response) => {
   try {
     const livrets = await prisma.livret.findMany({
       where: { userId: req.userId },
@@ -88,7 +88,7 @@ router.get('/', authenticateToken, async (req: any, res) => {
 });
 
 // Get single livret
-router.get('/:id', authenticateToken, async (req: any, res) => {
+router.get('/:id', authenticateToken, async (req: any, res: express.Response) => {
   try {
     const livret = await prisma.livret.findFirst({
       where: {
@@ -145,7 +145,7 @@ router.get('/:id', authenticateToken, async (req: any, res) => {
 // Create livret
 router.post('/', authenticateToken, [
   body('name').notEmpty().trim(),
-], async (req: any, res) => {
+], async (req: any, res: express.Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -205,7 +205,7 @@ router.post('/', authenticateToken, [
 // Update livret
 router.put('/:id', authenticateToken, [
   body('name').optional().notEmpty().trim(),
-], async (req: any, res) => {
+], async (req: any, res: express.Response) => {
   console.log('🔄 ===== DÉBUT MISE À JOUR LIVRET =====');
   console.log('📥 Requête PUT reçue pour livret:', req.params.id);
   console.log('📦 Données reçues:', {
@@ -452,7 +452,7 @@ router.put('/:id', authenticateToken, [
 });
 
 // Delete livret
-router.delete('/:id', authenticateToken, async (req: any, res) => {
+router.delete('/:id', authenticateToken, async (req: any, res: express.Response) => {
   try {
     const livret = await prisma.livret.findFirst({
       where: {
@@ -477,7 +477,7 @@ router.delete('/:id', authenticateToken, async (req: any, res) => {
 });
 
 // Duplicate livret
-router.post('/:id/duplicate', authenticateToken, async (req: any, res) => {
+router.post('/:id/duplicate', authenticateToken, async (req: any, res: express.Response) => {
   try {
     const originalLivret = await prisma.livret.findFirst({
       where: {
@@ -561,7 +561,7 @@ router.post('/:id/duplicate', authenticateToken, async (req: any, res) => {
 });
 
 // Get public livret (for traveler view)
-router.get('/public/:qrCode', async (req, res) => {
+router.get('/public/:qrCode', async (req: express.Request, res: express.Response) => {
   try {
     const qrCodeParam = req.params.qrCode;
     console.log('🔍 Recherche livret avec QR code:', qrCodeParam);

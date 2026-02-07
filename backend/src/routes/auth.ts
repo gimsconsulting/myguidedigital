@@ -13,7 +13,7 @@ router.post('/register', [
   body('password').isLength({ min: 6 }),
   body('firstName').optional().trim(),
   body('lastName').optional().trim(),
-], async (req, res) => {
+], async (req: express.Request, res: express.Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -68,8 +68,8 @@ router.post('/register', [
 
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      process.env.JWT_SECRET as string,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as jwt.SignOptions
     );
 
     res.status(201).json({
@@ -95,7 +95,7 @@ router.post('/register', [
 router.post('/login', [
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty(),
-], async (req, res) => {
+], async (req: express.Request, res: express.Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -129,8 +129,8 @@ router.post('/login', [
     // Generate JWT
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      process.env.JWT_SECRET as string,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as jwt.SignOptions
     );
 
     res.json({
@@ -154,7 +154,7 @@ router.post('/login', [
 });
 
 // Get current user
-router.get('/me', authenticateToken, async (req: any, res) => {
+router.get('/me', authenticateToken, async (req: any, res: express.Response) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
@@ -230,7 +230,7 @@ router.put('/profile', authenticateToken, [
   body('phone').optional().trim(),
   body('userType').optional().isIn(['PARTICULIER', 'SOCIETE']),
   body('profilePhoto').optional().trim(),
-], async (req: any, res) => {
+], async (req: any, res: express.Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -271,7 +271,7 @@ router.put('/profile', authenticateToken, [
 // Update password (authenticated user)
 router.put('/password', authenticateToken, [
   body('password').isLength({ min: 6 }),
-], async (req: any, res) => {
+], async (req: any, res: express.Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -297,7 +297,7 @@ router.put('/password', authenticateToken, [
 router.post('/reset-password', [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
-], async (req, res) => {
+], async (req: express.Request, res: express.Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

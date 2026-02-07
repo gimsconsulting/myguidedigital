@@ -67,7 +67,7 @@ function replaceTexts(obj: any, translations: Record<string, string>): any {
 }
 
 // Get modules for a livret
-router.get('/livret/:livretId', authenticateToken, async (req: any, res) => {
+router.get('/livret/:livretId', authenticateToken, async (req: any, res: express.Response) => {
   try {
     // Verify ownership
     const livret = await prisma.livret.findFirst({
@@ -114,7 +114,7 @@ router.get('/livret/:livretId', authenticateToken, async (req: any, res) => {
 router.post('/', authenticateToken, [
   body('livretId').notEmpty(),
   body('type').notEmpty(),
-], async (req: any, res) => {
+], async (req: any, res: express.Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -198,7 +198,7 @@ router.post('/', authenticateToken, [
 router.put('/reorder', authenticateToken, [
   body('livretId').notEmpty(),
   body('moduleOrders').isArray(),
-], async (req: any, res) => {
+], async (req: any, res: express.Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -264,7 +264,7 @@ router.put('/reorder', authenticateToken, [
 // Update module
 router.put('/:id', authenticateToken, [
   body('type').optional().notEmpty(),
-], async (req: any, res) => {
+], async (req: any, res: express.Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -402,7 +402,7 @@ router.put('/:id', authenticateToken, [
 });
 
 // Delete module
-router.delete('/:id', authenticateToken, async (req: any, res) => {
+router.delete('/:id', authenticateToken, async (req: any, res: express.Response) => {
   try {
     // Verify ownership
     const module = await prisma.module.findUnique({

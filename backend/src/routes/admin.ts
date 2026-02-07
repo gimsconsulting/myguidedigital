@@ -33,7 +33,7 @@ const requireAdmin = async (req: express.Request, res: express.Response, next: e
 };
 
 // Vue d'ensemble - KPIs
-router.get('/overview', authenticateToken, requireAdmin, async (req, res) => {
+router.get('/overview', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {
     // Total utilisateurs
     const totalUsers = await prisma.user.count();
@@ -71,6 +71,9 @@ router.get('/overview', authenticateToken, requireAdmin, async (req, res) => {
     const invoices = await prisma.invoice.findMany({
       where: {
         status: 'PAID'
+      },
+      include: {
+        subscription: true
       }
     });
     const totalRevenue = invoices.reduce((sum, inv) => sum + inv.amount, 0);
@@ -161,7 +164,7 @@ router.get('/overview', authenticateToken, requireAdmin, async (req, res) => {
 });
 
 // Liste des utilisateurs
-router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
+router.get('/users', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {
     const { page = 1, limit = 20, search, plan, status } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
@@ -231,7 +234,7 @@ router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
 });
 
 // Statistiques financières
-router.get('/revenue', authenticateToken, requireAdmin, async (req, res) => {
+router.get('/revenue', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {
     const { period = '12' } = req.query; // Nombre de mois
     const months = Number(period);
@@ -297,7 +300,7 @@ router.get('/revenue', authenticateToken, requireAdmin, async (req, res) => {
 });
 
 // Liste des abonnements
-router.get('/subscriptions', authenticateToken, requireAdmin, async (req, res) => {
+router.get('/subscriptions', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {
     const { page = 1, limit = 20, plan, status } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
@@ -341,7 +344,7 @@ router.get('/subscriptions', authenticateToken, requireAdmin, async (req, res) =
 });
 
 // Statistiques des livrets
-router.get('/livrets', authenticateToken, requireAdmin, async (req, res) => {
+router.get('/livrets', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {
     const totalLivrets = await prisma.livret.count();
     const activeLivrets = await prisma.livret.count({ where: { isActive: true } });
@@ -407,7 +410,7 @@ router.get('/livrets', authenticateToken, requireAdmin, async (req, res) => {
 });
 
 // Liste des factures
-router.get('/invoices', authenticateToken, requireAdmin, async (req, res) => {
+router.get('/invoices', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {
     const { page = 1, limit = 20, status } = req.query;
     const skip = (Number(page) - 1) * Number(limit);

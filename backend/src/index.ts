@@ -111,7 +111,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Gérer explicitement les requêtes OPTIONS (preflight) AVANT les routes
-app.options('*', (req, res) => {
+app.options('*', (req: express.Request, res: express.Response) => {
   console.log('🔵 Requête OPTIONS (preflight) reçue:', req.headers.origin);
   res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
@@ -122,7 +122,7 @@ app.options('*', (req, res) => {
 });
 
 // Logger toutes les requêtes pour debug
-app.use((req, res, next) => {
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.log(`📥 ${req.method} ${req.path} - Origin: ${req.headers.origin || 'none'}`);
   next();
 });
@@ -136,7 +136,7 @@ const uploadDir = process.env.UPLOAD_DIR || './uploads';
 app.use('/uploads', express.static(uploadDir));
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -161,11 +161,11 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3001;
 const HOST = process.env.HOST || '0.0.0.0'; // Écouter sur toutes les interfaces réseau
 
 // Créer le serveur sans l'écouter immédiatement pour permettre le rechargement
-const server = app.listen(PORT, HOST, () => {
+const server = app.listen(PORT, HOST as string, () => {
   console.log(`🚀 Server running on http://${HOST}:${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 Accessible via: http://localhost:${PORT} or http://192.168.0.126:${PORT}`);
