@@ -24,10 +24,10 @@ Créez ou mettez à jour `backend/.env` avec :
 
 ```env
 # Base de données MySQL Hostinger
-DATABASE_URL="mysql://u513978936_myguideuser:VOTRE_MOT_DE_PASSE@localhost:3306/u513978936_myguidedigital"
+DATABASE_URL="mysql://u513978936_myguideuser:Patrice-charly-lena-0904*@localhost:3306/u513978936_myguidedigital"
 
 # Ou si Hostinger fournit une adresse différente :
-# DATABASE_URL="mysql://u513978936_myguideuser:VOTRE_MOT_DE_PASSE@mysql.hostinger.com:3306/u513978936_myguidedigital"
+# DATABASE_URL="mysql://u513978936_myguideuser:Patrice-charly-lena-0904*@mysql.hostinger.com:3306/u513978936_myguidedigital"
 ```
 
 **Format de la DATABASE_URL MySQL :**
