@@ -11,7 +11,7 @@ import LanguageSelector from '@/components/LanguageSelector';
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
-  const { t, ready } = useTranslation();
+  const { t, i18n, ready } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
@@ -1012,7 +1012,9 @@ export default function Home() {
             {t('home.cta.title', 'Prêt à transformer l\'expérience de vos voyageurs ?')}
           </h2>
           <p className="text-xl sm:text-2xl mb-8 text-white/90">
-            {t('home.cta.subtitle', 'Rejoignez des dizaines d\'établissements qui font confiance à notre plateforme')}
+            {i18n.language === 'fr' || !i18n.language
+              ? "Rejoignez des dizaines d'établissements qui font confiance à notre plateforme"
+              : t('home.cta.subtitle', "Rejoignez des dizaines d'établissements qui font confiance à notre plateforme")}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
