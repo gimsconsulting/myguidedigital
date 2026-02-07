@@ -17,6 +17,12 @@ export default function Home() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [forceRender, setForceRender] = useState(false);
 
+  const scrollToTarifs = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.getElementById('tarifs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setIsMobileMenuOpen(false);
+  };
+
   useEffect(() => {
     setMounted(true);
     // Timeout de sécurité : forcer le rendu après 2 secondes même si i18n n'est pas prêt
@@ -59,9 +65,9 @@ export default function Home() {
               <Link href="/hote-airbnb" className="text-white hover:text-primary transition-colors">
                 {t('nav.airbnbHost', 'Hôte AirBnB')}
               </Link>
-              <Link href="#tarifs" className="text-white hover:text-primary transition-colors">
+              <a href="#tarifs" onClick={scrollToTarifs} className="text-white hover:text-primary transition-colors cursor-pointer">
                 {t('nav.pricing', 'Nos tarifs')}
-              </Link>
+              </a>
               <Link href="/blog" className="text-white hover:text-primary transition-colors">
                 {t('nav.blog', 'Blog')}
               </Link>
@@ -117,9 +123,9 @@ export default function Home() {
               <Link href="/hote-airbnb" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                 {t('nav.airbnbHost', 'Hôte AirBnB')}
               </Link>
-              <Link href="#tarifs" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+              <a href="#tarifs" onClick={scrollToTarifs} className="block text-white hover:text-primary transition-colors cursor-pointer">
                 {t('nav.pricing', 'Nos tarifs')}
-              </Link>
+              </a>
               <Link href="/blog" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                 {t('nav.blog', 'Blog')}
               </Link>
@@ -1040,7 +1046,7 @@ export default function Home() {
               <ul className="space-y-2 text-gray-400">
                 <li><Link href="/" className="hover:text-primary transition-colors">{t('nav.home', 'Accueil')}</Link></li>
                 <li><Link href="/hote-airbnb" className="hover:text-primary transition-colors">{t('nav.airbnbHost', 'Hôte AirBnB')}</Link></li>
-                <li><Link href="#tarifs" className="hover:text-primary transition-colors">{t('nav.pricing', 'Nos tarifs')}</Link></li>
+                <li><a href="#tarifs" onClick={scrollToTarifs} className="hover:text-primary transition-colors cursor-pointer">{t('nav.pricing', 'Nos tarifs')}</a></li>
                 <li><Link href="/blog" className="hover:text-primary transition-colors">{t('nav.blog', 'Blog')}</Link></li>
                 <li><Link href="/login" className="hover:text-primary transition-colors">{t('nav.login', 'Connexion')}</Link></li>
               </ul>
