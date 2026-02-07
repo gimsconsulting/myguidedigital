@@ -16,16 +16,24 @@ import translateRoutes from './routes/translate';
 import adminRoutes from './routes/admin';
 import chatDocumentsRoutes from './routes/chat-documents';
 
-// Charger le fichier .env avec chemin explicite
-const envPath = path.join(process.cwd(), '.env');
-console.log('📁 Chemin du fichier .env:', envPath);
-console.log('📁 Fichier existe?', require('fs').existsSync(envPath));
-
-const result = dotenv.config({ path: envPath });
-if (result.error) {
-  console.error('❌ Erreur lors du chargement du .env:', result.error);
+// Charger le fichier .env : essayer racine du projet puis backend/.env
+const fs = require('fs');
+const candidates = [
+  path.join(process.cwd(), '.env'),
+  path.join(process.cwd(), 'backend', '.env'),
+  path.join(__dirname, '..', '.env'), // depuis backend/dist/index.js -> backend/.env
+];
+let envPath = candidates.find((p) => fs.existsSync(p));
+if (!envPath) {
+  console.error('❌ Aucun fichier .env trouvé. Chemins testés:', candidates);
 } else {
-  console.log('✅ Fichier .env chargé');
+  console.log('📁 Fichier .env utilisé:', envPath);
+  const result = dotenv.config({ path: envPath });
+  if (result.error) {
+    console.error('❌ Erreur lors du chargement du .env:', result.error);
+  } else {
+    console.log('✅ Fichier .env chargé');
+  }
 }
 
 // Vérifier que la clé API est chargée (pour debug)
@@ -39,8 +47,7 @@ if (process.env.GOOGLE_TRANSLATE_API_KEY) {
   
   // Essayer de lire directement le fichier
   try {
-    const fs = require('fs');
-    const envContent = fs.readFileSync(envPath, 'utf8');
+    const envContent = envPath ? fs.readFileSync(envPath, 'utf8') : '';
     const hasKey = envContent.includes('GOOGLE_TRANSLATE_API_KEY');
     console.log('📄 Contenu du .env contient GOOGLE_TRANSLATE_API_KEY?', hasKey);
     if (hasKey) {
