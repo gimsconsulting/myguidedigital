@@ -45,7 +45,7 @@ model Livret {
   iconColor        String?        @default("#FFFFFF")
   languages        String?
   qrCode           String?        @unique
-  translations     String?
+  translations     String?         @db.Text
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   modules          Module[]
   statistics       Statistic[]
@@ -63,8 +63,8 @@ model Module {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   livretId     String
-  content      String?
-  translations String?
+  content      String?         @db.Text
+  translations String?         @db.Text
   livret       Livret   @relation(fields: [livretId], references: [id], onDelete: Cascade)
 
   @@map("modules")
