@@ -857,14 +857,25 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
 
     setIsUploading(true);
     try {
-      await chatDocumentsApi.upload(livretId, file);
+      console.log('📤 Upload du fichier:', { livretId, fileName: file.name, fileSize: file.size, fileType: file.type });
+      const response = await chatDocumentsApi.upload(livretId, file);
+      console.log('✅ Upload réussi:', response.data);
       toast.success(t('chatDocuments.uploadSuccess', 'PDF uploadé avec succès'));
       loadDocuments();
       // Réinitialiser l'input
       e.target.value = '';
     } catch (err: any) {
-      console.error('Erreur lors de l\'upload:', err);
-      toast.error(err.response?.data?.message || t('chatDocuments.uploadError', 'Erreur lors de l\'upload du PDF'));
+      console.error('❌ Erreur lors de l\'upload:', err);
+      console.error('Détails:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        statusText: err.response?.statusText
+      });
+      const errorMessage = err.response?.data?.message || 
+                          err.message || 
+                          t('chatDocuments.uploadError', 'Erreur lors de l\'upload du PDF');
+      toast.error(errorMessage);
     } finally {
       setIsUploading(false);
     }

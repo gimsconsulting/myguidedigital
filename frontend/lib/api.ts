@@ -246,11 +246,8 @@ export const chatDocumentsApi = {
   upload: (livretId: string, file: File) => {
     const formData = new FormData();
     formData.append('pdf', file);
-    return api.post(`/chat-documents/${livretId}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    // Ne pas définir Content-Type manuellement, axios le fait automatiquement avec la bonne boundary
+    return api.post(`/chat-documents/${livretId}`, formData);
   },
   getAll: (livretId: string) => api.get(`/chat-documents/${livretId}`),
   delete: (documentId: string) => api.delete(`/chat-documents/${documentId}`),

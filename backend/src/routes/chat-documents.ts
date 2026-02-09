@@ -9,9 +9,11 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // Créer le dossier pour les PDFs du chat
-const chatDocsDir = process.env.CHAT_DOCS_DIR || './uploads/chat-documents';
+// Utiliser un chemin absolu pour éviter les problèmes de chemin relatif
+const chatDocsDir = process.env.CHAT_DOCS_DIR || path.join(process.cwd(), 'uploads', 'chat-documents');
 if (!fs.existsSync(chatDocsDir)) {
   fs.mkdirSync(chatDocsDir, { recursive: true });
+  console.log(`📁 Dossier créé: ${chatDocsDir}`);
 }
 
 // Configuration de multer pour les PDFs
@@ -53,6 +55,14 @@ router.post('/:livretId', authenticateToken, upload.single('pdf'), async (req: a
       return res.status(400).json({ message: 'Aucun fichier PDF fourni' });
     }
 
+    console.log('📤 Upload PDF:', {
+      originalname: req.file.originalname,
+      filename: req.file.filename,
+      size: req.file.size,
+      mimetype: req.file.mimetype,
+      path: req.file.path
+    });
+
     // Vérifier que le livret appartient à l'utilisateur
     const livret = await prisma.livret.findFirst({
       where: {
@@ -68,11 +78,13 @@ router.post('/:livretId', authenticateToken, upload.single('pdf'), async (req: a
     }
 
     // Créer l'entrée dans la base de données
+    // Utiliser un chemin relatif pour le stockage en base (accessible via API)
+    const relativePath = path.join('uploads', 'chat-documents', req.file.filename).replace(/\\/g, '/');
     const chatDocument = await prisma.chatDocument.create({
       data: {
         livretId: livretId,
         fileName: req.file.originalname,
-        filePath: `/uploads/chat-documents/${req.file.filename}`,
+        filePath: relativePath,
         fileSize: req.file.size,
         mimeType: req.file.mimetype
       }
@@ -147,9 +159,19 @@ router.delete('/:documentId', authenticateToken, async (req: any, res) => {
     }
 
     // Supprimer le fichier physique
-    const fullPath = path.join(process.cwd(), document.filePath);
+    // Le filePath peut être relatif ou absolu, gérer les deux cas
+    let fullPath: string;
+    if (path.isAbsolute(document.filePath)) {
+      fullPath = document.filePath;
+    } else {
+      fullPath = path.join(process.cwd(), document.filePath);
+    }
+    
     if (fs.existsSync(fullPath)) {
       fs.unlinkSync(fullPath);
+      console.log(`🗑️ Fichier supprimé: ${fullPath}`);
+    } else {
+      console.warn(`⚠️ Fichier non trouvé: ${fullPath}`);
     }
 
     // Supprimer l'entrée de la base de données
