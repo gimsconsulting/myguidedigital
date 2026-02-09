@@ -247,23 +247,12 @@ export const adminApi = {
     api.get('/admin/invoices', { params }),
 };
 
-// Chat Documents (PDFs pour le chat)
+// Chat Documents (Textes pour le chat)
 export const chatDocumentsApi = {
-  upload: (livretId: string, file: File) => {
-    const formData = new FormData();
-    // S'assurer que le champ s'appelle bien "pdf" comme attendu par multer
-    formData.append('pdf', file, file.name);
-    console.log('📤 FormData créé:', {
-      livretId,
-      fileName: file.name,
-      fileType: file.type,
-      fileSize: file.size,
-      formDataKeys: Array.from(formData.keys()),
-      formDataValues: Array.from(formData.values()).map(v => v instanceof File ? { name: v.name, type: v.type, size: v.size } : v)
-    });
-    // Ne pas définir Content-Type manuellement, axios le fait automatiquement avec la bonne boundary
-    return api.post(`/chat-documents/${livretId}`, formData);
-  },
+  create: (livretId: string, data: { title: string; content: string }) =>
+    api.post(`/chat-documents/${livretId}`, data),
+  update: (documentId: string, data: { title?: string; content?: string }) =>
+    api.put(`/chat-documents/${documentId}`, data),
   getAll: (livretId: string) => api.get(`/chat-documents/${livretId}`),
   delete: (documentId: string) => api.delete(`/chat-documents/${documentId}`),
 };

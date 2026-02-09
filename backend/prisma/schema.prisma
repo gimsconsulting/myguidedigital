@@ -122,11 +122,10 @@ model Invoice {
 model ChatDocument {
   id          String   @id @default(uuid())
   livretId    String
-  fileName    String
-  filePath    String
-  fileSize    Int      // Taille en bytes
-  mimeType    String   @default("application/pdf")
-  uploadedAt  DateTime @default(now())
+  title       String   // Titre du document
+  content     String   @db.Text // Contenu texte du document
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   livret      Livret   @relation(fields: [livretId], references: [id], onDelete: Cascade)
 
   @@map("chat_documents")

@@ -812,13 +812,15 @@ export default function EditLivretPage() {
   );
 }
 
-// Composant pour gérer les documents PDF du chat
+// Composant pour gérer les documents texte du chat
 function ChatDocumentsSection({ livretId }: { livretId: string }) {
   const { t } = useTranslation();
   const [documents, setDocuments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isDragOver, setIsDragOver] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formData, setFormData] = useState({ title: '', content: '' });
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; documentId: string | null }>({
     isOpen: false,
     documentId: null,
@@ -840,92 +842,55 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
     }
   };
 
-  const processFile = async (file: File) => {
-    // Vérifier que c'est un PDF
-    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-      toast.error(t('chatDocuments.invalidFile', 'Seuls les fichiers PDF sont autorisés'));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.title.trim()) {
+      toast.error(t('chatDocuments.titleRequired', 'Le titre est requis'));
       return;
     }
 
-    // Vérifier la taille (20MB max)
-    if (file.size > 20 * 1024 * 1024) {
-      toast.error(t('chatDocuments.fileTooLarge', 'Le fichier ne doit pas dépasser 20MB'));
+    if (!formData.content.trim()) {
+      toast.error(t('chatDocuments.contentRequired', 'Le contenu est requis'));
       return;
     }
 
-    setIsUploading(true);
+    setIsSaving(true);
     try {
-      console.log('📤 Upload du fichier:', { livretId, fileName: file.name, fileSize: file.size, fileType: file.type });
-      const response = await chatDocumentsApi.upload(livretId, file);
-      console.log('✅ Upload réussi:', response.data);
-      toast.success(t('chatDocuments.uploadSuccess', 'PDF uploadé avec succès'));
+      if (editingId) {
+        // Mettre à jour
+        await chatDocumentsApi.update(editingId, formData);
+        toast.success(t('chatDocuments.updateSuccess', 'Document mis à jour avec succès'));
+      } else {
+        // Créer
+        await chatDocumentsApi.create(livretId, formData);
+        toast.success(t('chatDocuments.createSuccess', 'Document créé avec succès'));
+      }
+      setFormData({ title: '', content: '' });
+      setShowAddForm(false);
+      setEditingId(null);
       loadDocuments();
     } catch (err: any) {
-      console.error('❌ Erreur lors de l\'upload:', err);
-      console.error('Détails:', {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
-        statusText: err.response?.statusText
-      });
+      console.error('Erreur lors de la sauvegarde:', err);
       const errorMessage = err.response?.data?.message || 
                           err.message || 
-                          t('chatDocuments.uploadError', 'Erreur lors de l\'upload du PDF');
+                          t('chatDocuments.saveError', 'Erreur lors de la sauvegarde');
       toast.error(errorMessage);
     } finally {
-      setIsUploading(false);
+      setIsSaving(false);
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    await processFile(file);
-    // Réinitialiser l'input
-    e.target.value = '';
+  const handleEdit = (doc: any) => {
+    setFormData({ title: doc.title, content: doc.content });
+    setEditingId(doc.id);
+    setShowAddForm(true);
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-  };
-
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-
-    if (isUploading) return;
-
-    const files = e.dataTransfer.files;
-    if (files.length === 0) {
-      console.warn('⚠️ Aucun fichier dans le drop');
-      return;
-    }
-
-    // Prendre seulement le premier fichier
-    const file = files[0];
-    console.log('📥 Fichier déposé:', {
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      isFile: file instanceof File
-    });
-
-    // Vérifier que c'est bien un File object
-    if (!(file instanceof File)) {
-      toast.error(t('chatDocuments.invalidFile', 'Seuls les fichiers PDF sont autorisés'));
-      return;
-    }
-
-    await processFile(file);
+  const handleCancel = () => {
+    setFormData({ title: '', content: '' });
+    setShowAddForm(false);
+    setEditingId(null);
   };
 
   const handleDelete = (documentId: string) => {
@@ -941,17 +906,12 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
       loadDocuments();
     } catch (err: any) {
       console.error('Erreur lors de la suppression:', err);
-      toast.error(t('chatDocuments.deleteError', 'Erreur lors de la suppression du PDF'));
+      toast.error(t('chatDocuments.deleteError', 'Erreur lors de la suppression du document'));
     } finally {
       setDeleteConfirm({ isOpen: false, documentId: null });
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -959,66 +919,78 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
         <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
         </svg>
-        {t('chatDocuments.title', 'Documents PDF pour le Chat')}
+        {t('chatDocuments.title', 'Documents pour le Chat')}
       </h2>
       <p className="text-gray-600 mb-4">
-        {t('chatDocuments.description', 'Ajoutez des fichiers PDF pour enrichir les connaissances du chat. Ces documents seront utilisés pour répondre aux questions des voyageurs.')}
+        {t('chatDocuments.description', 'Ajoutez du contenu texte pour enrichir les connaissances du chat. Ces documents seront utilisés pour répondre aux questions des voyageurs.')}
       </p>
 
-      {/* Zone d'upload avec drag and drop */}
-      <div className="mb-6">
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-            isDragOver
-              ? 'border-primary bg-primary/5 scale-[1.02]'
-              : 'border-gray-300 hover:border-primary hover:bg-gray-50'
-          } ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-          onClick={() => {
-            if (!isUploading) {
-              document.getElementById('pdf-upload')?.click();
-            }
-          }}
-        >
-          <input
-            type="file"
-            accept=".pdf,application/pdf"
-            onChange={handleFileUpload}
-            disabled={isUploading}
-            className="hidden"
-            id="pdf-upload"
-          />
-          <div className="flex flex-col items-center">
-            {isUploading ? (
-              <>
-                <svg className="animate-spin w-12 h-12 text-primary mx-auto mb-2" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <p className="text-gray-600 font-medium">
-                  {t('chatDocuments.uploading', 'Upload en cours...')}
-                </p>
-              </>
-            ) : (
-              <>
-                <svg className={`w-12 h-12 mx-auto mb-2 transition-colors ${isDragOver ? 'text-primary' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                <p className={`font-medium transition-colors ${isDragOver ? 'text-primary' : 'text-gray-600'}`}>
-                  {isDragOver 
-                    ? t('chatDocuments.dropFile', 'Déposez le fichier PDF ici')
-                    : t('chatDocuments.uploadText', 'Cliquez ou glissez-déposez un PDF ici')}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {t('chatDocuments.maxSize', 'Taille maximale : 10MB')}
-                </p>
-              </>
-            )}
-          </div>
+      {/* Bouton pour ajouter un document */}
+      {!showAddForm && (
+        <div className="mb-6">
+          <Button
+            variant="primary"
+            onClick={() => setShowAddForm(true)}
+          >
+            {t('chatDocuments.addDocument', '+ Ajouter un document')}
+          </Button>
         </div>
-      </div>
+      )}
+
+      {/* Formulaire d'ajout/édition */}
+      {showAddForm && (
+        <div className="mb-6 bg-gray-50 rounded-lg p-6 border border-gray-200">
+          <h3 className="text-lg font-semibold mb-4">
+            {editingId ? t('chatDocuments.editDocument', 'Modifier le document') : t('chatDocuments.newDocument', 'Nouveau document')}
+          </h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('chatDocuments.documentTitle', 'Titre du document')}
+              </label>
+              <Input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder={t('chatDocuments.titlePlaceholder', 'Ex: Règles de la maison')}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('chatDocuments.documentContent', 'Contenu')}
+              </label>
+              <textarea
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder={t('chatDocuments.contentPlaceholder', 'Collez ou tapez votre texte ici...')}
+                required
+                rows={10}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-y"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {t('chatDocuments.contentHint', 'Ce texte sera utilisé par le chat pour répondre aux questions des voyageurs')}
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                type="submit"
+                variant="primary"
+                isLoading={isSaving}
+              >
+                {editingId ? t('common.update', 'Mettre à jour') : t('common.save', 'Enregistrer')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+              >
+                {t('common.cancel', 'Annuler')}
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Liste des documents */}
       {isLoading ? (
@@ -1030,33 +1002,41 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
           <svg className="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <p>{t('chatDocuments.noDocuments', 'Aucun document PDF pour le moment')}</p>
+          <p>{t('chatDocuments.noDocuments', 'Aucun document pour le moment')}</p>
         </div>
       ) : (
         <div className="space-y-3">
           {documents.map((doc) => (
-            <div key={doc.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex items-center gap-3 flex-1">
-                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{doc.fileName}</p>
+            <div key={doc.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-1">{doc.title}</h4>
                   <p className="text-xs text-gray-500">
-                    {formatFileSize(doc.fileSize)} • {new Date(doc.uploadedAt).toLocaleDateString('fr-FR')}
+                    {new Date(doc.createdAt).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleEdit(doc)}
+                  >
+                    {t('common.edit', 'Modifier')}
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => handleDelete(doc.id)}
+                  >
+                    {t('common.delete', 'Supprimer')}
+                  </Button>
+                </div>
               </div>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => handleDelete(doc.id)}
-                className="ml-4"
-              >
-                {t('common.delete', 'Supprimer')}
-              </Button>
+              <div className="mt-3 p-3 bg-white rounded border border-gray-200">
+                <p className="text-sm text-gray-700 whitespace-pre-wrap line-clamp-3">
+                  {doc.content}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -1064,8 +1044,8 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
 
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
-        title={t('chatDocuments.deleteConfirmTitle', 'Supprimer le PDF')}
-        message={t('chatDocuments.deleteConfirm', 'Êtes-vous sûr de vouloir supprimer ce PDF ? Cette action est irréversible.')}
+        title={t('chatDocuments.deleteConfirmTitle', 'Supprimer le document')}
+        message={t('chatDocuments.deleteConfirm', 'Êtes-vous sûr de vouloir supprimer ce document ? Cette action est irréversible.')}
         confirmText={t('common.delete', 'Supprimer')}
         cancelText={t('common.cancel', 'Annuler')}
         variant="danger"
