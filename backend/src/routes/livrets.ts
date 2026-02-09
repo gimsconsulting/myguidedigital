@@ -156,9 +156,18 @@ router.post('/', authenticateToken, [
 
     // Generate QR code URL (on génère juste l'URL, pas l'image pour l'instant)
     const uniqueId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    // Utiliser l'IP locale par défaut si QR_CODE_BASE_URL n'est pas défini
-    const defaultQrBaseUrl = process.env.QR_CODE_BASE_URL || 'http://192.168.0.126:3000/guide';
-    const qrCodeUrl = `${defaultQrBaseUrl}/${uniqueId}`;
+    // Déterminer l'URL de base pour le QR code selon l'environnement
+    let qrBaseUrl = process.env.QR_CODE_BASE_URL;
+    if (!qrBaseUrl) {
+      // En production, utiliser le domaine de production
+      if (process.env.NODE_ENV === 'production') {
+        qrBaseUrl = 'https://app.myguidedigital.com/guide';
+      } else {
+        // En développement, utiliser l'IP locale par défaut
+        qrBaseUrl = 'http://192.168.0.126:3000/guide';
+      }
+    }
+    const qrCodeUrl = `${qrBaseUrl}/${uniqueId}`;
     
     // Convertir le tableau de langues en JSON string pour SQLite
     const languagesArray = languages || ['fr'];
@@ -494,8 +503,18 @@ router.post('/:id/duplicate', authenticateToken, async (req: any, res: express.R
     }
 
     // Generate new QR code
-    const defaultQrBaseUrl = process.env.QR_CODE_BASE_URL || 'http://192.168.0.126:3000/guide';
-    const qrCodeUrl = `${defaultQrBaseUrl}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Déterminer l'URL de base pour le QR code selon l'environnement
+    let qrBaseUrl = process.env.QR_CODE_BASE_URL;
+    if (!qrBaseUrl) {
+      // En production, utiliser le domaine de production
+      if (process.env.NODE_ENV === 'production') {
+        qrBaseUrl = 'https://app.myguidedigital.com/guide';
+      } else {
+        // En développement, utiliser l'IP locale par défaut
+        qrBaseUrl = 'http://192.168.0.126:3000/guide';
+      }
+    }
+    const qrCodeUrl = `${qrBaseUrl}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     // Les langues sont déjà en JSON string, on peut les réutiliser directement
     const duplicatedLivret = await prisma.livret.create({

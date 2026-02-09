@@ -260,20 +260,29 @@ export default function EditLivretPage() {
               <div className="flex flex-col items-start space-y-4">
                 <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
                   {livret.qrCode && (() => {
-                    // Extraire l'ID du QR code pour s'assurer que le QR code contient bien l'URL complète
+                    // Extraire l'ID du QR code et construire l'URL complète selon l'environnement
                     let qrCodeValue = livret.qrCode;
                     try {
-                      // S'assurer que l'URL est complète et valide
+                      // Extraire l'ID du QR code
+                      let qrCodeId = '';
                       const urlParts = livret.qrCode.split('/guide/');
                       if (urlParts.length > 1) {
-                        // L'URL est déjà complète, l'utiliser telle quelle
-                        qrCodeValue = livret.qrCode;
+                        qrCodeId = urlParts[1].split('?')[0].split('#')[0];
                       } else {
-                        // Si c'est juste un ID, construire l'URL complète
-                        const hostname = window.location.hostname;
+                        qrCodeId = livret.qrCode.split('/').pop() || livret.qrCode;
+                      }
+                      
+                      // Construire l'URL complète selon l'environnement
+                      const hostname = window.location.hostname;
+                      const protocol = window.location.protocol;
+                      
+                      // Si on est en production (domaine myguidedigital.com), utiliser HTTPS sans port
+                      if (hostname.includes('myguidedigital.com')) {
+                        qrCodeValue = `${protocol}//${hostname}/guide/${qrCodeId}`;
+                      } else {
+                        // En développement/local, utiliser l'URL complète avec port
                         const port = window.location.port || '3000';
-                        const protocol = window.location.protocol;
-                        qrCodeValue = `${protocol}//${hostname}:${port}/guide/${livret.qrCode}`;
+                        qrCodeValue = `${protocol}//${hostname}:${port}/guide/${qrCodeId}`;
                       }
                     } catch (e) {
                       // En cas d'erreur, utiliser l'URL telle quelle
@@ -306,26 +315,39 @@ export default function EditLivretPage() {
                       qrCodeId = livret.qrCode.split('/').pop() || '';
                     }
                     
-                    // Construire l'URL relative pour le lien cliquable
-                    const guideUrl = `/guide/${qrCodeId}`;
+                    // Construire l'URL complète selon l'environnement
+                    const hostname = window.location.hostname;
+                    const protocol = window.location.protocol;
+                    let fullGuideUrl = '';
+                    
+                    if (hostname.includes('myguidedigital.com')) {
+                      // Production : utiliser le domaine sans port
+                      fullGuideUrl = `${protocol}//${hostname}/guide/${qrCodeId}`;
+                    } else {
+                      // Développement/local : utiliser avec port
+                      const port = window.location.port || '3000';
+                      fullGuideUrl = `${protocol}//${hostname}:${port}/guide/${qrCodeId}`;
+                    }
                     
                     return (
                       <>
                         <a
-                          href={guideUrl}
+                          href={fullGuideUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-primary hover:underline break-all max-w-md inline-block"
                           onClick={(e) => {
                             e.preventDefault();
-                            window.open(guideUrl, '_blank', 'noopener,noreferrer');
+                            window.open(fullGuideUrl, '_blank', 'noopener,noreferrer');
                           }}
                         >
-                          {livret.qrCode}
+                          {fullGuideUrl}
                         </a>
-                        <p className="text-xs text-blue-600 mt-2">
-                          💡 {t('livret.qrCodeWifiTip', 'Assurez-vous que votre smartphone est sur le même réseau Wi-Fi que votre ordinateur')}
-                        </p>
+                        {!hostname.includes('myguidedigital.com') && (
+                          <p className="text-xs text-blue-600 mt-2">
+                            💡 {t('livret.qrCodeWifiTip', 'Assurez-vous que votre smartphone est sur le même réseau Wi-Fi que votre ordinateur')}
+                          </p>
+                        )}
                       </>
                     );
                   })()}
@@ -349,7 +371,17 @@ export default function EditLivretPage() {
                           }
                           
                           // Construire l'URL complète pour ouvrir dans un nouvel onglet
-                          const guideUrl = `/guide/${qrCodeId}`;
+                          const hostname = window.location.hostname;
+                          const protocol = window.location.protocol;
+                          let guideUrl = '';
+                          
+                          if (hostname.includes('myguidedigital.com')) {
+                            guideUrl = `${protocol}//${hostname}/guide/${qrCodeId}`;
+                          } else {
+                            const port = window.location.port || '3000';
+                            guideUrl = `${protocol}//${hostname}:${port}/guide/${qrCodeId}`;
+                          }
+                          
                           window.open(guideUrl, '_blank', 'noopener,noreferrer');
                         } catch (err) {
                           console.error('Erreur lors de l\'ouverture du guide:', err);
@@ -387,11 +419,15 @@ export default function EditLivretPage() {
                           uniqueId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
                         }
                         
-                        // Détecter l'IP locale automatiquement
+                        // Construire l'URL de base selon l'environnement
                         const hostname = window.location.hostname;
+                        const protocol = window.location.protocol;
                         let baseUrl = '';
                         
-                        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                        if (hostname.includes('myguidedigital.com')) {
+                          // Production : utiliser le domaine sans port
+                          baseUrl = `${protocol}//${hostname}`;
+                        } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
                           // Si on est sur localhost, essayer de détecter l'IP locale
                           // Demander à l'utilisateur de saisir son IP locale
                           const userIp = prompt(
@@ -407,11 +443,11 @@ export default function EditLivretPage() {
                           
                           baseUrl = `http://${userIp.trim()}:3000`;
                         } else {
-                          // Sinon utiliser l'hostname actuel (qui devrait être l'IP locale)
-                          baseUrl = `${window.location.protocol}//${hostname}:${window.location.port || 3000}`;
+                          // Utiliser l'hostname actuel avec le port
+                          const port = window.location.port || '3000';
+                          baseUrl = `${protocol}//${hostname}:${port}`;
                         }
                         
-                        // Créer la nouvelle URL avec l'IP locale détectée
                         const newQrCodeUrl = `${baseUrl}/guide/${uniqueId}`;
                         
                         console.log('🔄 Mise à jour QR code:', { uniqueId, baseUrl, newQrCodeUrl });
