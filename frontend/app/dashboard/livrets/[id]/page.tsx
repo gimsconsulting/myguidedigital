@@ -847,9 +847,9 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
       return;
     }
 
-    // Vérifier la taille (10MB max)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error(t('chatDocuments.fileTooLarge', 'Le fichier ne doit pas dépasser 10MB'));
+    // Vérifier la taille (20MB max)
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error(t('chatDocuments.fileTooLarge', 'Le fichier ne doit pas dépasser 20MB'));
       return;
     }
 

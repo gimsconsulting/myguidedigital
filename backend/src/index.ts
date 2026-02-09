@@ -62,6 +62,10 @@ if (process.env.GOOGLE_TRANSLATE_API_KEY) {
 const app = express();
 const prisma = new PrismaClient();
 
+// Augmenter la limite de taille du body pour les uploads de fichiers (20MB)
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+
 // Middleware CORS - Configuration permissive pour le développement
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
