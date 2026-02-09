@@ -61,10 +61,10 @@ const upload = multer({
 });
 
 // Upload d'un PDF pour un livret
-router.post('/:livretId', authenticateToken, (req: any, res: any, next: any) => {
+router.post('/:livretId', authenticateToken, (req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.log('📥 Route upload appelée, avant multer');
   next();
-}, upload.single('pdf'), (err: any, req: any, res: any, next: any) => {
+}, upload.single('pdf'), (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   // Gérer les erreurs de multer AVANT le handler principal
   if (err) {
     console.error('❌ Erreur multer:', err);
@@ -81,7 +81,7 @@ router.post('/:livretId', authenticateToken, (req: any, res: any, next: any) => 
     return res.status(400).json({ message: err.message || 'Erreur lors de l\'upload du fichier' });
   }
   next();
-}, async (req: any, res) => {
+}, async (req: any, res: express.Response) => {
   try {
     const { livretId } = req.params;
 
