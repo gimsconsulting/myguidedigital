@@ -220,6 +220,7 @@ export default function ModuleDetailPage() {
   const [module, setModule] = useState<Module | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState('fr');
   const [isLoading, setIsLoading] = useState(true);
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
 
   const LANGUAGES = [
     { code: 'fr', name: 'Français', countryCode: 'fr' },
@@ -484,50 +485,106 @@ export default function ModuleDetailPage() {
             </Link>
             <div className="text-xl font-bold text-gray-900">Livrets d&apos;Accueil</div>
             {livret?.languages && livret.languages.length > 0 && (
-              <div className="flex space-x-2">
-                {LANGUAGES.filter(lang => livret.languages?.includes(lang.code)).map(lang => (
-                  <button
-                    key={lang.code}
-                    onClick={() => setSelectedLanguage(lang.code)}
-                    className={`px-3 py-2 rounded-lg text-sm transition-all transform hover:scale-110 flex items-center justify-center ${
-                      selectedLanguage === lang.code
-                        ? 'bg-primary text-white font-semibold shadow-lg'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                    title={lang.name}
-                  >
-                    <div className="w-6 h-4 flex items-center justify-center rounded overflow-hidden border border-gray-300 bg-white/10">
-                      {lang.countryCode ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+                  aria-label="Changer la langue"
+                >
+                  <div className="w-5 h-4 flex items-center justify-center rounded overflow-hidden border border-gray-300">
+                    {(() => {
+                      const availableLangs = LANGUAGES.filter(lang => livret.languages?.includes(lang.code));
+                      const currentLang = availableLangs.find(l => l.code === selectedLanguage) || availableLangs[0];
+                      return (
                         <img
-                          src={`https://flagcdn.com/w40/${lang.countryCode}.png`}
-                          alt={lang.name}
+                          src={`https://flagcdn.com/w20/${currentLang.countryCode}.png`}
+                          alt={currentLang.name}
                           className="w-full h-full object-cover"
-                          loading="lazy"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.style.display = 'none';
                             const parent = target.parentElement;
                             if (parent) {
                               const emojiSpan = document.createElement('span');
-                              emojiSpan.className = 'text-lg';
-                              // Fallback emoji selon le code
+                              emojiSpan.className = 'text-sm';
                               const emojiMap: Record<string, string> = {
                                 'fr': '🇫🇷', 'en': '🇬🇧', 'de': '🇩🇪', 'it': '🇮🇹',
                                 'es': '🇪🇸', 'pt': '🇵🇹', 'zh': '🇨🇳', 'ru': '🇷🇺', 'nl': '🇳🇱'
                               };
-                              emojiSpan.textContent = emojiMap[lang.code] || '🌐';
+                              emojiSpan.textContent = emojiMap[currentLang.code] || '🌐';
                               parent.appendChild(emojiSpan);
                             }
                           }}
                         />
-                      ) : (
-                        <span className="text-lg">
-                          {lang.code === 'fr' ? '🇫🇷' : lang.code === 'en' ? '🇬🇧' : lang.code === 'es' ? '🇪🇸' : '🌐'}
-                        </span>
-                      )}
+                      );
+                    })()}
+                  </div>
+                  <span className="text-sm font-medium">
+                    {LANGUAGES.find(l => l.code === selectedLanguage && livret.languages?.includes(l.code))?.code.toUpperCase() || 'FR'}
+                  </span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${isLanguageMenuOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {isLanguageMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setIsLanguageMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+                      <div className="py-1">
+                        {LANGUAGES.filter(lang => livret.languages?.includes(lang.code)).map((lang) => (
+                          <button
+                            key={lang.code}
+                            onClick={() => {
+                              setSelectedLanguage(lang.code);
+                              setIsLanguageMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-gray-100 transition-colors ${
+                              selectedLanguage === lang.code ? 'bg-primary/10 text-primary font-medium' : 'text-gray-700'
+                            }`}
+                          >
+                            <div className="w-6 h-4 flex items-center justify-center rounded overflow-hidden border border-gray-300 flex-shrink-0">
+                              <img
+                                src={`https://flagcdn.com/w20/${lang.countryCode}.png`}
+                                alt={lang.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  const parent = target.parentElement;
+                                  if (parent) {
+                                    const emojiSpan = document.createElement('span');
+                                    emojiSpan.className = 'text-sm';
+                                    const emojiMap: Record<string, string> = {
+                                      'fr': '🇫🇷', 'en': '🇬🇧', 'de': '🇩🇪', 'it': '🇮🇹',
+                                      'es': '🇪🇸', 'pt': '🇵🇹', 'zh': '🇨🇳', 'ru': '🇷🇺', 'nl': '🇳🇱'
+                                    };
+                                    emojiSpan.textContent = emojiMap[lang.code] || '🌐';
+                                    parent.appendChild(emojiSpan);
+                                  }
+                                }}
+                              />
+                            </div>
+                            <span className="text-sm flex-1">{lang.code.toUpperCase()} {lang.name}</span>
+                            {selectedLanguage === lang.code && (
+                              <svg className="w-4 h-4 ml-auto text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </button>
-                ))}
+                  </>
+                )}
               </div>
             )}
           </div>
