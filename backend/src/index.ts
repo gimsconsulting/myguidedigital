@@ -81,6 +81,9 @@ const corsOptions = {
       'http://192.168.0.126:3000',
       'http://127.0.0.1:3000',
       'https://jone-pretelephonic-trembly.ngrok-free.dev',
+      'https://app.myguidedigital.com',
+      'https://myguidedigital.com',
+      'https://www.myguidedigital.com',
     ];
     
     // Patterns pour ngrok et localtunnel
