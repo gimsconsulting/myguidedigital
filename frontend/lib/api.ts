@@ -11,34 +11,44 @@ function getApiUrl(): string {
   if (typeof window === 'undefined') {
     // Server-side: utiliser la variable d'environnement ou localhost par défaut
     const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
+    console.log('🔍 [SSR] getApiUrl - envApiUrl:', envApiUrl);
     return envApiUrl || 'http://localhost:3001';
   }
 
   const hostname = window.location.hostname;
   const protocol = window.location.protocol;
+  const isIp = isIpAddress(hostname);
+
+  // Log de débogage
+  console.log('🔍 [CLIENT] getApiUrl - hostname:', hostname, 'protocol:', protocol, 'isIp:', isIp);
 
   // Localhost → backend sur le port 3001
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    console.log('🔍 [CLIENT] Using localhost:3001');
     return 'http://localhost:3001';
   }
 
   // Ngrok → localhost pour l'API (test depuis l'ordinateur)
   if (hostname.includes('ngrok') || hostname.includes('ngrok-free') || hostname.includes('ngrok.io') || hostname.includes('ngrok-free.dev')) {
+    console.log('🔍 [CLIENT] Using ngrok -> localhost:3001');
     return 'http://localhost:3001';
   }
 
   // Production (nom de domaine type app.myguidedigital.com) → même origine, pas de port
   // Les requêtes iront vers https://app.myguidedigital.com/api/... (proxy nginx vers le backend)
   // IMPORTANT: En production, on ignore le port même si NEXT_PUBLIC_API_URL est défini avec un port
-  if (!isIpAddress(hostname)) {
+  if (!isIp) {
     // Utiliser le même hostname et protocole que le frontend (sans port)
     // Nginx proxyfera /api/ vers le backend sur localhost:3001
     const apiUrl = `${protocol}//${hostname}`;
+    console.log('🔍 [CLIENT] Production domain detected, using:', apiUrl);
     return apiUrl;
   }
 
   // IP locale (ex: smartphone sur le réseau) → même IP, port 3001
-  return `${protocol}//${hostname}:3001`;
+  const apiUrl = `${protocol}//${hostname}:3001`;
+  console.log('🔍 [CLIENT] IP address detected, using:', apiUrl);
+  return apiUrl;
 }
 
 // Fonction pour obtenir le baseURL dynamiquement
