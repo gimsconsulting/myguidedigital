@@ -162,6 +162,8 @@ export default function ModulesPage() {
   const [showCustomModuleModal, setShowCustomModuleModal] = useState(false);
   const [customModuleTitle, setCustomModuleTitle] = useState('');
   const [isReordering, setIsReordering] = useState(false);
+  const [selectedModules, setSelectedModules] = useState<string[]>([]);
+  const [isAddingMultiple, setIsAddingMultiple] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; moduleId: string | null }>({
     isOpen: false,
     moduleId: null,
@@ -216,6 +218,60 @@ export default function ModulesPage() {
                           err.message || 
                           'Erreur lors de l\'ajout du module';
       toast.error(errorMessage);
+    }
+  };
+
+  const handleToggleModuleSelection = (moduleType: string) => {
+    setSelectedModules(prev => {
+      if (prev.includes(moduleType)) {
+        return prev.filter(type => type !== moduleType);
+      } else {
+        return [...prev, moduleType];
+      }
+    });
+  };
+
+  const handleAddSelectedModules = async () => {
+    if (selectedModules.length === 0) {
+      toast.error('Veuillez sélectionner au moins un module');
+      return;
+    }
+
+    setIsAddingMultiple(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      // Ajouter les modules un par un
+      for (const moduleType of selectedModules) {
+        try {
+          await modulesApi.create({
+            livretId,
+            type: moduleType,
+            content: {},
+            translations: {},
+          });
+          successCount++;
+        } catch (err: any) {
+          console.error(`Erreur ajout module ${moduleType}:`, err);
+          errorCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success(`${successCount} module(s) ajouté(s) avec succès`);
+      }
+      if (errorCount > 0) {
+        toast.error(`${errorCount} module(s) n'a(ont) pas pu être ajouté(s)`);
+      }
+
+      setSelectedModules([]);
+      setShowAddModule(false);
+      loadData();
+    } catch (err: any) {
+      toast.error('Erreur lors de l\'ajout des modules');
+    } finally {
+      setIsAddingMultiple(false);
     }
   };
 
@@ -400,7 +456,13 @@ export default function ModulesPage() {
       <div className="mb-6">
         <Button
           variant="primary"
-          onClick={() => setShowAddModule(!showAddModule)}
+          onClick={() => {
+            setShowAddModule(!showAddModule);
+            if (showAddModule) {
+              // Réinitialiser la sélection quand on ferme
+              setSelectedModules([]);
+            }
+          }}
         >
           {showAddModule ? 'Annuler' : '+ Créer un module'}
         </Button>
@@ -408,7 +470,18 @@ export default function ModulesPage() {
 
       {showAddModule && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Choisir un module à ajouter</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Choisir un ou plusieurs modules à ajouter</h2>
+            {selectedModules.length > 0 && (
+              <Button
+                variant="primary"
+                onClick={handleAddSelectedModules}
+                isLoading={isAddingMultiple}
+              >
+                Ajouter {selectedModules.length} module(s) sélectionné(s)
+              </Button>
+            )}
+          </div>
           
           {/* Module personnalisé */}
           <div className="mb-6 p-4 border-2 border-dashed border-primary rounded-lg bg-primary/5">
@@ -435,27 +508,69 @@ export default function ModulesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {MODULE_TYPES.map((moduleType) => {
               const alreadyAdded = modules.some(m => m.type === moduleType.id);
+              const isSelected = selectedModules.includes(moduleType.id);
               return (
-                <button
+                <div
                   key={moduleType.id}
-                  onClick={() => handleAddModule(moduleType.id)}
-                  disabled={alreadyAdded}
-                  className={`p-4 border-2 rounded-lg text-left transition-colors ${
+                  className={`p-4 border-2 rounded-lg text-left transition-all ${
                     alreadyAdded
                       ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                      : isSelected
+                      ? 'border-primary bg-primary/10 shadow-md cursor-pointer'
                       : 'border-gray-300 hover:border-primary hover:bg-primary/5 cursor-pointer'
                   }`}
+                  onClick={() => {
+                    if (!alreadyAdded) {
+                      handleToggleModuleSelection(moduleType.id);
+                    }
+                  }}
+                  onDoubleClick={() => {
+                    if (!alreadyAdded) {
+                      handleAddModule(moduleType.id);
+                    }
+                  }}
                 >
-                  <div className="text-2xl mb-2">{moduleType.icon}</div>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="text-2xl">{moduleType.icon}</div>
+                    {!alreadyAdded && (
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleToggleModuleSelection(moduleType.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer"
+                      />
+                    )}
+                  </div>
                   <div className="font-semibold text-gray-900">{moduleType.name}</div>
                   <div className="text-sm text-gray-600 mt-1">{moduleType.description}</div>
                   {alreadyAdded && (
                     <div className="text-xs text-gray-500 mt-2">Déjà ajouté</div>
                   )}
-                </button>
+                  {isSelected && !alreadyAdded && (
+                    <div className="text-xs text-primary font-medium mt-2">✓ Sélectionné</div>
+                  )}
+                  {!alreadyAdded && (
+                    <div className="text-xs text-gray-400 mt-2 italic">Double-clic pour ajouter directement</div>
+                  )}
+                </div>
               );
             })}
           </div>
+
+          {/* Bouton d'ajout en bas si des modules sont sélectionnés */}
+          {selectedModules.length > 0 && (
+            <div className="mt-6 pt-6 border-t border-gray-200 flex justify-end">
+              <Button
+                variant="primary"
+                onClick={handleAddSelectedModules}
+                isLoading={isAddingMultiple}
+                size="lg"
+              >
+                Ajouter {selectedModules.length} module(s) sélectionné(s)
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
