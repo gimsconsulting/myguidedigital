@@ -253,12 +253,45 @@ router.put('/:id', authenticateToken, [
       hasTranslations: !!existingLivret.translations,
     });
 
-    // Préparer les langues
-    const languagesArray = languages 
-      ? (typeof languages === 'string' ? JSON.parse(languages) : (Array.isArray(languages) ? languages : ['fr']))
-      : (existingLivret.languages ? JSON.parse(existingLivret.languages as string) : ['fr']);
+    // Préparer les langues avec gestion d'erreur robuste
+    let languagesArray: string[] = ['fr'];
+    
+    if (languages) {
+      try {
+        if (typeof languages === 'string') {
+          languagesArray = JSON.parse(languages);
+        } else if (Array.isArray(languages)) {
+          languagesArray = languages;
+        } else {
+          languagesArray = ['fr'];
+        }
+      } catch (e) {
+        console.error('❌ Erreur parsing languages depuis req.body:', e);
+        languagesArray = ['fr'];
+      }
+    } else if (existingLivret.languages) {
+      try {
+        if (typeof existingLivret.languages === 'string') {
+          languagesArray = JSON.parse(existingLivret.languages);
+        } else if (Array.isArray(existingLivret.languages)) {
+          languagesArray = existingLivret.languages;
+        } else {
+          languagesArray = ['fr'];
+        }
+      } catch (e) {
+        console.error('❌ Erreur parsing languages depuis existingLivret:', e);
+        languagesArray = ['fr'];
+      }
+    }
+    
+    // S'assurer que languagesArray est toujours un tableau valide
+    if (!Array.isArray(languagesArray) || languagesArray.length === 0) {
+      console.warn('⚠️ languagesArray invalide, utilisation de ["fr"] par défaut');
+      languagesArray = ['fr'];
+    }
     
     const languagesJson = JSON.stringify(languagesArray);
+    console.log('✅ Langues préparées:', { languagesArray, languagesJson });
 
     // Traduire automatiquement welcomeTitle et welcomeSubtitle dans toutes les langues
     let translations: Record<string, { welcomeTitle?: string; welcomeSubtitle?: string }> = {};
@@ -335,65 +368,101 @@ router.put('/:id', authenticateToken, [
         existingTranslations: Object.keys(translations),
       });
 
-      // Traduire dans toutes les langues sélectionnées
-      for (const targetLang of languagesArray) {
-        if (targetLang === sourceLang) {
-          // Pour la langue source, utiliser le texte original
-          translations[targetLang] = {
-            welcomeTitle: titleToTranslate || undefined,
-            welcomeSubtitle: subtitleToTranslate || undefined,
-          };
-        } else {
-          // Si la traduction existe déjà et que les textes n'ont pas changé, la conserver
-          if (!shouldRetranslate && translations[targetLang]) {
-            console.log(`ℹ️ Traduction existante conservée pour ${targetLang}`);
-            continue;
+      // Traduire dans toutes les langues sélectionnées avec gestion d'erreur
+      try {
+        for (const targetLang of languagesArray) {
+          if (targetLang === sourceLang) {
+            // Pour la langue source, utiliser le texte original
+            translations[targetLang] = {
+              welcomeTitle: titleToTranslate || undefined,
+              welcomeSubtitle: subtitleToTranslate || undefined,
+            };
+          } else {
+            // Si la traduction existe déjà et que les textes n'ont pas changé, la conserver
+            if (!shouldRetranslate && translations[targetLang]) {
+              console.log(`ℹ️ Traduction existante conservée pour ${targetLang}`);
+              continue;
+            }
+
+            // Traduire vers la langue cible avec gestion d'erreur
+            try {
+              const [translatedTitle, translatedSubtitle] = await Promise.all([
+                titleToTranslate ? translateText(titleToTranslate, sourceLang, targetLang) : Promise.resolve(''),
+                subtitleToTranslate ? translateText(subtitleToTranslate, sourceLang, targetLang) : Promise.resolve(''),
+              ]);
+
+              translations[targetLang] = {
+                welcomeTitle: translatedTitle || undefined,
+                welcomeSubtitle: translatedSubtitle || undefined,
+              };
+
+              console.log(`✅ Traduit vers ${targetLang}:`, {
+                title: translatedTitle,
+                subtitle: translatedSubtitle,
+              });
+            } catch (translateError: any) {
+              console.error(`❌ Erreur traduction pour ${targetLang}:`, translateError);
+              // En cas d'erreur de traduction, utiliser le texte original pour cette langue
+              translations[targetLang] = {
+                welcomeTitle: titleToTranslate || undefined,
+                welcomeSubtitle: subtitleToTranslate || undefined,
+              };
+            }
           }
-
-          // Traduire vers la langue cible
-          const [translatedTitle, translatedSubtitle] = await Promise.all([
-            titleToTranslate ? translateText(titleToTranslate, sourceLang, targetLang) : Promise.resolve(''),
-            subtitleToTranslate ? translateText(subtitleToTranslate, sourceLang, targetLang) : Promise.resolve(''),
-          ]);
-
-          translations[targetLang] = {
-            welcomeTitle: translatedTitle || undefined,
-            welcomeSubtitle: translatedSubtitle || undefined,
-          };
-
-          console.log(`✅ Traduit vers ${targetLang}:`, {
-            title: translatedTitle,
-            subtitle: translatedSubtitle,
-          });
         }
+      } catch (error: any) {
+        console.error('❌ Erreur lors de la boucle de traduction:', error);
+        // Continuer même en cas d'erreur globale
       }
     } else if (languages && languagesArray.length > 0 && (titleToTranslate || subtitleToTranslate)) {
       // Si seulement les langues ont changé, traduire les textes existants dans les nouvelles langues
-      for (const targetLang of languagesArray) {
-        if (targetLang === sourceLang) {
-          translations[targetLang] = {
-            welcomeTitle: titleToTranslate || undefined,
-            welcomeSubtitle: subtitleToTranslate || undefined,
-          };
-        } else if (!translations[targetLang]) {
-          // Traduire seulement si la traduction n'existe pas encore
-          console.log(`🌐 Traduction manquante pour ${targetLang}, génération en cours...`);
-          const [translatedTitle, translatedSubtitle] = await Promise.all([
-            titleToTranslate ? translateText(titleToTranslate, sourceLang, targetLang) : Promise.resolve(''),
-            subtitleToTranslate ? translateText(subtitleToTranslate, sourceLang, targetLang) : Promise.resolve(''),
-          ]);
+      try {
+        for (const targetLang of languagesArray) {
+          if (targetLang === sourceLang) {
+            translations[targetLang] = {
+              welcomeTitle: titleToTranslate || undefined,
+              welcomeSubtitle: subtitleToTranslate || undefined,
+            };
+          } else if (!translations[targetLang]) {
+            // Traduire seulement si la traduction n'existe pas encore
+            console.log(`🌐 Traduction manquante pour ${targetLang}, génération en cours...`);
+            try {
+              const [translatedTitle, translatedSubtitle] = await Promise.all([
+                titleToTranslate ? translateText(titleToTranslate, sourceLang, targetLang) : Promise.resolve(''),
+                subtitleToTranslate ? translateText(subtitleToTranslate, sourceLang, targetLang) : Promise.resolve(''),
+              ]);
 
-          translations[targetLang] = {
-            welcomeTitle: translatedTitle || undefined,
-            welcomeSubtitle: translatedSubtitle || undefined,
-          };
+              translations[targetLang] = {
+                welcomeTitle: translatedTitle || undefined,
+                welcomeSubtitle: translatedSubtitle || undefined,
+              };
 
-          console.log(`✅ Traduit vers ${targetLang}:`, {
-            title: translatedTitle,
-            subtitle: translatedSubtitle,
-          });
+              console.log(`✅ Traduit vers ${targetLang}:`, {
+                title: translatedTitle,
+                subtitle: translatedSubtitle,
+              });
+            } catch (translateError: any) {
+              console.error(`❌ Erreur traduction pour ${targetLang}:`, translateError);
+              // En cas d'erreur de traduction, utiliser le texte original
+              translations[targetLang] = {
+                welcomeTitle: titleToTranslate || undefined,
+                welcomeSubtitle: subtitleToTranslate || undefined,
+              };
+            }
+          }
         }
+      } catch (error: any) {
+        console.error('❌ Erreur lors de la boucle de traduction (nouvelles langues):', error);
+        // Continuer même en cas d'erreur
       }
+    }
+
+    // S'assurer qu'on a au moins les traductions pour la langue source
+    if (!translations[sourceLang] && (titleToTranslate || subtitleToTranslate)) {
+      translations[sourceLang] = {
+        welcomeTitle: titleToTranslate || undefined,
+        welcomeSubtitle: subtitleToTranslate || undefined,
+      };
     }
 
     const translationsJson = JSON.stringify(translations);
@@ -405,25 +474,35 @@ router.put('/:id', authenticateToken, [
       translationsJson: translationsJson.substring(0, 200) + '...',
     });
 
+    // Préparer les données de mise à jour
+    const updateData: any = {};
+    
+    if (name) updateData.name = name;
+    if (address !== undefined) updateData.address = address;
+    if (welcomeTitle !== undefined) updateData.welcomeTitle = welcomeTitle;
+    if (welcomeSubtitle !== undefined) updateData.welcomeSubtitle = welcomeSubtitle;
+    if (languages) updateData.languages = languagesJson;
+    if (translationsJson) updateData.translations = translationsJson;
+    if (isActive !== undefined) updateData.isActive = isActive;
+    
+    // Personnalisation
+    if (personalization.showProfilePhoto !== undefined) updateData.showProfilePhoto = personalization.showProfilePhoto;
+    if (personalization.titleFont) updateData.titleFont = personalization.titleFont;
+    if (personalization.titleColor) updateData.titleColor = personalization.titleColor;
+    if (personalization.subtitleColor) updateData.subtitleColor = personalization.subtitleColor;
+    if (personalization.tileColor) updateData.tileColor = personalization.tileColor;
+    if (personalization.iconColor) updateData.iconColor = personalization.iconColor;
+    if (personalization.backgroundImage) updateData.backgroundImage = personalization.backgroundImage;
+
+    console.log('💾 Données de mise à jour:', {
+      keys: Object.keys(updateData),
+      languagesJson,
+      hasTranslations: !!updateData.translations
+    });
+
     const livret = await prisma.livret.update({
       where: { id: req.params.id },
-      data: {
-        ...(name && { name }),
-        ...(address !== undefined && { address }),
-        ...(welcomeTitle !== undefined && { welcomeTitle }),
-        ...(welcomeSubtitle !== undefined && { welcomeSubtitle }),
-        ...(languages && { languages: languagesJson }),
-        // Toujours sauvegarder les traductions si elles existent (même si vides, pour forcer la création du champ)
-        ...(translationsJson && { translations: translationsJson }),
-        ...(isActive !== undefined && { isActive }),
-        ...(personalization.showProfilePhoto !== undefined && { showProfilePhoto: personalization.showProfilePhoto }),
-        ...(personalization.titleFont && { titleFont: personalization.titleFont }),
-        ...(personalization.titleColor && { titleColor: personalization.titleColor }),
-        ...(personalization.subtitleColor && { subtitleColor: personalization.subtitleColor }),
-        ...(personalization.tileColor && { tileColor: personalization.tileColor }),
-        ...(personalization.iconColor && { iconColor: personalization.iconColor }),
-        ...(personalization.backgroundImage && { backgroundImage: personalization.backgroundImage }),
-      },
+      data: updateData,
       include: {
         modules: {
           orderBy: { order: 'asc' }
