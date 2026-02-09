@@ -263,12 +263,20 @@ export default function ModuleDetailPage() {
       if (data.languages) {
         try {
           parsedLanguages = typeof data.languages === 'string' ? JSON.parse(data.languages) : data.languages;
+          // S'assurer que c'est un tableau
+          if (!Array.isArray(parsedLanguages)) {
+            parsedLanguages = [parsedLanguages];
+          }
         } catch (e) {
+          console.warn('Erreur parsing languages:', e);
           parsedLanguages = ['fr'];
         }
       }
 
-      setLivret({ ...data, modules: modulesWithParsedContent, languages: parsedLanguages });
+      // S'assurer que modules est toujours un tableau
+      const modules = Array.isArray(modulesWithParsedContent) ? modulesWithParsedContent : [];
+
+      setLivret({ ...data, modules: modules, languages: parsedLanguages });
       
       // Définir la langue par défaut
       if (parsedLanguages.length > 0) {
@@ -488,28 +496,35 @@ export default function ModuleDetailPage() {
                     }`}
                     title={lang.name}
                   >
-                    <div className="w-6 h-4 flex items-center justify-center rounded overflow-hidden border border-gray-300">
-                      <img
-                        src={`https://flagcdn.com/w40/${lang.countryCode}.png`}
-                        alt={lang.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            const emojiSpan = document.createElement('span');
-                            emojiSpan.className = 'text-lg';
-                            // Fallback emoji selon le code
-                            const emojiMap: Record<string, string> = {
-                              'fr': '🇫🇷', 'en': '🇬🇧', 'de': '🇩🇪', 'it': '🇮🇹',
-                              'es': '🇪🇸', 'pt': '🇵🇹', 'zh': '🇨🇳', 'ru': '🇷🇺', 'nl': '🇳🇱'
-                            };
-                            emojiSpan.textContent = emojiMap[lang.code] || '🌐';
-                            parent.appendChild(emojiSpan);
-                          }
-                        }}
-                      />
+                    <div className="w-6 h-4 flex items-center justify-center rounded overflow-hidden border border-gray-300 bg-white/10">
+                      {lang.countryCode ? (
+                        <img
+                          src={`https://flagcdn.com/w40/${lang.countryCode}.png`}
+                          alt={lang.name}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              const emojiSpan = document.createElement('span');
+                              emojiSpan.className = 'text-lg';
+                              // Fallback emoji selon le code
+                              const emojiMap: Record<string, string> = {
+                                'fr': '🇫🇷', 'en': '🇬🇧', 'de': '🇩🇪', 'it': '🇮🇹',
+                                'es': '🇪🇸', 'pt': '🇵🇹', 'zh': '🇨🇳', 'ru': '🇷🇺', 'nl': '🇳🇱'
+                              };
+                              emojiSpan.textContent = emojiMap[lang.code] || '🌐';
+                              parent.appendChild(emojiSpan);
+                            }
+                          }}
+                        />
+                      ) : (
+                        <span className="text-lg">
+                          {lang.code === 'fr' ? '🇫🇷' : lang.code === 'en' ? '🇬🇧' : lang.code === 'es' ? '🇪🇸' : '🌐'}
+                        </span>
+                      )}
                     </div>
                   </button>
                 ))}

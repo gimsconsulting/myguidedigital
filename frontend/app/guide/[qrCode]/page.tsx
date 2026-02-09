@@ -315,11 +315,40 @@ export default function GuidePage() {
         console.warn('⚠️ Aucune traduction trouvée dans les données reçues');
       }
       
-      setLivret(data);
+      // Parser les modules si nécessaire
+      let modules = [];
+      if (data.modules) {
+        if (Array.isArray(data.modules)) {
+          modules = data.modules.map((m: any) => {
+            let parsedContent = {};
+            let parsedTranslations = {};
+            try {
+              parsedContent = typeof m.content === 'string' ? JSON.parse(m.content) : (m.content || {});
+              parsedTranslations = typeof m.translations === 'string' ? JSON.parse(m.translations) : (m.translations || {});
+            } catch (e) {
+              console.warn('Erreur parsing module:', e);
+            }
+            return {
+              ...m,
+              content: parsedContent,
+              translations: parsedTranslations
+            };
+          });
+        }
+      }
+      
+      // S'assurer que languages est toujours un tableau
+      const languages = Array.isArray(data.languages) ? data.languages : (data.languages ? [data.languages] : ['fr']);
+      
+      setLivret({ 
+        ...data, 
+        modules: modules,
+        languages: languages
+      });
       
       // Définir la langue par défaut
-      if (data.languages && data.languages.length > 0) {
-        setSelectedLanguage(data.languages[0]);
+      if (languages && languages.length > 0) {
+        setSelectedLanguage(languages[0]);
       }
     } catch (err: any) {
       console.error('Erreur chargement livret:', err);
@@ -406,7 +435,7 @@ export default function GuidePage() {
     );
   }
 
-  const activeModules = livret.modules
+  const activeModules = (livret.modules || [])
     .filter(m => m.isActive)
     .sort((a, b) => a.order - b.order);
 
@@ -451,28 +480,35 @@ export default function GuidePage() {
                   }`}
                   title={lang.name}
                 >
-                  <div className="w-6 h-4 md:w-8 md:h-5 flex items-center justify-center rounded overflow-hidden border border-gray-300">
-                    <img
-                      src={`https://flagcdn.com/w40/${lang.countryCode}.png`}
-                      alt={lang.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const parent = target.parentElement;
-                        if (parent) {
-                          const emojiSpan = document.createElement('span');
-                          emojiSpan.className = 'text-lg md:text-xl';
-                          // Fallback emoji selon le code
-                          const emojiMap: Record<string, string> = {
-                            'fr': '🇫🇷', 'en': '🇬🇧', 'de': '🇩🇪', 'it': '🇮🇹',
-                            'es': '🇪🇸', 'pt': '🇵🇹', 'zh': '🇨🇳', 'ru': '🇷🇺', 'nl': '🇳🇱'
-                          };
-                          emojiSpan.textContent = emojiMap[lang.code] || '🌐';
-                          parent.appendChild(emojiSpan);
-                        }
-                      }}
-                    />
+                  <div className="w-6 h-4 md:w-8 md:h-5 flex items-center justify-center rounded overflow-hidden border border-gray-300 bg-white/10">
+                    {lang.countryCode ? (
+                      <img
+                        src={`https://flagcdn.com/w40/${lang.countryCode}.png`}
+                        alt={lang.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            const emojiSpan = document.createElement('span');
+                            emojiSpan.className = 'text-lg md:text-xl';
+                            // Fallback emoji selon le code
+                            const emojiMap: Record<string, string> = {
+                              'fr': '🇫🇷', 'en': '🇬🇧', 'de': '🇩🇪', 'it': '🇮🇹',
+                              'es': '🇪🇸', 'pt': '🇵🇹', 'zh': '🇨🇳', 'ru': '🇷🇺', 'nl': '🇳🇱'
+                            };
+                            emojiSpan.textContent = emojiMap[lang.code] || '🌐';
+                            parent.appendChild(emojiSpan);
+                          }
+                        }}
+                      />
+                    ) : (
+                      <span className="text-lg md:text-xl">
+                        {lang.code === 'fr' ? '🇫🇷' : lang.code === 'en' ? '🇬🇧' : lang.code === 'es' ? '🇪🇸' : '🌐'}
+                      </span>
+                    )}
                   </div>
                 </button>
               ))}
