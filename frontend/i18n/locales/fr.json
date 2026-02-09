@@ -172,9 +172,10 @@
     "address": "Adresse"
   },
   "chatDocuments": {
+    "dropFile": "Déposez le fichier PDF ici",
     "title": "Documents PDF pour le Chat",
     "description": "Ajoutez des fichiers PDF pour enrichir les connaissances du chat. Ces documents seront utilisés pour répondre aux questions des voyageurs.",
-    "uploadText": "Cliquez pour uploader un PDF",
+    "uploadText": "Cliquez ou glissez-déposez un PDF ici",
     "maxSize": "Taille maximale : 10MB",
     "uploading": "Upload en cours...",
     "uploadSuccess": "PDF uploadé avec succès",

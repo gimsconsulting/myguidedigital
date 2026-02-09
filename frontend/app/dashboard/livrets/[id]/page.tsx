@@ -818,6 +818,7 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
   const [documents, setDocuments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; documentId: string | null }>({
     isOpen: false,
     documentId: null,
@@ -839,12 +840,9 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processFile = async (file: File) => {
     // Vérifier que c'est un PDF
-    if (file.type !== 'application/pdf') {
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
       toast.error(t('chatDocuments.invalidFile', 'Seuls les fichiers PDF sont autorisés'));
       return;
     }
@@ -862,8 +860,6 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
       console.log('✅ Upload réussi:', response.data);
       toast.success(t('chatDocuments.uploadSuccess', 'PDF uploadé avec succès'));
       loadDocuments();
-      // Réinitialiser l'input
-      e.target.value = '';
     } catch (err: any) {
       console.error('❌ Erreur lors de l\'upload:', err);
       console.error('Détails:', {
@@ -879,6 +875,41 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processFile(file);
+    // Réinitialiser l'input
+    e.target.value = '';
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    if (isUploading) return;
+
+    const files = e.dataTransfer.files;
+    if (files.length === 0) return;
+
+    // Prendre seulement le premier fichier
+    const file = files[0];
+    await processFile(file);
   };
 
   const handleDelete = (documentId: string) => {
@@ -918,31 +949,59 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
         {t('chatDocuments.description', 'Ajoutez des fichiers PDF pour enrichir les connaissances du chat. Ces documents seront utilisés pour répondre aux questions des voyageurs.')}
       </p>
 
-      {/* Zone d'upload */}
+      {/* Zone d'upload avec drag and drop */}
       <div className="mb-6">
-        <label className="block mb-2">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
-            <input
-              type="file"
-              accept=".pdf,application/pdf"
-              onChange={handleFileUpload}
-              disabled={isUploading}
-              className="hidden"
-              id="pdf-upload"
-            />
-            <label htmlFor="pdf-upload" className="cursor-pointer">
-              <svg className="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-              <p className="text-gray-600 font-medium">
-                {isUploading ? t('chatDocuments.uploading', 'Upload en cours...') : t('chatDocuments.uploadText', 'Cliquez pour uploader un PDF')}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {t('chatDocuments.maxSize', 'Taille maximale : 10MB')}
-              </p>
-            </label>
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
+            isDragOver
+              ? 'border-primary bg-primary/5 scale-[1.02]'
+              : 'border-gray-300 hover:border-primary hover:bg-gray-50'
+          } ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          onClick={() => {
+            if (!isUploading) {
+              document.getElementById('pdf-upload')?.click();
+            }
+          }}
+        >
+          <input
+            type="file"
+            accept=".pdf,application/pdf"
+            onChange={handleFileUpload}
+            disabled={isUploading}
+            className="hidden"
+            id="pdf-upload"
+          />
+          <div className="flex flex-col items-center">
+            {isUploading ? (
+              <>
+                <svg className="animate-spin w-12 h-12 text-primary mx-auto mb-2" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p className="text-gray-600 font-medium">
+                  {t('chatDocuments.uploading', 'Upload en cours...')}
+                </p>
+              </>
+            ) : (
+              <>
+                <svg className={`w-12 h-12 mx-auto mb-2 transition-colors ${isDragOver ? 'text-primary' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <p className={`font-medium transition-colors ${isDragOver ? 'text-primary' : 'text-gray-600'}`}>
+                  {isDragOver 
+                    ? t('chatDocuments.dropFile', 'Déposez le fichier PDF ici')
+                    : t('chatDocuments.uploadText', 'Cliquez ou glissez-déposez un PDF ici')}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {t('chatDocuments.maxSize', 'Taille maximale : 10MB')}
+                </p>
+              </>
+            )}
           </div>
-        </label>
+        </div>
       </div>
 
       {/* Liste des documents */}
