@@ -905,10 +905,26 @@ function ChatDocumentsSection({ livretId }: { livretId: string }) {
     if (isUploading) return;
 
     const files = e.dataTransfer.files;
-    if (files.length === 0) return;
+    if (files.length === 0) {
+      console.warn('⚠️ Aucun fichier dans le drop');
+      return;
+    }
 
     // Prendre seulement le premier fichier
     const file = files[0];
+    console.log('📥 Fichier déposé:', {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      isFile: file instanceof File
+    });
+
+    // Vérifier que c'est bien un File object
+    if (!(file instanceof File)) {
+      toast.error(t('chatDocuments.invalidFile', 'Seuls les fichiers PDF sont autorisés'));
+      return;
+    }
+
     await processFile(file);
   };
 

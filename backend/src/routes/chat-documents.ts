@@ -89,11 +89,23 @@ router.post('/:livretId', authenticateToken, (req: express.Request, res: express
       livretId,
       hasFile: !!req.file,
       body: req.body,
-      headers: req.headers['content-type']
+      headers: req.headers['content-type'],
+      files: req.files,
+      file: req.file ? {
+        fieldname: req.file.fieldname,
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+      } : null
     });
 
     if (!req.file) {
       console.error('❌ Aucun fichier reçu dans req.file');
+      console.error('Détails de la requête:', {
+        contentType: req.headers['content-type'],
+        bodyKeys: Object.keys(req.body),
+        files: req.files
+      });
       return res.status(400).json({ message: 'Aucun fichier PDF fourni. Assurez-vous que le champ du formulaire s\'appelle "pdf"' });
     }
 

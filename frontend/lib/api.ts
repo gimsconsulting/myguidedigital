@@ -68,6 +68,11 @@ const api = axios.create({
 
 // Intercepteur pour définir le baseURL dynamiquement et ajouter le token JWT
 api.interceptors.request.use((config) => {
+  // Si la requête contient FormData, ne pas définir Content-Type (axios le fera avec la boundary)
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+  
   // Définir le baseURL dynamiquement pour chaque requête
   const baseURL = getBaseURL();
   config.baseURL = baseURL;
@@ -75,7 +80,8 @@ api.interceptors.request.use((config) => {
     method: config.method?.toUpperCase(),
     url: config.url,
     baseURL: baseURL,
-    fullURL: baseURL + config.url
+    fullURL: baseURL + config.url,
+    isFormData: config.data instanceof FormData
   });
   
   // Ne pas ajouter le token pour les routes publiques
@@ -245,7 +251,16 @@ export const adminApi = {
 export const chatDocumentsApi = {
   upload: (livretId: string, file: File) => {
     const formData = new FormData();
-    formData.append('pdf', file);
+    // S'assurer que le champ s'appelle bien "pdf" comme attendu par multer
+    formData.append('pdf', file, file.name);
+    console.log('📤 FormData créé:', {
+      livretId,
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      formDataKeys: Array.from(formData.keys()),
+      formDataValues: Array.from(formData.values()).map(v => v instanceof File ? { name: v.name, type: v.type, size: v.size } : v)
+    });
     // Ne pas définir Content-Type manuellement, axios le fait automatiquement avec la bonne boundary
     return api.post(`/chat-documents/${livretId}`, formData);
   },
