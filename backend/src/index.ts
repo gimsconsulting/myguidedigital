@@ -68,9 +68,12 @@ const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 // Configuration CORS très permissive pour le développement
 const corsOptions = {
   origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // Log pour débogage
+    console.log('🔍 CORS check - Origin:', origin || 'undefined', 'NODE_ENV:', process.env.NODE_ENV);
+    
     // En développement, autoriser TOUTES les origines
     if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
-      console.log('✅ CORS: Autorisation de l\'origine:', origin || 'sans origine');
+      console.log('✅ CORS: Autorisation de l\'origine (dev mode):', origin || 'sans origine');
       return callback(null, true);
     }
     
@@ -86,21 +89,34 @@ const corsOptions = {
       'https://www.myguidedigital.com',
     ];
     
-    // Patterns pour ngrok et localtunnel
+    // Patterns pour ngrok, localtunnel et myguidedigital
     const ngrokPattern = /^https:\/\/.*\.ngrok-free\.dev$/;
     const ngrokIoPattern = /^https:\/\/.*\.ngrok\.io$/;
     const locaPattern = /^https:\/\/.*\.loca\.lt$/;
+    const myguidedigitalPattern = /^https:\/\/(.*\.)?myguidedigital\.com$/;
     
-    // Vérifier si l'origine est autorisée
-    if (!origin || allowedOrigins.includes(origin) || 
-        ngrokPattern.test(origin) || 
-        ngrokIoPattern.test(origin) || 
-        locaPattern.test(origin)) {
-      callback(null, true);
-    } else {
-      console.log('⚠️ Origine CORS non autorisée:', origin);
-      callback(new Error('Not allowed by CORS'));
+    // Si pas d'origine (requêtes same-origin ou depuis le serveur)
+    if (!origin) {
+      console.log('✅ CORS: Pas d\'origine (same-origin), autorisé');
+      return callback(null, true);
     }
+    
+    // Vérifier si l'origine est dans la liste autorisée
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ CORS: Origine autorisée (liste):', origin);
+      return callback(null, true);
+    }
+    
+    // Vérifier les patterns
+    if (ngrokPattern.test(origin) || ngrokIoPattern.test(origin) || locaPattern.test(origin) || myguidedigitalPattern.test(origin)) {
+      console.log('✅ CORS: Origine autorisée (pattern):', origin);
+      return callback(null, true);
+    }
+    
+    // Si aucune correspondance, refuser
+    console.log('❌ CORS: Origine NON autorisée:', origin);
+    console.log('📋 Origines autorisées:', allowedOrigins);
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
