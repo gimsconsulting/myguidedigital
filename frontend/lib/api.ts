@@ -1,39 +1,44 @@
 import axios from 'axios';
 
+// Détecte si l'hôte est une IP (ex: 192.168.1.1)
+function isIpAddress(host: string): boolean {
+  const ipv4 = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host);
+  return ipv4 || host.startsWith('['); // IPv6
+}
+
 // Fonction pour déterminer l'URL de l'API de manière dynamique
 function getApiUrl(): string {
-  // Si on est côté serveur (SSR), utiliser localhost
   if (typeof window === 'undefined') {
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    // Server-side: utiliser la variable d'environnement ou localhost par défaut
+    const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
+    return envApiUrl || 'http://localhost:3001';
   }
 
-  // Détecter automatiquement l'URL de l'API en fonction de l'URL actuelle
   const hostname = window.location.hostname;
   const protocol = window.location.protocol;
-  const port = window.location.port || '3000';
-  
-  // Si on est sur localhost ou 127.0.0.1, utiliser localhost pour l'API
+
+  // Localhost → backend sur le port 3001
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    console.log('✅ Utilisation de localhost pour l\'API:', apiUrl);
-    return apiUrl;
+    return 'http://localhost:3001';
   }
-  
-  // Si on est sur ngrok, utiliser localhost pour l'API (car localtunnel bloque les requêtes CORS)
-  // Note: Cela fonctionne seulement si on accède depuis l'ordinateur, pas depuis un smartphone
+
+  // Ngrok → localhost pour l'API (test depuis l'ordinateur)
   if (hostname.includes('ngrok') || hostname.includes('ngrok-free') || hostname.includes('ngrok.io') || hostname.includes('ngrok-free.dev')) {
-    // Utiliser localhost directement pour éviter les problèmes CORS avec localtunnel
-    const apiUrl = 'http://localhost:3001';
-    console.log('✅ Détection ngrok, utilisation de localhost pour l\'API (depuis ordinateur):', apiUrl);
-    console.warn('⚠️ Note: Pour tester depuis un smartphone, vous devrez utiliser ngrok pour le backend aussi.');
+    return 'http://localhost:3001';
+  }
+
+  // Production (nom de domaine type app.myguidedigital.com) → même origine, pas de port
+  // Les requêtes iront vers https://app.myguidedigital.com/api/... (proxy nginx vers le backend)
+  // IMPORTANT: En production, on ignore le port même si NEXT_PUBLIC_API_URL est défini avec un port
+  if (!isIpAddress(hostname)) {
+    // Utiliser le même hostname et protocole que le frontend (sans port)
+    // Nginx proxyfera /api/ vers le backend sur localhost:3001
+    const apiUrl = `${protocol}//${hostname}`;
     return apiUrl;
   }
-  
-  // Si on est sur une IP locale (smartphone ou réseau local), utiliser la même IP pour l'API
-  // Le port de l'API est toujours 3001
-  const apiUrl = `${protocol}//${hostname}:3001`;
-  console.log('✅ Utilisation de l\'IP locale pour l\'API:', apiUrl);
-  return apiUrl;
+
+  // IP locale (ex: smartphone sur le réseau) → même IP, port 3001
+  return `${protocol}//${hostname}:3001`;
 }
 
 // Fonction pour obtenir le baseURL dynamiquement
