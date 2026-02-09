@@ -249,15 +249,15 @@ const MODULE_NAMES: Record<string, Record<string, string>> = {
 };
 
 const LANGUAGES = [
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+  { code: 'fr', name: 'Français', countryCode: 'fr' },
+  { code: 'en', name: 'English', countryCode: 'gb' },
+  { code: 'de', name: 'Deutsch', countryCode: 'de' },
+  { code: 'it', name: 'Italiano', countryCode: 'it' },
+  { code: 'es', name: 'Español', countryCode: 'es' },
+  { code: 'pt', name: 'Português', countryCode: 'pt' },
+  { code: 'zh', name: '中文', countryCode: 'cn' },
+  { code: 'ru', name: 'Русский', countryCode: 'ru' },
+  { code: 'nl', name: 'Nederlands', countryCode: 'nl' },
 ];
 
 export default function GuidePage() {
@@ -444,14 +444,36 @@ export default function GuidePage() {
                     console.log('🔄 Changement de langue vers:', lang.code);
                     setSelectedLanguage(lang.code);
                   }}
-                  className={`px-3 py-2 rounded-lg text-sm md:text-base transition-all transform hover:scale-110 ${
+                  className={`px-3 py-2 rounded-lg text-sm md:text-base transition-all transform hover:scale-110 flex items-center justify-center ${
                     selectedLanguage === lang.code
                       ? 'bg-white text-primary font-semibold shadow-lg'
                       : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
                   }`}
                   title={lang.name}
                 >
-                  <span className="text-lg md:text-xl">{lang.flag}</span>
+                  <div className="w-6 h-4 md:w-8 md:h-5 flex items-center justify-center rounded overflow-hidden border border-gray-300">
+                    <img
+                      src={`https://flagcdn.com/w40/${lang.countryCode}.png`}
+                      alt={lang.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          const emojiSpan = document.createElement('span');
+                          emojiSpan.className = 'text-lg md:text-xl';
+                          // Fallback emoji selon le code
+                          const emojiMap: Record<string, string> = {
+                            'fr': '🇫🇷', 'en': '🇬🇧', 'de': '🇩🇪', 'it': '🇮🇹',
+                            'es': '🇪🇸', 'pt': '🇵🇹', 'zh': '🇨🇳', 'ru': '🇷🇺', 'nl': '🇳🇱'
+                          };
+                          emojiSpan.textContent = emojiMap[lang.code] || '🌐';
+                          parent.appendChild(emojiSpan);
+                        }
+                      }}
+                    />
+                  </div>
                 </button>
               ))}
             </div>

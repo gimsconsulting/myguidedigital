@@ -222,15 +222,15 @@ export default function ModuleDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const LANGUAGES = [
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'pt', name: 'Português', flag: '🇵🇹' },
-    { code: 'zh', name: '中文', flag: '🇨🇳' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-    { code: 'nl', name: 'Nederlands', flag: '🇳🇱' },
+    { code: 'fr', name: 'Français', countryCode: 'fr' },
+    { code: 'en', name: 'English', countryCode: 'gb' },
+    { code: 'de', name: 'Deutsch', countryCode: 'de' },
+    { code: 'it', name: 'Italiano', countryCode: 'it' },
+    { code: 'es', name: 'Español', countryCode: 'es' },
+    { code: 'pt', name: 'Português', countryCode: 'pt' },
+    { code: 'zh', name: '中文', countryCode: 'cn' },
+    { code: 'ru', name: 'Русский', countryCode: 'ru' },
+    { code: 'nl', name: 'Nederlands', countryCode: 'nl' },
   ];
 
   useEffect(() => {
@@ -481,14 +481,36 @@ export default function ModuleDetailPage() {
                   <button
                     key={lang.code}
                     onClick={() => setSelectedLanguage(lang.code)}
-                    className={`px-3 py-2 rounded-lg text-sm transition-all transform hover:scale-110 ${
+                    className={`px-3 py-2 rounded-lg text-sm transition-all transform hover:scale-110 flex items-center justify-center ${
                       selectedLanguage === lang.code
                         ? 'bg-primary text-white font-semibold shadow-lg'
                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                     title={lang.name}
                   >
-                    <span className="text-lg">{lang.flag}</span>
+                    <div className="w-6 h-4 flex items-center justify-center rounded overflow-hidden border border-gray-300">
+                      <img
+                        src={`https://flagcdn.com/w40/${lang.countryCode}.png`}
+                        alt={lang.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            const emojiSpan = document.createElement('span');
+                            emojiSpan.className = 'text-lg';
+                            // Fallback emoji selon le code
+                            const emojiMap: Record<string, string> = {
+                              'fr': '🇫🇷', 'en': '🇬🇧', 'de': '🇩🇪', 'it': '🇮🇹',
+                              'es': '🇪🇸', 'pt': '🇵🇹', 'zh': '🇨🇳', 'ru': '🇷🇺', 'nl': '🇳🇱'
+                            };
+                            emojiSpan.textContent = emojiMap[lang.code] || '🌐';
+                            parent.appendChild(emojiSpan);
+                          }
+                        }}
+                      />
+                    </div>
                   </button>
                 ))}
               </div>
