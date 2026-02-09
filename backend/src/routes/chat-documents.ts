@@ -31,10 +31,24 @@ const storage = multer.diskStorage({
 
 // Filtrer les types de fichiers (seulement PDFs)
 const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  if (file.mimetype === 'application/pdf') {
+  console.log('🔍 Vérification du fichier:', {
+    fieldname: file.fieldname,
+    originalname: file.originalname,
+    mimetype: file.mimetype,
+    size: file.size
+  });
+  
+  // Accepter les PDFs (mimetype peut varier selon le navigateur)
+  const isPdf = file.mimetype === 'application/pdf' || 
+                file.mimetype === 'application/x-pdf' ||
+                file.originalname.toLowerCase().endsWith('.pdf');
+  
+  if (isPdf) {
+    console.log('✅ Fichier PDF accepté');
     cb(null, true);
   } else {
-    cb(new Error('Seuls les fichiers PDF sont autorisés'));
+    console.error('❌ Type de fichier non autorisé:', file.mimetype);
+    cb(new Error(`Seuls les fichiers PDF sont autorisés. Type reçu: ${file.mimetype || 'inconnu'}`));
   }
 };
 
@@ -47,12 +61,40 @@ const upload = multer({
 });
 
 // Upload d'un PDF pour un livret
-router.post('/:livretId', authenticateToken, upload.single('pdf'), async (req: any, res) => {
+router.post('/:livretId', authenticateToken, (req: any, res: any, next: any) => {
+  console.log('📥 Route upload appelée, avant multer');
+  next();
+}, upload.single('pdf'), (err: any, req: any, res: any, next: any) => {
+  // Gérer les erreurs de multer AVANT le handler principal
+  if (err) {
+    console.error('❌ Erreur multer:', err);
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ message: 'Le fichier est trop volumineux. Taille maximale : 10MB' });
+      }
+      if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+        return res.status(400).json({ message: 'Champ de fichier incorrect. Le champ doit s\'appeler "pdf"' });
+      }
+      return res.status(400).json({ message: `Erreur upload: ${err.message}` });
+    }
+    // Erreur du fileFilter
+    return res.status(400).json({ message: err.message || 'Erreur lors de l\'upload du fichier' });
+  }
+  next();
+}, async (req: any, res) => {
   try {
     const { livretId } = req.params;
 
+    console.log('📥 Requête reçue:', {
+      livretId,
+      hasFile: !!req.file,
+      body: req.body,
+      headers: req.headers['content-type']
+    });
+
     if (!req.file) {
-      return res.status(400).json({ message: 'Aucun fichier PDF fourni' });
+      console.error('❌ Aucun fichier reçu dans req.file');
+      return res.status(400).json({ message: 'Aucun fichier PDF fourni. Assurez-vous que le champ du formulaire s\'appelle "pdf"' });
     }
 
     console.log('📤 Upload PDF:', {
