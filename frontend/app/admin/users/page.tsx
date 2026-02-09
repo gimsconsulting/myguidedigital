@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store';
 import { adminApi } from '@/lib/api';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { toast } from '@/components/ui/Toast';
 
 interface User {
   id: string;
@@ -31,6 +33,11 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState('');
   const [planFilter, setPlanFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; userId: string | null; userEmail: string }>({
+    isOpen: false,
+    userId: null,
+    userEmail: ''
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -79,6 +86,25 @@ export default function AdminUsersPage() {
       CANCELLED: 'bg-gray-100 text-gray-800'
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
+  };
+
+  const handleDeleteClick = (userId: string, userEmail: string) => {
+    setDeleteConfirm({ isOpen: true, userId, userEmail });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.userId) return;
+
+    try {
+      await adminApi.deleteUser(deleteConfirm.userId);
+      toast.success(t('admin.users.deleteSuccess', 'Utilisateur supprimé avec succès'));
+      loadUsers();
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || t('admin.users.deleteError', 'Erreur lors de la suppression');
+      toast.error(errorMessage);
+    } finally {
+      setDeleteConfirm({ isOpen: false, userId: null, userEmail: '' });
+    }
   };
 
   if (!isAuthenticated || user?.role !== 'ADMIN') {
@@ -155,6 +181,7 @@ export default function AdminUsersPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.users.table.status')}</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.users.table.livrets')}</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.users.table.registration')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('admin.users.table.actions')}</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -191,6 +218,18 @@ export default function AdminUsersPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(u.createdAt)}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <button
+                        onClick={() => handleDeleteClick(u.id, u.email)}
+                        className="text-red-600 hover:text-red-800 hover:underline flex items-center gap-1"
+                        title={t('admin.users.delete', 'Supprimer')}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        {t('admin.users.delete', 'Supprimer')}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -221,6 +260,18 @@ export default function AdminUsersPage() {
           </div>
         </>
       )}
+
+      {/* Dialog de confirmation de suppression */}
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        onCancel={() => setDeleteConfirm({ isOpen: false, userId: null, userEmail: '' })}
+        onConfirm={confirmDelete}
+        title={t('admin.users.deleteConfirmTitle', 'Supprimer l\'utilisateur')}
+        message={t('admin.users.deleteConfirmMessage', 'Êtes-vous sûr de vouloir supprimer l\'utilisateur {{email}} ? Cette action est irréversible.', { email: deleteConfirm.userEmail })}
+        confirmText={t('admin.users.delete', 'Supprimer')}
+        cancelText={t('common.cancel', 'Annuler')}
+        variant="danger"
+      />
       </div>
     </div>
   );

@@ -237,6 +237,20 @@
         "expired": "Expiré",
         "cancelled": "Annulé"
       },
+      "delete": "Supprimer",
+      "deleteSuccess": "Utilisateur supprimé avec succès",
+      "deleteError": "Erreur lors de la suppression de l'utilisateur",
+      "deleteConfirmTitle": "Supprimer l'utilisateur",
+      "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer l'utilisateur {{email}} ? Cette action est irréversible.",
+      "table": {
+        "user": "Utilisateur",
+        "email": "Email",
+        "plan": "Plan",
+        "status": "Statut",
+        "livrets": "Livrets",
+        "registration": "Inscription",
+        "actions": "Actions"
+      },
       "table": {
         "user": "Utilisateur",
         "email": "Email",

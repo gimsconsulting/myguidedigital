@@ -233,6 +233,49 @@ router.get('/users', authenticateToken, requireAdmin, async (req: express.Reques
   }
 });
 
+// Supprimer un utilisateur
+router.delete('/users/:userId', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const { userId } = req.params;
+    const currentUser = (req as any).user;
+
+    // Empêcher la suppression de soi-même
+    if (userId === currentUser.id) {
+      return res.status(400).json({ message: 'Vous ne pouvez pas supprimer votre propre compte' });
+    }
+
+    // Vérifier que l'utilisateur existe
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        livrets: { select: { id: true } },
+        subscriptions: { select: { id: true } },
+        invoices: { select: { id: true } }
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    // Supprimer l'utilisateur (les relations seront supprimées en cascade grâce à onDelete: Cascade dans le schema)
+    await prisma.user.delete({
+      where: { id: userId }
+    });
+
+    res.json({ 
+      message: 'Utilisateur supprimé avec succès',
+      deletedUser: {
+        id: user.id,
+        email: user.email
+      }
+    });
+  } catch (error: any) {
+    console.error('Erreur suppression utilisateur:', error);
+    res.status(500).json({ message: 'Erreur lors de la suppression de l\'utilisateur' });
+  }
+});
+
 // Statistiques financières
 router.get('/revenue', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {

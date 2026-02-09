@@ -231,6 +231,7 @@ export const adminApi = {
   getOverview: () => api.get('/admin/overview'),
   getUsers: (params?: { page?: number; limit?: number; search?: string; plan?: string; status?: string }) =>
     api.get('/admin/users', { params }),
+  deleteUser: (userId: string) => api.delete(`/admin/users/${userId}`),
   getRevenue: (params?: { period?: number }) =>
     api.get('/admin/revenue', { params }),
   getSubscriptions: (params?: { page?: number; limit?: number; plan?: string; status?: string }) =>
