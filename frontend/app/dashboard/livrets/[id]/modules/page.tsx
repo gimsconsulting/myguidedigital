@@ -84,46 +84,46 @@ function SortableModuleItem({ module, livretId, onToggleActive, onDelete, getMod
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white rounded-lg shadow-md p-6 flex items-center justify-between ${
+      className={`bg-white rounded-lg shadow-md p-4 sm:p-6 flex items-center justify-between gap-2 sm:gap-4 ${
         isDragging ? 'ring-2 ring-primary' : ''
       }`}
     >
-      <div className="flex items-center space-x-4 flex-1">
+      <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 text-2xl select-none"
+          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 text-xl sm:text-2xl select-none flex-shrink-0"
           title="Maintenez et glissez pour réorganiser"
         >
           ⋮⋮
         </div>
-        <div className="text-3xl">{moduleInfo.icon}</div>
-        <div className="flex-1">
-          <div className="flex items-center space-x-2">
-            <h3 className="font-semibold text-gray-900">
+        <div className="text-2xl sm:text-3xl flex-shrink-0">{moduleInfo.icon}</div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center space-x-2 flex-wrap">
+            <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
               {moduleInfo.name}
             </h3>
             {module.type === 'CUSTOM' && (
-              <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+              <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded flex-shrink-0">
                 Personnalisé
               </span>
             )}
             {module.isActive ? (
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded flex-shrink-0">
                 Actif
               </span>
             ) : (
-              <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
+              <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded flex-shrink-0">
                 Inactif
               </span>
             )}
           </div>
           {module.type !== 'CUSTOM' && moduleInfo.description && (
-            <p className="text-sm text-gray-600">{moduleInfo.description}</p>
+            <p className="text-xs sm:text-sm text-gray-600 truncate">{moduleInfo.description}</p>
           )}
         </div>
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
         <label className="relative inline-flex items-center cursor-pointer">
           <input
             type="checkbox"
@@ -131,20 +131,34 @@ function SortableModuleItem({ module, livretId, onToggleActive, onDelete, getMod
             onChange={() => onToggleActive(module.id, module.isActive)}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          <div className="w-9 h-5 sm:w-11 sm:h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 sm:after:h-5 sm:after:w-5 after:transition-all peer-checked:bg-primary"></div>
         </label>
         <Link href={`/dashboard/livrets/${livretId}/modules/${module.id}`}>
-          <Button variant="primary" size="sm">
+          <Button variant="primary" size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
             Modifier
           </Button>
         </Link>
-        <Button
-          variant="danger"
-          size="sm"
+        <button
           onClick={() => onDelete(module.id)}
+          className="p-1.5 sm:p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+          title="Supprimer"
+          aria-label="Supprimer le module"
         >
-          Supprimer
-        </Button>
+          <svg
+            className="w-4 h-4 sm:w-5 sm:h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
       </div>
     </div>
   );
