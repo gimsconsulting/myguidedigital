@@ -6,6 +6,7 @@ import { body, validationResult, CustomValidator } from 'express-validator';
 import crypto from 'crypto';
 import { loginLimiter, registerLimiter } from '../middleware/rateLimiter';
 import { validateCsrfToken } from '../middleware/csrf';
+import { sendWelcomeEmail } from '../services/email';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -129,6 +130,16 @@ router.post('/register', registerLimiter, validateCsrfToken, [
       process.env.JWT_SECRET as string,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as jwt.SignOptions
     );
+
+    // Envoyer l'email de bienvenue (en arrière-plan, ne bloque pas l'inscription)
+    sendWelcomeEmail({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    }).catch((error) => {
+      // L'erreur est déjà loggée dans sendWelcomeEmail
+      console.error('Erreur lors de l\'envoi de l\'email de bienvenue:', error);
+    });
 
     res.status(201).json({
       token,
