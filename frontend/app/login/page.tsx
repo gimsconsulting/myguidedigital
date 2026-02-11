@@ -69,7 +69,23 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (err: any) {
       console.error('Erreur connexion:', err);
+      
+      // Gérer spécifiquement l'erreur 429 (Rate Limit)
+      if (err.response?.status === 429) {
+        const retryAfter = err.response?.data?.retryAfter || 15 * 60;
+        const minutes = Math.ceil(retryAfter / 60);
+        const errorMessage = err.response?.data?.error || 
+                            `Trop de tentatives de connexion. Veuillez réessayer dans ${minutes} minute(s).`;
+        setError(errorMessage);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(ERROR_STORAGE_KEY, errorMessage);
+        }
+        toast.error(errorMessage);
+        return;
+      }
+      
       const errorMessage = err.response?.data?.message || 
+                          err.response?.data?.error ||
                           err.response?.data?.errors?.[0]?.msg ||
                           err.message || 
                           t('login.error', 'Erreur lors de la connexion');

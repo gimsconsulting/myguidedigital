@@ -1,9 +1,12 @@
 import rateLimit from 'express-rate-limit';
 
+// En développement, désactiver le rate limiting ou le rendre très permissif
+const isDevelopment = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
+
 // Rate limiter pour les routes de login
 export const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limite à 5 tentatives par IP par fenêtre de 15 minutes
+  max: isDevelopment ? 100 : 10, // Limite très élevée en dev, 10 en production
   message: {
     error: 'Trop de tentatives de connexion. Veuillez réessayer dans 15 minutes.',
     retryAfter: 15 * 60, // secondes
@@ -13,10 +16,11 @@ export const loginLimiter = rateLimit({
   skipSuccessfulRequests: true, // Ne pas compter les requêtes réussies
   skipFailedRequests: false, // Compter les requêtes échouées
   handler: (req, res) => {
-    const ip = req.ip || req.socket.remoteAddress;
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
     console.warn(`⚠️ [RATE LIMIT] Trop de tentatives de login depuis IP: ${ip}`);
     res.status(429).json({
       error: 'Trop de tentatives de connexion. Veuillez réessayer dans 15 minutes.',
+      message: 'Trop de tentatives de connexion. Veuillez réessayer dans 15 minutes.',
       retryAfter: 15 * 60,
     });
   },
