@@ -104,8 +104,8 @@ app.use(helmet({
   //     camera: ["'none'"],
   //   },
   // },
-  // Referrer Policy
-  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  // Referrer Policy - Désactivé car syntaxe incompatible avec cette version de Helmet
+  referrerPolicy: false,
   // XSS Protection (déprécié mais gardé pour compatibilité)
   xssFilter: true,
 }));
