@@ -157,7 +157,8 @@ export const authApi = {
   getMe: () => api.get('/auth/me'),
   updateProfile: (data: any) => api.put('/auth/profile', data),
   updatePassword: (data: { password: string }) => api.put('/auth/password', data),
-  resetPassword: (data: { email: string; password: string }) => api.post('/auth/reset-password', data),
+  forgotPassword: (data: { email: string }) => api.post('/auth/forgot-password', data),
+  resetPassword: (data: { token: string; password: string }) => api.post('/auth/reset-password', data),
 };
 
 // Upload

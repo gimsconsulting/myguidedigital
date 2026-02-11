@@ -3,12 +3,40 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { body, validationResult } from 'express-validator';
+import crypto from 'crypto';
+import { loginLimiter, registerLimiter } from '../middleware/rateLimiter';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Register
-router.post('/register', [
+// Interface pour stocker les tentatives de connexion échouées
+interface FailedLoginAttempt {
+  email: string;
+  attempts: number;
+  lastAttempt: Date;
+  lockedUntil: Date | null;
+}
+
+// Store en mémoire pour les tentatives échouées (en production, utiliser Redis)
+const failedLoginAttempts = new Map<string, FailedLoginAttempt>();
+
+// Nettoyer les tentatives expirées toutes les heures
+setInterval(() => {
+  const now = new Date();
+  for (const [email, attempt] of failedLoginAttempts.entries()) {
+    // Supprimer les tentatives de plus de 1 heure
+    if (attempt.lastAttempt.getTime() < now.getTime() - 60 * 60 * 1000) {
+      failedLoginAttempts.delete(email);
+    }
+    // Déverrouiller les comptes après 30 minutes
+    if (attempt.lockedUntil && attempt.lockedUntil < now) {
+      failedLoginAttempts.delete(email);
+    }
+  }
+}, 60 * 60 * 1000);
+
+// Register avec rate limiting
+router.post('/register', registerLimiter, [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
   body('firstName').optional().trim(),
@@ -91,8 +119,8 @@ router.post('/register', [
   }
 });
 
-// Login
-router.post('/login', [
+// Login avec rate limiting et verrouillage de compte
+router.post('/login', loginLimiter, [
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty(),
 ], async (req: express.Request, res: express.Response) => {
@@ -103,6 +131,18 @@ router.post('/login', [
     }
 
     const { email, password } = req.body;
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+
+    // Vérifier si le compte est verrouillé
+    const failedAttempt = failedLoginAttempts.get(email);
+    if (failedAttempt && failedAttempt.lockedUntil && failedAttempt.lockedUntil > new Date()) {
+      const minutesLeft = Math.ceil((failedAttempt.lockedUntil.getTime() - Date.now()) / 60000);
+      console.warn(`🔒 [SECURITY] Tentative de connexion sur compte verrouillé: ${email} depuis IP: ${ip}`);
+      return res.status(423).json({ 
+        message: `Compte temporairement verrouillé. Réessayez dans ${minutesLeft} minute(s).`,
+        lockedUntil: failedAttempt.lockedUntil
+      });
+    }
 
     // Find user
     const user = await prisma.user.findUnique({
@@ -117,13 +157,49 @@ router.post('/login', [
     });
 
     if (!user) {
+      // Logger la tentative suspecte
+      console.warn(`⚠️ [SECURITY] Tentative de connexion avec email inexistant: ${email} depuis IP: ${ip}`);
+      // Attendre un peu pour éviter les timing attacks
+      await new Promise(resolve => setTimeout(resolve, 100));
       return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
     }
 
     // Verify password
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
-      return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+      // Incrémenter le compteur de tentatives échouées
+      const currentAttempt = failedLoginAttempts.get(email) || {
+        email,
+        attempts: 0,
+        lastAttempt: new Date(),
+        lockedUntil: null
+      };
+
+      currentAttempt.attempts += 1;
+      currentAttempt.lastAttempt = new Date();
+
+      // Verrouiller le compte après 5 tentatives échouées pendant 30 minutes
+      if (currentAttempt.attempts >= 5) {
+        currentAttempt.lockedUntil = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+        console.error(`🔒 [SECURITY] Compte verrouillé après 5 tentatives échouées: ${email} depuis IP: ${ip}`);
+      }
+
+      failedLoginAttempts.set(email, currentAttempt);
+
+      // Logger la tentative échouée
+      console.warn(`⚠️ [SECURITY] Tentative de connexion échouée (${currentAttempt.attempts}/5): ${email} depuis IP: ${ip}`);
+
+      return res.status(401).json({ 
+        message: 'Email ou mot de passe incorrect',
+        attemptsRemaining: Math.max(0, 5 - currentAttempt.attempts),
+        locked: currentAttempt.lockedUntil !== null
+      });
+    }
+
+    // Connexion réussie - réinitialiser les tentatives échouées
+    if (failedLoginAttempts.has(email)) {
+      failedLoginAttempts.delete(email);
+      console.log(`✅ [SECURITY] Connexion réussie après tentatives échouées: ${email} depuis IP: ${ip}`);
     }
 
     // Generate JWT
@@ -293,10 +369,9 @@ router.put('/password', authenticateToken, [
   }
 });
 
-// Reset password (forgot password - no authentication required)
-router.post('/reset-password', [
+// Forgot password - Génère un token de réinitialisation
+router.post('/forgot-password', [
   body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 6 }),
 ], async (req: express.Request, res: express.Response) => {
   try {
     const errors = validationResult(req);
@@ -304,24 +379,154 @@ router.post('/reset-password', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { email } = req.body;
 
-    // Find user by email
+    // Trouver l'utilisateur
     const user = await prisma.user.findUnique({
       where: { email }
     });
 
+    // Pour des raisons de sécurité, on retourne toujours le même message
+    // même si l'email n'existe pas (pour éviter l'énumération d'emails)
     if (!user) {
-      return res.status(404).json({ message: 'Aucun compte trouvé avec cet email' });
+      // Attendre un peu pour simuler le temps de traitement (protection timing attack)
+      await new Promise(resolve => setTimeout(resolve, 100));
+      return res.json({ 
+        message: 'Si cet email existe, un lien de réinitialisation a été envoyé.' 
+      });
     }
 
-    // Hash new password
+    // Vérifier le nombre de tentatives récentes (limite: 3 par heure)
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const recentTokens = await prisma.passwordResetToken.count({
+      where: {
+        userId: user.id,
+        createdAt: { gte: oneHourAgo }
+      }
+    });
+
+    if (recentTokens >= 3) {
+      return res.status(429).json({ 
+        message: 'Trop de tentatives. Veuillez réessayer dans une heure.' 
+      });
+    }
+
+    // Invalider tous les tokens précédents non utilisés pour cet utilisateur
+    await prisma.passwordResetToken.updateMany({
+      where: {
+        userId: user.id,
+        used: false
+      },
+      data: {
+        used: true
+      }
+    });
+
+    // Générer un token sécurisé (32 bytes aléatoires en hex)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // Créer le token avec expiration de 30 minutes
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+
+    await prisma.passwordResetToken.create({
+      data: {
+        token: resetToken,
+        userId: user.id,
+        expiresAt: expiresAt
+      }
+    });
+
+    // TODO: Envoyer l'email avec le lien de réinitialisation
+    // Pour l'instant, on log le token en développement (à retirer en production)
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔐 [DEV] Token de réinitialisation généré pour:', email);
+      console.log('🔗 [DEV] Lien de réinitialisation:', resetUrl);
+      console.log('⚠️  [DEV] En production, ce lien doit être envoyé par email uniquement!');
+    }
+
+    // En production, envoyer l'email ici
+    // await sendPasswordResetEmail(user.email, resetToken);
+
+    res.json({ 
+      message: 'Si cet email existe, un lien de réinitialisation a été envoyé.',
+      // En développement seulement, retourner le token pour faciliter les tests
+      ...(process.env.NODE_ENV === 'development' && { 
+        resetToken: resetToken,
+        resetUrl: resetUrl 
+      })
+    });
+  } catch (error: any) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Erreur lors de la demande de réinitialisation' });
+  }
+});
+
+// Reset password - Réinitialise le mot de passe avec un token valide
+router.post('/reset-password', [
+  body('token').notEmpty().withMessage('Token de réinitialisation requis'),
+  body('password').isLength({ min: 6 }).withMessage('Le mot de passe doit contenir au moins 6 caractères'),
+], async (req: express.Request, res: express.Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { token, password } = req.body;
+
+    // Trouver le token de réinitialisation
+    const resetToken = await prisma.passwordResetToken.findUnique({
+      where: { token },
+      include: { user: true }
+    });
+
+    // Vérifier que le token existe
+    if (!resetToken) {
+      return res.status(400).json({ message: 'Token de réinitialisation invalide ou expiré' });
+    }
+
+    // Vérifier que le token n'a pas été utilisé
+    if (resetToken.used) {
+      return res.status(400).json({ message: 'Ce token a déjà été utilisé' });
+    }
+
+    // Vérifier que le token n'est pas expiré
+    if (new Date() > resetToken.expiresAt) {
+      // Marquer le token comme utilisé pour éviter les tentatives répétées
+      await prisma.passwordResetToken.update({
+        where: { id: resetToken.id },
+        data: { used: true }
+      });
+      return res.status(400).json({ message: 'Token de réinitialisation expiré' });
+    }
+
+    // Hash le nouveau mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Update password
+    // Mettre à jour le mot de passe de l'utilisateur
     await prisma.user.update({
-      where: { id: user.id },
+      where: { id: resetToken.userId },
       data: { password: hashedPassword }
+    });
+
+    // Marquer le token comme utilisé
+    await prisma.passwordResetToken.update({
+      where: { id: resetToken.id },
+      data: { used: true }
+    });
+
+    // Invalider tous les autres tokens non utilisés pour cet utilisateur (sécurité supplémentaire)
+    await prisma.passwordResetToken.updateMany({
+      where: {
+        userId: resetToken.userId,
+        used: false,
+        id: { not: resetToken.id }
+      },
+      data: {
+        used: true
+      }
     });
 
     res.json({ message: 'Mot de passe réinitialisé avec succès' });
@@ -330,6 +535,28 @@ router.post('/reset-password', [
     res.status(500).json({ message: 'Erreur lors de la réinitialisation du mot de passe' });
   }
 });
+
+// Nettoyer les tokens expirés (à appeler périodiquement via un cron job)
+async function cleanupExpiredTokens() {
+  try {
+    const deleted = await prisma.passwordResetToken.deleteMany({
+      where: {
+        OR: [
+          { expiresAt: { lt: new Date() } },
+          { used: true }
+        ]
+      }
+    });
+    if (deleted.count > 0) {
+      console.log(`🧹 Nettoyage: ${deleted.count} token(s) de réinitialisation supprimé(s)`);
+    }
+  } catch (error: any) {
+    console.error('Erreur lors du nettoyage des tokens:', error);
+  }
+}
+
+// Nettoyer les tokens expirés toutes les heures
+setInterval(cleanupExpiredTokens, 60 * 60 * 1000);
 
 // Middleware d'authentification
 function authenticateToken(req: any, res: express.Response, next: express.NextFunction) {

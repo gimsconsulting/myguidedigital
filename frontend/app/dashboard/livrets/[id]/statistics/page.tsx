@@ -186,25 +186,25 @@ export default function StatisticsPage() {
         >
           ← Retour à l'édition du livret
         </Link>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Statistiques du guide {livret.name}
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Retrouvez sur cette page le nombre de fois où votre guide a été ouvert ainsi que le nombre de consultations pour chaque module.
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              Le nombre affiché sous chaque module correspond au nombre de visiteurs uniques pour celui-ci.
-            </p>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Statistiques du guide {livret.name}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Retrouvez sur cette page le nombre de fois où votre guide a été ouvert ainsi que le nombre de consultations pour chaque module.
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            Le nombre affiché sous chaque module correspond au nombre de visiteurs uniques pour celui-ci.
+          </p>
+          <div className="mt-4">
+            <Button
+              variant="danger"
+              onClick={handleReset}
+              isLoading={isResetting}
+            >
+              Remettre les compteurs à zéro
+            </Button>
           </div>
-          <Button
-            variant="danger"
-            onClick={handleReset}
-            isLoading={isResetting}
-          >
-            Remettre les compteurs à zéro
-          </Button>
 
           <ConfirmDialog
             isOpen={showResetConfirm}

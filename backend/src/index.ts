@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import helmet from 'helmet';
 import { PrismaClient } from '@prisma/client';
 
 // Import routes
@@ -36,31 +37,75 @@ if (!envPath) {
   }
 }
 
-// Vérifier que la clé API est chargée (pour debug)
-console.log('🔍 Vérification des variables d\'environnement...');
-if (process.env.GOOGLE_TRANSLATE_API_KEY) {
-  console.log('✅ GOOGLE_TRANSLATE_API_KEY chargée:', process.env.GOOGLE_TRANSLATE_API_KEY.substring(0, 15) + '...');
-} else {
-  console.warn('⚠️ GOOGLE_TRANSLATE_API_KEY non trouvée dans les variables d\'environnement');
-  console.log('📁 Répertoire courant:', process.cwd());
-  console.log('📋 Variables disponibles:', Object.keys(process.env).filter(k => k.includes('GOOGLE') || k.includes('API') || k.includes('TRANSLATE')));
-  
-  // Essayer de lire directement le fichier
-  try {
-    const envContent = envPath ? fs.readFileSync(envPath, 'utf8') : '';
-    const hasKey = envContent.includes('GOOGLE_TRANSLATE_API_KEY');
-    console.log('📄 Contenu du .env contient GOOGLE_TRANSLATE_API_KEY?', hasKey);
-    if (hasKey) {
-      const keyLine = envContent.split('\n').find((line: string) => line.includes('GOOGLE_TRANSLATE_API_KEY'));
-      console.log('📝 Ligne trouvée:', keyLine?.substring(0, 50));
-    }
-  } catch (err: any) {
-    console.error('❌ Erreur lecture fichier .env:', err.message);
+// Vérifier que la clé API est chargée (seulement en développement)
+if (process.env.NODE_ENV === 'development') {
+  if (process.env.GOOGLE_TRANSLATE_API_KEY) {
+    console.log('✅ GOOGLE_TRANSLATE_API_KEY chargée');
+  } else {
+    console.warn('⚠️ GOOGLE_TRANSLATE_API_KEY non trouvée - Les traductions seront désactivées');
   }
 }
 
 const app = express();
 const prisma = new PrismaClient();
+
+// Configuration Helmet pour les headers de sécurité HTTP
+// IMPORTANT: Helmet doit être configuré AVANT les autres middlewares
+app.use(helmet({
+  // Désactiver contentSecurityPolicy par défaut pour éviter les conflits avec CORS
+  // On va le configurer manuellement si nécessaire
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-inline/eval pour compatibilité avec certains frameworks
+      styleSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline pour les styles inline
+      imgSrc: ["'self'", "data:", "https:", "http:"], // Autoriser les images depuis n'importe quelle source HTTPS/HTTP
+      connectSrc: ["'self'", "https:", "http:"], // Autoriser les connexions API
+      fontSrc: ["'self'", "data:", "https:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null, // Désactiver en dev pour permettre HTTP
+    },
+  },
+  // Cross-Origin Embedder Policy - désactivé pour compatibilité
+  crossOriginEmbedderPolicy: false,
+  // Cross-Origin Opener Policy
+  crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
+  // Cross-Origin Resource Policy
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  // Désactiver DNS Prefetch Control (peut améliorer les performances)
+  dnsPrefetchControl: true,
+  // Frameguard - protection contre le clickjacking
+  frameguard: { action: 'deny' },
+  // Hide Powered-By header
+  hidePoweredBy: true,
+  // HSTS - HTTP Strict Transport Security (seulement en production HTTPS)
+  hsts: process.env.NODE_ENV === 'production' ? {
+    maxAge: 31536000, // 1 an
+    includeSubDomains: true,
+    preload: true
+  } : false,
+  // IE No Open
+  ieNoOpen: true,
+  // No Sniff - empêche le MIME sniffing
+  noSniff: true,
+  // Origin Agent Cluster
+  originAgentCluster: true,
+  // Permissions Policy (anciennement Feature Policy)
+  permissionsPolicy: {
+    features: {
+      geolocation: ["'self'"],
+      microphone: ["'none'"],
+      camera: ["'none'"],
+    },
+  },
+  // Referrer Policy
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  // XSS Protection (déprécié mais gardé pour compatibilité)
+  xssFilter: true,
+}));
 
 // Augmenter la limite de taille du body pour les uploads de fichiers (20MB)
 app.use(express.json({ limit: '20mb' }));
@@ -175,12 +220,72 @@ app.use('/api/translate', translateRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/chat-documents', chatDocumentsRoutes);
 
-// Error handling middleware
+// Error handling middleware - Gestion améliorée des erreurs
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
+  // Erreur de parsing JSON
+  if (err instanceof SyntaxError && 'body' in err) {
+    console.error('❌ [ERROR] Erreur de parsing JSON:', {
+      url: req.url,
+      method: req.method,
+      ip: req.ip || req.socket.remoteAddress,
+      error: err.message
+    });
+    return res.status(400).json({
+      error: 'JSON malformé',
+      message: 'Le corps de la requête contient du JSON invalide'
+    });
+  }
+
+  // Erreur Prisma
+  if (err.code && err.code.startsWith('P')) {
+    console.error('❌ [PRISMA ERROR]', {
+      code: err.code,
+      meta: err.meta,
+      message: err.message,
+      url: req.url,
+      method: req.method
+    });
+    
+    // Erreur P2000 : valeur trop longue pour la colonne
+    if (err.code === 'P2000') {
+      return res.status(400).json({
+        error: 'Données trop longues',
+        message: `Le champ ${err.meta?.column_name || 'données'} est trop long. Veuillez réduire la taille.`
+      });
+    }
+    
+    // Erreur P2002 : contrainte unique violée
+    if (err.code === 'P2002') {
+      return res.status(409).json({
+        error: 'Conflit',
+        message: 'Cette valeur existe déjà'
+      });
+    }
+    
+    // Erreur P2025 : enregistrement non trouvé
+    if (err.code === 'P2025') {
+      return res.status(404).json({
+        error: 'Non trouvé',
+        message: 'L\'enregistrement demandé n\'existe pas'
+      });
+    }
+  }
+
+  // Erreur générique
+  console.error('❌ [ERROR]', {
+    message: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method,
+    ip: req.ip || req.socket.remoteAddress
+  });
+
   res.status(err.status || 500).json({
-    message: err.message || 'Internal Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    error: err.message || 'Internal Server Error',
+    ...(process.env.NODE_ENV === 'development' && { 
+      stack: err.stack,
+      details: err
+    })
   });
 });
 

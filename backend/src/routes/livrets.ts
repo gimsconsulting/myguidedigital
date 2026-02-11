@@ -16,7 +16,11 @@ async function translateText(text: string, sourceLang: string, targetLang: strin
 
   const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
   if (!apiKey) {
-    console.warn('⚠️ GOOGLE_TRANSLATE_API_KEY non configurée, retour du texte original');
+    // Ne logger qu'une seule fois au démarrage, pas à chaque appel
+    if (!translateText.warned) {
+      console.warn('⚠️ GOOGLE_TRANSLATE_API_KEY non configurée - Les traductions seront désactivées');
+      translateText.warned = true;
+    }
     return text;
   }
 
