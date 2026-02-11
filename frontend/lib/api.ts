@@ -78,7 +78,13 @@ export async function getCsrfToken(): Promise<string> {
   try {
     const baseURL = getBaseURL();
     const response = await axios.get(`${baseURL}/csrf-token`);
-    csrfToken = response.data.csrfToken;
+    const token = response.data.csrfToken;
+    
+    if (!token || typeof token !== 'string') {
+      throw new Error('Token CSRF invalide reçu du serveur');
+    }
+    
+    csrfToken = token;
     return csrfToken;
   } catch (error) {
     console.error('Erreur lors de la récupération du token CSRF:', error);
@@ -131,8 +137,13 @@ api.interceptors.request.use(async (config) => {
       // Essayer de récupérer le token si manquant
       try {
         const response = await axios.get(`${baseURL}/csrf-token`);
-        csrfToken = response.data.csrfToken;
-        console.log('✅ [CSRF] Token CSRF récupéré automatiquement');
+        const token = response.data.csrfToken;
+        if (token && typeof token === 'string') {
+          csrfToken = token;
+          console.log('✅ [CSRF] Token CSRF récupéré automatiquement');
+        } else {
+          console.error('❌ [CSRF] Token CSRF invalide reçu du serveur');
+        }
       } catch (error) {
         console.error('❌ [CSRF] Impossible de récupérer le token:', error);
       }
