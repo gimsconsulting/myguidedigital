@@ -597,7 +597,8 @@ async function cleanupExpiredTokens() {
 }
 
 // Nettoyer les tokens expirés toutes les heures
-setInterval(cleanupExpiredTokens, 60 * 60 * 1000);
+// Temporairement désactivé jusqu'à ce que la table password_reset_tokens soit créée
+// setInterval(cleanupExpiredTokens, 60 * 60 * 1000);
 
 // Middleware d'authentification
 function authenticateToken(req: any, res: express.Response, next: express.NextFunction) {
