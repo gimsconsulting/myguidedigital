@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import { authApi, getCsrfToken } from '@/lib/api';
+import { authApi, getCsrfToken, resetCsrfToken } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -29,8 +29,16 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // Récupérer le token CSRF avant de soumettre
-      await getCsrfToken();
+      // Récupérer le token CSRF avant de soumettre (à chaque fois pour être sûr)
+      try {
+        await getCsrfToken();
+        console.log('✅ Token CSRF récupéré');
+      } catch (csrfError) {
+        console.error('❌ Erreur récupération CSRF:', csrfError);
+        toast.error('Erreur de sécurité. Veuillez rafraîchir la page.');
+        setIsLoading(false);
+        return;
+      }
       
       console.log('Tentative d\'inscription avec:', { email: formData.email, firstName: formData.firstName });
       const response = await authApi.register(formData);
@@ -45,12 +53,23 @@ export default function RegisterPage() {
       console.error('Erreur details:', {
         message: err.message,
         response: err.response?.data,
+        status: err.response?.status,
         config: err.config,
       });
       
       let errorMessage = t('register.error', 'Erreur lors de l\'inscription');
       
-      if (err.message && err.message.includes('URL')) {
+      // Gérer spécifiquement l'erreur CSRF (403)
+      if (err.response?.status === 403 && (err.response?.data?.code === 'CSRF_TOKEN_MISSING' || err.response?.data?.code === 'CSRF_TOKEN_INVALID')) {
+        errorMessage = 'Erreur de sécurité. Veuillez rafraîchir la page et réessayer.';
+        // Réinitialiser le token CSRF pour en obtenir un nouveau
+        resetCsrfToken();
+      } else if (err.response?.status === 429) {
+        // Gérer le rate limiting
+        const retryAfter = err.response?.data?.retryAfter || 60 * 60;
+        const minutes = Math.ceil(retryAfter / 60);
+        errorMessage = err.response?.data?.error || `Trop de tentatives. Veuillez réessayer dans ${minutes} minute(s).`;
+      } else if (err.message && err.message.includes('URL')) {
         errorMessage = 'Erreur de configuration: URL API invalide. Vérifiez la console pour plus de détails.';
       } else if (err.response?.data?.message) {
         errorMessage = err.response.data.message;

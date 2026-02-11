@@ -92,7 +92,7 @@ export function resetCsrfToken() {
 }
 
 // Intercepteur pour définir le baseURL dynamiquement et ajouter le token JWT
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(async (config) => {
   // Si la requête contient FormData, ne pas définir Content-Type (axios le fera avec la boundary)
   if (config.data instanceof FormData) {
     delete config.headers['Content-Type'];
@@ -125,8 +125,22 @@ api.interceptors.request.use((config) => {
                     config.url?.includes('/auth/reset-password') ||
                     (config.method === 'delete' && config.url?.includes('/admin/users/'));
   
-  if (needsCsrf && csrfToken) {
-    config.headers['X-CSRF-Token'] = csrfToken;
+  if (needsCsrf) {
+    if (!csrfToken) {
+      console.warn('⚠️ [CSRF] Token CSRF manquant pour:', config.url, '- Tentative de récupération...');
+      // Essayer de récupérer le token si manquant
+      try {
+        const response = await axios.get(`${baseURL}/csrf-token`);
+        csrfToken = response.data.csrfToken;
+        console.log('✅ [CSRF] Token CSRF récupéré automatiquement');
+      } catch (error) {
+        console.error('❌ [CSRF] Impossible de récupérer le token:', error);
+      }
+    }
+    if (csrfToken) {
+      config.headers['X-CSRF-Token'] = csrfToken;
+      console.log('🔐 [CSRF] Token CSRF ajouté au header pour:', config.url);
+    }
   }
   
   return config;
