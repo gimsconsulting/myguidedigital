@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store';
-import { adminApi } from '@/lib/api';
+import { adminApi, getCsrfToken } from '@/lib/api';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { toast } from '@/components/ui/Toast';
 
@@ -96,6 +96,9 @@ export default function AdminUsersPage() {
     if (!deleteConfirm.userId) return;
 
     try {
+      // Récupérer le token CSRF avant de supprimer
+      await getCsrfToken();
+      
       await adminApi.deleteUser(deleteConfirm.userId);
       toast.success(t('admin.users.deleteSuccess', 'Utilisateur supprimé avec succès'));
       loadUsers();

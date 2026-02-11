@@ -1,0 +1,47 @@
+# ============================================
+# COMMANDES À EXÉCUTER SUR LE SERVEUR VPS
+# ============================================
+
+cd /root/myguidedigital/myguidedigital/backend
+
+# ============================================
+# CORRECTION 1 : src/index.ts (ligne 97)
+# ============================================
+
+# Commenter permissionsPolicy
+sed -i '97s/^  permissionsPolicy: {/  \/\/ permissionsPolicy: {/' src/index.ts
+sed -i '98s/^    features: {/    \/\/ features: {/' src/index.ts
+sed -i '99s/^      geolocation:/      \/\/ geolocation:/' src/index.ts
+sed -i '100s/^      microphone:/      \/\/ microphone:/' src/index.ts
+sed -i '101s/^      camera:/      \/\/ camera:/' src/index.ts
+sed -i '102s/^    },/    \/\/ },/' src/index.ts
+sed -i '103s/^  },/  \/\/ },/' src/index.ts
+
+# ============================================
+# CORRECTION 2 : src/routes/livrets.ts
+# ============================================
+
+# Ajouter la variable avant la fonction translateText (ligne ~11)
+sed -i '11i\\/\/ Variable pour éviter les warnings répétés\nlet translateWarningShown = false;\n' src/routes/livrets.ts
+
+# Remplacer translateText.warned par translateWarningShown
+sed -i 's/translateText\.warned/translateWarningShown/g' src/routes/livrets.ts
+
+# ============================================
+# CORRECTION 3 : src/routes/modules.ts
+# ============================================
+
+# Ajouter la variable avant la fonction translateText (ligne ~11)
+sed -i '11i\\/\/ Variable pour éviter les warnings répétés\nlet translateWarningShown = false;\n' src/routes/modules.ts
+
+# Remplacer translateText.warned par translateWarningShown
+sed -i 's/translateText\.warned/translateWarningShown/g' src/routes/modules.ts
+
+# ============================================
+# COMPILER ET REDÉMARRER
+# ============================================
+
+npm run build
+
+# Si compilation réussie :
+pm2 restart my-guidedigital-backend

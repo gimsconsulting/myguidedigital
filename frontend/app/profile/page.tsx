@@ -96,8 +96,26 @@ export default function ProfilePage() {
     setMessage('');
 
     try {
-      if (!password || password.length < 6) {
-        toast.error('Le mot de passe doit contenir au moins 6 caractères');
+      if (!password || password.length < 8) {
+        toast.error('Le mot de passe doit contenir au moins 8 caractères');
+        setIsLoading(false);
+        return;
+      }
+
+      // Vérifier la complexité du mot de passe côté client (le backend vérifiera aussi)
+      if (!/[A-Z]/.test(password)) {
+        toast.error('Le mot de passe doit contenir au moins une majuscule');
+        setIsLoading(false);
+        return;
+      }
+      if (!/[a-z]/.test(password)) {
+        toast.error('Le mot de passe doit contenir au moins une minuscule');
+        setIsLoading(false);
+        return;
+      }
+      if (!/[0-9]/.test(password)) {
+        toast.error('Le mot de passe doit contenir au moins un chiffre');
+        setIsLoading(false);
         return;
       }
 
@@ -288,8 +306,8 @@ export default function ProfilePage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
-                placeholder="Minimum 6 caractères"
+                minLength={8}
+                placeholder="Minimum 8 caractères, majuscule, minuscule, chiffre"
                 className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400"
               />
               <button
@@ -310,6 +328,9 @@ export default function ProfilePage() {
                 )}
               </button>
             </div>
+            <p className="mt-1 text-xs text-gray-500">
+              Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre
+            </p>
           </div>
           <Button type="submit" variant="primary" isLoading={isLoading}>
             Mettre à jour le mot de passe

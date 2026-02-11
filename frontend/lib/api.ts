@@ -66,6 +66,31 @@ const api = axios.create({
   },
 });
 
+// Variable pour stocker le token CSRF
+let csrfToken: string | null = null;
+
+// Fonction pour récupérer le token CSRF depuis le serveur
+export async function getCsrfToken(): Promise<string> {
+  if (csrfToken) {
+    return csrfToken;
+  }
+
+  try {
+    const baseURL = getBaseURL();
+    const response = await axios.get(`${baseURL}/csrf-token`);
+    csrfToken = response.data.csrfToken;
+    return csrfToken;
+  } catch (error) {
+    console.error('Erreur lors de la récupération du token CSRF:', error);
+    throw error;
+  }
+}
+
+// Fonction pour réinitialiser le token CSRF (utile après certaines actions)
+export function resetCsrfToken() {
+  csrfToken = null;
+}
+
 // Intercepteur pour définir le baseURL dynamiquement et ajouter le token JWT
 api.interceptors.request.use((config) => {
   // Si la requête contient FormData, ne pas définir Content-Type (axios le fera avec la boundary)
@@ -91,6 +116,17 @@ api.interceptors.request.use((config) => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+  }
+  
+  // Ajouter le token CSRF pour les routes qui en ont besoin
+  // Routes nécessitant CSRF: register, forgot-password, reset-password, delete user
+  const needsCsrf = config.url?.includes('/auth/register') ||
+                    config.url?.includes('/auth/forgot-password') ||
+                    config.url?.includes('/auth/reset-password') ||
+                    (config.method === 'delete' && config.url?.includes('/admin/users/'));
+  
+  if (needsCsrf && csrfToken) {
+    config.headers['X-CSRF-Token'] = csrfToken;
   }
   
   return config;

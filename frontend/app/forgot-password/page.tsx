@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { authApi } from '@/lib/api';
+import { authApi, getCsrfToken } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { toast } from '@/components/ui/Toast';
@@ -43,6 +43,9 @@ export default function ForgotPasswordPage() {
     setIsRequesting(true);
 
     try {
+      // Récupérer le token CSRF avant de soumettre
+      await getCsrfToken();
+      
       const response = await authApi.forgotPassword({ email });
       setRequestSent(true);
       
@@ -76,8 +79,22 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    if (!newPassword || newPassword.length < 6) {
-      setResetError('Le mot de passe doit contenir au moins 6 caractères');
+    if (!newPassword || newPassword.length < 8) {
+      setResetError('Le mot de passe doit contenir au moins 8 caractères');
+      return;
+    }
+
+    // Vérifier la complexité du mot de passe côté client (le backend vérifiera aussi)
+    if (!/[A-Z]/.test(newPassword)) {
+      setResetError('Le mot de passe doit contenir au moins une majuscule');
+      return;
+    }
+    if (!/[a-z]/.test(newPassword)) {
+      setResetError('Le mot de passe doit contenir au moins une minuscule');
+      return;
+    }
+    if (!/[0-9]/.test(newPassword)) {
+      setResetError('Le mot de passe doit contenir au moins un chiffre');
       return;
     }
 
@@ -89,6 +106,9 @@ export default function ForgotPasswordPage() {
     setIsResetting(true);
 
     try {
+      // Récupérer le token CSRF avant de soumettre
+      await getCsrfToken();
+      
       await authApi.resetPassword({ token, password: newPassword });
       toast.success('Mot de passe réinitialisé avec succès !');
       router.push('/login');
@@ -144,8 +164,8 @@ export default function ForgotPasswordPage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
-                  minLength={6}
-                  placeholder="Minimum 6 caractères"
+                  minLength={8}
+                  placeholder="Minimum 8 caractères, majuscule, minuscule, chiffre"
                   autoComplete="new-password"
                   name="new-password"
                   id="new-password"
@@ -169,6 +189,9 @@ export default function ForgotPasswordPage() {
                   )}
                 </button>
               </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre
+              </p>
             </div>
 
             <div className="w-full">
@@ -181,7 +204,7 @@ export default function ForgotPasswordPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={8}
                   placeholder="Répétez le mot de passe"
                   autoComplete="new-password"
                   name="confirm-password"

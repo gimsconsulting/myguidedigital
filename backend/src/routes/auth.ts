@@ -2,12 +2,42 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
-import { body, validationResult } from 'express-validator';
+import { body, validationResult, CustomValidator } from 'express-validator';
 import crypto from 'crypto';
 import { loginLimiter, registerLimiter } from '../middleware/rateLimiter';
+import { validateCsrfToken } from '../middleware/csrf';
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+// Validation personnalisée pour la complexité du mot de passe
+const passwordComplexity: CustomValidator = (value: string) => {
+  if (!value || typeof value !== 'string') {
+    throw new Error('Le mot de passe est requis');
+  }
+
+  // Minimum 8 caractères
+  if (value.length < 8) {
+    throw new Error('Le mot de passe doit contenir au moins 8 caractères');
+  }
+
+  // Au moins une majuscule
+  if (!/[A-Z]/.test(value)) {
+    throw new Error('Le mot de passe doit contenir au moins une majuscule');
+  }
+
+  // Au moins une minuscule
+  if (!/[a-z]/.test(value)) {
+    throw new Error('Le mot de passe doit contenir au moins une minuscule');
+  }
+
+  // Au moins un chiffre
+  if (!/[0-9]/.test(value)) {
+    throw new Error('Le mot de passe doit contenir au moins un chiffre');
+  }
+
+  return true;
+};
 
 // Interface pour stocker les tentatives de connexion échouées
 interface FailedLoginAttempt {
@@ -35,10 +65,10 @@ setInterval(() => {
   }
 }, 60 * 60 * 1000);
 
-// Register avec rate limiting
-router.post('/register', registerLimiter, [
+// Register avec rate limiting et CSRF
+router.post('/register', registerLimiter, validateCsrfToken, [
   body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 6 }),
+  body('password').custom(passwordComplexity),
   body('firstName').optional().trim(),
   body('lastName').optional().trim(),
 ], async (req: express.Request, res: express.Response) => {
@@ -119,7 +149,7 @@ router.post('/register', registerLimiter, [
   }
 });
 
-// Login avec rate limiting et verrouillage de compte
+// Login avec rate limiting et verrouillage de compte (pas de CSRF car JWT)
 router.post('/login', loginLimiter, [
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty(),
@@ -344,9 +374,9 @@ router.put('/profile', authenticateToken, [
   }
 });
 
-// Update password (authenticated user)
+// Update password (authenticated user) - Pas de CSRF car JWT protège déjà
 router.put('/password', authenticateToken, [
-  body('password').isLength({ min: 6 }),
+  body('password').custom(passwordComplexity),
 ], async (req: any, res: express.Response) => {
   try {
     const errors = validationResult(req);
@@ -369,8 +399,8 @@ router.put('/password', authenticateToken, [
   }
 });
 
-// Forgot password - Génère un token de réinitialisation
-router.post('/forgot-password', [
+// Forgot password - Génère un token de réinitialisation (CSRF pour route publique)
+router.post('/forgot-password', validateCsrfToken, [
   body('email').isEmail().normalizeEmail(),
 ], async (req: express.Request, res: express.Response) => {
   try {
@@ -463,10 +493,10 @@ router.post('/forgot-password', [
   }
 });
 
-// Reset password - Réinitialise le mot de passe avec un token valide
-router.post('/reset-password', [
+// Reset password - Réinitialise le mot de passe avec un token valide (CSRF pour route publique)
+router.post('/reset-password', validateCsrfToken, [
   body('token').notEmpty().withMessage('Token de réinitialisation requis'),
-  body('password').isLength({ min: 6 }).withMessage('Le mot de passe doit contenir au moins 6 caractères'),
+  body('password').custom(passwordComplexity),
 ], async (req: express.Request, res: express.Response) => {
   try {
     const errors = validationResult(req);

@@ -8,6 +8,9 @@ import axios from 'axios';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Variable pour éviter les warnings répétés
+let translateWarningShown = false;
+
 // Fonction utilitaire pour traduire un texte
 async function translateText(text: string, sourceLang: string, targetLang: string): Promise<string> {
   if (!text || text.trim() === '' || sourceLang === targetLang) {
@@ -17,9 +20,9 @@ async function translateText(text: string, sourceLang: string, targetLang: strin
   const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
   if (!apiKey) {
     // Ne logger qu'une seule fois au démarrage, pas à chaque appel
-    if (!translateText.warned) {
+    if (!translateWarningShown) {
       console.warn('⚠️ GOOGLE_TRANSLATE_API_KEY non configurée - Les traductions seront désactivées');
-      translateText.warned = true;
+      translateWarningShown = true;
     }
     return text;
   }

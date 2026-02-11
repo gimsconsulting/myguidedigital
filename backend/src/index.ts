@@ -17,6 +17,9 @@ import translateRoutes from './routes/translate';
 import adminRoutes from './routes/admin';
 import chatDocumentsRoutes from './routes/chat-documents';
 
+// Import CSRF middleware
+import { getCsrfToken, validateCsrfToken } from './middleware/csrf';
+
 // Charger le fichier .env : essayer racine du projet puis backend/.env
 const fs = require('fs');
 const candidates = [
@@ -93,14 +96,14 @@ app.use(helmet({
   noSniff: true,
   // Origin Agent Cluster
   originAgentCluster: true,
-  // Permissions Policy (anciennement Feature Policy)
-  permissionsPolicy: {
-    features: {
-      geolocation: ["'self'"],
-      microphone: ["'none'"],
-      camera: ["'none'"],
-    },
-  },
+  // Permissions Policy (anciennement Feature Policy) - Désactivé car non supporté dans cette version de Helmet
+  // permissionsPolicy: {
+  //   features: {
+  //     geolocation: ["'self'"],
+  //     microphone: ["'none'"],
+  //     camera: ["'none'"],
+  //   },
+  // },
   // Referrer Policy
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   // XSS Protection (déprécié mais gardé pour compatibilité)
@@ -208,7 +211,12 @@ app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Route pour obtenir le token CSRF (accessible sans authentification)
+app.get('/api/csrf-token', getCsrfToken);
+
 // Routes
+// Note: Les routes authentifiées avec JWT n'ont pas besoin de CSRF car les tokens JWT ne sont pas dans des cookies
+// Mais on applique CSRF aux routes publiques critiques (login, register, password reset)
 app.use('/api/auth', authRoutes);
 app.use('/api/livrets', livretRoutes);
 app.use('/api/modules', moduleRoutes);

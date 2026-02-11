@@ -2,15 +2,66 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from './auth';
 import jwt from 'jsonwebtoken';
+import { query, param, validationResult } from 'express-validator';
+import { validateCsrfToken } from '../middleware/csrf';
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+// Valeurs valides pour les enums
+const VALID_PLANS = ['TRIAL', 'MONTHLY', 'YEARLY', 'LIFETIME'];
+const VALID_SUBSCRIPTION_STATUSES = ['ACTIVE', 'EXPIRED', 'CANCELLED'];
+const VALID_INVOICE_STATUSES = ['PENDING', 'PAID', 'FAILED', 'CANCELLED'];
+
+// Fonction helper pour logger les actions sensibles des admins
+function logAdminAction(
+  adminId: string,
+  adminEmail: string,
+  action: string,
+  details: Record<string, any> = {},
+  req: express.Request
+) {
+  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const userAgent = req.get('user-agent') || 'unknown';
+  const timestamp = new Date().toISOString();
+
+  const logEntry = {
+    timestamp,
+    admin: {
+      id: adminId,
+      email: adminEmail,
+    },
+    action,
+    details,
+    request: {
+      ip,
+      userAgent,
+      method: req.method,
+      path: req.path,
+      query: req.query,
+    },
+  };
+
+  // Logger avec un format structuré pour faciliter l'analyse
+  console.log('🔐 [ADMIN ACTION]', JSON.stringify(logEntry, null, 2));
+
+  // En production, vous pourriez aussi envoyer ces logs vers un service externe
+  // (ex: Winston, Logstash, CloudWatch, etc.)
+}
 
 // Middleware pour vérifier si l'utilisateur est admin
 const requireAdmin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    
     if (!authHeader) {
+      console.warn('🚫 [SECURITY] Tentative d\'accès admin sans token:', {
+        ip,
+        path: req.path,
+        method: req.method,
+        timestamp: new Date().toISOString(),
+      });
       return res.status(401).json({ message: 'Non autorisé' });
     }
 
@@ -21,13 +72,41 @@ const requireAdmin = async (req: express.Request, res: express.Response, next: e
       where: { id: decoded.userId }
     });
 
-    if (!user || user.role !== 'ADMIN') {
+    if (!user) {
+      console.warn('🚫 [SECURITY] Tentative d\'accès admin avec utilisateur inexistant:', {
+        ip,
+        userId: decoded.userId,
+        path: req.path,
+        method: req.method,
+        timestamp: new Date().toISOString(),
+      });
+      return res.status(403).json({ message: 'Accès refusé. Administrateur requis.' });
+    }
+
+    if (user.role !== 'ADMIN') {
+      console.warn('🚫 [SECURITY] Tentative d\'accès admin par utilisateur non-admin:', {
+        ip,
+        userId: user.id,
+        userEmail: user.email,
+        userRole: user.role,
+        path: req.path,
+        method: req.method,
+        timestamp: new Date().toISOString(),
+      });
       return res.status(403).json({ message: 'Accès refusé. Administrateur requis.' });
     }
 
     (req as any).user = user;
     next();
   } catch (error) {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    console.warn('🚫 [SECURITY] Tentative d\'accès admin avec token invalide:', {
+      ip,
+      path: req.path,
+      method: req.method,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+    });
     return res.status(401).json({ message: 'Token invalide' });
   }
 };
@@ -35,6 +114,14 @@ const requireAdmin = async (req: express.Request, res: express.Response, next: e
 // Vue d'ensemble - KPIs
 router.get('/overview', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {
+    const admin = (req as any).user;
+    logAdminAction(
+      admin.id,
+      admin.email,
+      'VIEW_OVERVIEW',
+      {},
+      req
+    );
     // Total utilisateurs
     const totalUsers = await prisma.user.count();
     const activeUsers = await prisma.user.count({
@@ -164,9 +251,35 @@ router.get('/overview', authenticateToken, requireAdmin, async (req: express.Req
 });
 
 // Liste des utilisateurs
-router.get('/users', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+router.get('/users', authenticateToken, requireAdmin, [
+  query('page').optional().isInt({ min: 1 }).withMessage('La page doit être un entier positif'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('La limite doit être entre 1 et 100'),
+  query('search').optional().trim().isLength({ max: 100 }).withMessage('La recherche ne peut pas dépasser 100 caractères'),
+  query('plan').optional().isIn(VALID_PLANS).withMessage(`Le plan doit être l'un des suivants: ${VALID_PLANS.join(', ')}`),
+  query('status').optional().isIn(VALID_SUBSCRIPTION_STATUSES).withMessage(`Le statut doit être l'un des suivants: ${VALID_SUBSCRIPTION_STATUSES.join(', ')}`),
+], async (req: express.Request, res: express.Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Données invalides',
+        errors: errors.array() 
+      });
+    }
+
+    const admin = (req as any).user;
     const { page = 1, limit = 20, search, plan, status } = req.query;
+    
+    logAdminAction(
+      admin.id,
+      admin.email,
+      'VIEW_USERS_LIST',
+      {
+        filters: { search, plan, status },
+        pagination: { page, limit },
+      },
+      req
+    );
     const skip = (Number(page) - 1) * Number(limit);
 
     const where: any = {};
@@ -233,14 +346,31 @@ router.get('/users', authenticateToken, requireAdmin, async (req: express.Reques
   }
 });
 
-// Supprimer un utilisateur
-router.delete('/users/:userId', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+// Supprimer un utilisateur (action critique - CSRF même avec JWT pour double protection)
+router.delete('/users/:userId', authenticateToken, requireAdmin, validateCsrfToken, [
+  param('userId').notEmpty().withMessage('L\'ID utilisateur est requis').isUUID().withMessage('L\'ID utilisateur doit être un UUID valide'),
+], async (req: express.Request, res: express.Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Données invalides',
+        errors: errors.array() 
+      });
+    }
+
     const { userId } = req.params;
     const currentUser = (req as any).user;
 
     // Empêcher la suppression de soi-même
     if (userId === currentUser.id) {
+      logAdminAction(
+        currentUser.id,
+        currentUser.email,
+        'DELETE_USER_ATTEMPT_SELF',
+        { attemptedUserId: userId },
+        req
+      );
       return res.status(400).json({ message: 'Vous ne pouvez pas supprimer votre propre compte' });
     }
 
@@ -255,8 +385,36 @@ router.delete('/users/:userId', authenticateToken, requireAdmin, async (req: exp
     });
 
     if (!user) {
+      logAdminAction(
+        currentUser.id,
+        currentUser.email,
+        'DELETE_USER_NOT_FOUND',
+        { attemptedUserId: userId },
+        req
+      );
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
+
+    // Logger AVANT la suppression (action critique)
+    logAdminAction(
+      currentUser.id,
+      currentUser.email,
+      'DELETE_USER',
+      {
+        deletedUser: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+        associatedData: {
+          livretsCount: user.livrets.length,
+          subscriptionsCount: user.subscriptions.length,
+          invoicesCount: user.invoices.length,
+        },
+      },
+      req
+    );
 
     // Supprimer l'utilisateur (les relations seront supprimées en cascade grâce à onDelete: Cascade dans le schema)
     await prisma.user.delete({
@@ -277,9 +435,28 @@ router.delete('/users/:userId', authenticateToken, requireAdmin, async (req: exp
 });
 
 // Statistiques financières
-router.get('/revenue', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+router.get('/revenue', authenticateToken, requireAdmin, [
+  query('period').optional().isInt({ min: 1, max: 60 }).withMessage('La période doit être entre 1 et 60 mois'),
+], async (req: express.Request, res: express.Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Données invalides',
+        errors: errors.array() 
+      });
+    }
+
+    const admin = (req as any).user;
     const { period = '12' } = req.query; // Nombre de mois
+    
+    logAdminAction(
+      admin.id,
+      admin.email,
+      'VIEW_REVENUE_STATS',
+      { period },
+      req
+    );
     const months = Number(period);
 
     // Revenus mensuels
@@ -343,9 +520,34 @@ router.get('/revenue', authenticateToken, requireAdmin, async (req: express.Requ
 });
 
 // Liste des abonnements
-router.get('/subscriptions', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+router.get('/subscriptions', authenticateToken, requireAdmin, [
+  query('page').optional().isInt({ min: 1 }).withMessage('La page doit être un entier positif'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('La limite doit être entre 1 et 100'),
+  query('plan').optional().isIn(VALID_PLANS).withMessage(`Le plan doit être l'un des suivants: ${VALID_PLANS.join(', ')}`),
+  query('status').optional().isIn(VALID_SUBSCRIPTION_STATUSES).withMessage(`Le statut doit être l'un des suivants: ${VALID_SUBSCRIPTION_STATUSES.join(', ')}`),
+], async (req: express.Request, res: express.Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Données invalides',
+        errors: errors.array() 
+      });
+    }
+
+    const admin = (req as any).user;
     const { page = 1, limit = 20, plan, status } = req.query;
+    
+    logAdminAction(
+      admin.id,
+      admin.email,
+      'VIEW_SUBSCRIPTIONS_LIST',
+      {
+        filters: { plan, status },
+        pagination: { page, limit },
+      },
+      req
+    );
     const skip = (Number(page) - 1) * Number(limit);
 
     const where: any = {};
@@ -389,6 +591,15 @@ router.get('/subscriptions', authenticateToken, requireAdmin, async (req: expres
 // Statistiques des livrets
 router.get('/livrets', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {
+    const admin = (req as any).user;
+    
+    logAdminAction(
+      admin.id,
+      admin.email,
+      'VIEW_LIVRETS_STATS',
+      {},
+      req
+    );
     const totalLivrets = await prisma.livret.count();
     const activeLivrets = await prisma.livret.count({ where: { isActive: true } });
     
@@ -453,9 +664,33 @@ router.get('/livrets', authenticateToken, requireAdmin, async (req: express.Requ
 });
 
 // Liste des factures
-router.get('/invoices', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+router.get('/invoices', authenticateToken, requireAdmin, [
+  query('page').optional().isInt({ min: 1 }).withMessage('La page doit être un entier positif'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('La limite doit être entre 1 et 100'),
+  query('status').optional().isIn(VALID_INVOICE_STATUSES).withMessage(`Le statut doit être l'un des suivants: ${VALID_INVOICE_STATUSES.join(', ')}`),
+], async (req: express.Request, res: express.Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Données invalides',
+        errors: errors.array() 
+      });
+    }
+
+    const admin = (req as any).user;
     const { page = 1, limit = 20, status } = req.query;
+    
+    logAdminAction(
+      admin.id,
+      admin.email,
+      'VIEW_INVOICES_LIST',
+      {
+        filters: { status },
+        pagination: { page, limit },
+      },
+      req
+    );
     const skip = (Number(page) - 1) * Number(limit);
 
     const where: any = {};

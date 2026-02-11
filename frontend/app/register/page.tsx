@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
-import { authApi } from '@/lib/api';
+import { authApi, getCsrfToken } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -29,6 +29,9 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
+      // Récupérer le token CSRF avant de soumettre
+      await getCsrfToken();
+      
       console.log('Tentative d\'inscription avec:', { email: formData.email, firstName: formData.firstName });
       const response = await authApi.register(formData);
       console.log('Réponse reçue:', response);
@@ -133,8 +136,8 @@ export default function RegisterPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                placeholder={t('register.minLength', 'Minimum 6 caractères')}
-                minLength={6}
+                placeholder="Minimum 8 caractères, majuscule, minuscule, chiffre"
+                minLength={8}
                 className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400"
               />
               <button
@@ -155,6 +158,9 @@ export default function RegisterPage() {
                 )}
               </button>
             </div>
+            <p className="mt-1 text-xs text-gray-500">
+              Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre
+            </p>
           </div>
 
           <Button
