@@ -673,8 +673,11 @@ export default function GuidePage() {
           </div>
         </div>
 
-        {/* Widget de chat */}
-        <ChatWidget />
+        {/* Widget de chat IA */}
+        <ChatWidget 
+          livretId={livret.id} 
+          hostName={livret.user ? `${livret.user.firstName || ''} ${livret.user.lastName || ''}`.trim() : undefined}
+        />
       </div>
     </div>
   );

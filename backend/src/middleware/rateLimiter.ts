@@ -48,6 +48,28 @@ export const registerLimiter = rateLimit({
   },
 });
 
+// Rate limiter pour le chatbot IA (éviter l'abus de l'API OpenAI)
+export const chatLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: isDevelopment ? 50 : 15, // 15 messages par minute en production
+  message: {
+    error: 'Trop de messages. Veuillez patienter quelques instants.',
+    retryAfter: 60,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    console.warn(`⚠️ [RATE LIMIT] Trop de messages chat depuis IP: ${ip}`);
+    res.status(429).json({
+      error: 'Trop de messages. Veuillez patienter quelques instants avant de renvoyer un message.',
+      message: 'Trop de messages. Veuillez patienter quelques instants.',
+      retryAfter: 60,
+      fallback: true,
+    });
+  },
+});
+
 // Rate limiter général pour les routes d'authentification
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

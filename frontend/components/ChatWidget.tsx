@@ -1,69 +1,110 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { chatApi } from '@/lib/api';
 
-export default function ChatWidget() {
+interface ChatMessage {
+  text: string;
+  sender: 'user' | 'bot';
+  isLoading?: boolean;
+}
+
+interface ChatWidgetProps {
+  livretId: string;
+  hostName?: string;
+}
+
+export default function ChatWidget({ livretId, hostName }: ChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Array<{ text: string; sender: 'user' | 'bot' }>>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const getBotResponse = (userMessage: string): string => {
-    const message = userMessage.toLowerCase().trim();
-    
-    // Réponses contextuelles selon le message
-    if (message.includes('bonjour') || message.includes('salut') || message.includes('hello')) {
-      return 'Bonjour ! 👋 Comment puis-je vous aider aujourd\'hui ?';
-    }
-    if (message.includes('wifi') || message.includes('internet') || message.includes('connexion')) {
-      return 'Pour les informations Wi-Fi, consultez le module "Wi-fi" dans le guide. Vous y trouverez le mot de passe et les instructions de connexion.';
-    }
-    if (message.includes('arrivée') || message.includes('check-in') || message.includes('arriver')) {
-      return 'Pour les informations sur votre arrivée, consultez le module "Infos arrivée" dans le guide.';
-    }
-    if (message.includes('départ') || message.includes('check-out') || message.includes('partir')) {
-      return 'Pour les informations sur votre départ, consultez le module "Infos départ" dans le guide.';
-    }
-    if (message.includes('merci') || message.includes('thanks')) {
-      return 'De rien ! N\'hésitez pas si vous avez d\'autres questions. 😊';
-    }
-    if (message.includes('urgence') || message.includes('urgent') || message.includes('problème')) {
-      return 'Pour toute urgence, consultez le module "Sécurité et secours" dans le guide ou contactez directement votre hôte.';
-    }
-    
-    // Réponse par défaut avec variations
-    const defaultResponses = [
-      'Merci pour votre message ! Je suis là pour vous aider. Pour plus d\'informations, consultez les différents modules du guide.',
-      'Je comprends votre question. N\'hésitez pas à explorer les modules du guide pour trouver les informations dont vous avez besoin.',
-      'Pour toute question spécifique, je vous recommande de consulter les modules correspondants dans le guide. Si besoin, contactez directement votre hôte.',
-    ];
-    
-    return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-  };
+  // Historique de conversation pour le contexte OpenAI
+  const [conversationHistory, setConversationHistory] = useState<Array<{ role: string; content: string }>>([]);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+  // Auto-scroll vers le bas quand de nouveaux messages arrivent
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Focus sur l'input quand le chat s'ouvre
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [isOpen]);
+
+  const handleSend = async () => {
+    const trimmedMessage = inputValue.trim();
+    if (!trimmedMessage || isTyping) return;
 
     // Ajouter le message de l'utilisateur
-    const userMessage = { text: inputValue, sender: 'user' as const };
-    setMessages([...messages, userMessage]);
-    const currentInput = inputValue;
+    const userMessage: ChatMessage = { text: trimmedMessage, sender: 'user' };
+    setMessages(prev => [...prev, userMessage]);
     setInputValue('');
+    setIsTyping(true);
 
-    // Réponse automatique avec délai réaliste
-    setTimeout(() => {
-      const botMessage = {
-        text: getBotResponse(currentInput),
-        sender: 'bot' as const,
-      };
-      setMessages((prev) => [...prev, botMessage]);
-    }, 800 + Math.random() * 400); // Délai variable entre 800ms et 1200ms
+    // Mettre à jour l'historique de conversation
+    const updatedHistory = [
+      ...conversationHistory,
+      { role: 'user', content: trimmedMessage }
+    ];
+
+    try {
+      // Appeler l'API du chatbot
+      const response = await chatApi.sendMessage(livretId, {
+        message: trimmedMessage,
+        conversationHistory: updatedHistory.slice(-10), // Garder les 10 derniers messages
+      });
+
+      const botResponseText = response.data.response;
+
+      // Ajouter la réponse du bot
+      const botMessage: ChatMessage = { text: botResponseText, sender: 'bot' };
+      setMessages(prev => [...prev, botMessage]);
+
+      // Mettre à jour l'historique
+      setConversationHistory([
+        ...updatedHistory,
+        { role: 'assistant', content: botResponseText }
+      ]);
+
+    } catch (error: any) {
+      console.error('Chat error:', error);
+
+      // Réponse de fallback si l'API ne fonctionne pas
+      let fallbackMessage = 'Désolé, je ne suis pas disponible pour le moment. N\'hésitez pas à contacter directement votre hôte.';
+      
+      if (error.response?.data?.message) {
+        fallbackMessage = error.response.data.message;
+      }
+
+      const botMessage: ChatMessage = { text: fallbackMessage, sender: 'bot' };
+      setMessages(prev => [...prev, botMessage]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
   };
 
   return (
     <>
       {/* Bouton flottant du chat */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="fixed bottom-6 right-6 z-50 bg-primary hover:bg-primary/90 text-white rounded-full p-4 shadow-2xl transition-all transform hover:scale-110"
         aria-label="Ouvrir le chat"
       >
@@ -80,67 +121,127 @@ export default function ChatWidget() {
 
       {/* Fenêtre de chat */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 h-96 bg-white rounded-lg shadow-2xl flex flex-col border border-gray-200">
+        <div className="fixed bottom-24 right-6 z-50 w-[340px] sm:w-96 h-[480px] bg-white rounded-2xl shadow-2xl flex flex-col border border-gray-200 overflow-hidden">
           {/* En-tête */}
-          <div className="bg-primary text-white p-4 rounded-t-lg flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                <span className="text-lg">😊</span>
+          <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <span className="text-xl">🤖</span>
               </div>
               <div>
-                <div className="font-semibold">Assistance</div>
-                <div className="text-xs text-white/80">En ligne</div>
+                <div className="font-semibold text-sm">Assistant du logement</div>
+                <div className="text-xs text-white/80 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-400 rounded-full inline-block"></span>
+                  En ligne
+                </div>
               </div>
             </div>
+            <button
+              onClick={handleToggle}
+              className="text-white/80 hover:text-white transition-colors"
+              aria-label="Fermer le chat"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
             {messages.length === 0 ? (
               <div className="text-center text-gray-500 text-sm py-8">
-                <p>Bonjour ! 👋</p>
-                <p className="mt-2">Comment puis-je vous aider ?</p>
+                <div className="text-4xl mb-3">👋</div>
+                <p className="font-medium text-gray-700">Bonjour !</p>
+                <p className="mt-1 text-gray-500">
+                  Comment puis-je vous aider pendant votre séjour ?
+                </p>
+                <div className="mt-4 space-y-2">
+                  {[
+                    '📶 Comment me connecter au Wi-Fi ?',
+                    '🔐 Quels sont les codes d\'accès ?',
+                    '🍽️ Y a-t-il des restaurants à proximité ?',
+                  ].map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setInputValue(suggestion.replace(/^[^\s]+\s/, ''));
+                      }}
+                      className="block w-full text-left text-xs bg-white border border-gray-200 rounded-lg px-3 py-2 hover:bg-primary/5 hover:border-primary/30 transition-colors text-gray-600"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
               </div>
             ) : (
-              messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
+              <>
+                {messages.map((msg, index) => (
                   <div
-                    className={`max-w-[80%] rounded-lg px-3 py-2 ${
-                      msg.sender === 'user'
-                        ? 'bg-primary text-white'
-                        : 'bg-gray-100 text-gray-900'
-                    }`}
+                    key={index}
+                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <p className="text-sm">{msg.text}</p>
+                    {msg.sender === 'bot' && (
+                      <div className="flex-shrink-0 w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center mr-2 mt-1">
+                        <span className="text-xs">🤖</span>
+                      </div>
+                    )}
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
+                        msg.sender === 'user'
+                          ? 'bg-primary text-white rounded-br-md'
+                          : 'bg-white text-gray-900 shadow-sm border border-gray-100 rounded-bl-md'
+                      }`}
+                    >
+                      <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="flex-shrink-0 w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center mr-2 mt-1">
+                      <span className="text-xs">🤖</span>
+                    </div>
+                    <div className="bg-white text-gray-500 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm border border-gray-100">
+                      <div className="flex space-x-1.5">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
-          <div className="border-t border-gray-200 p-3">
+          <div className="border-t border-gray-200 p-3 bg-white">
             <div className="flex space-x-2">
               <input
+                ref={inputRef}
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                onKeyDown={handleKeyDown}
                 placeholder="Tapez votre message..."
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm text-gray-900 bg-white placeholder:text-gray-400"
+                disabled={isTyping}
+                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm text-gray-900 bg-gray-50 placeholder:text-gray-400 disabled:opacity-50"
               />
               <button
                 onClick={handleSend}
-                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                disabled={!inputValue.trim() || isTyping}
+                className="bg-primary text-white px-4 py-2.5 rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
               </button>
             </div>
+            <p className="text-[10px] text-gray-400 text-center mt-1.5">
+              Propulsé par IA • Les réponses peuvent ne pas être exhaustives
+            </p>
           </div>
         </div>
       )}

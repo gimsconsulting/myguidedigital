@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import path from 'path';
 import helmet from 'helmet';
@@ -16,6 +17,7 @@ import uploadRoutes from './routes/upload';
 import translateRoutes from './routes/translate';
 import adminRoutes from './routes/admin';
 import chatDocumentsRoutes from './routes/chat-documents';
+import chatRoutes from './routes/chat';
 
 // Import CSRF middleware
 import { getCsrfToken, validateCsrfToken } from './middleware/csrf';
@@ -51,6 +53,10 @@ if (process.env.NODE_ENV === 'development') {
 
 const app = express();
 const prisma = new PrismaClient();
+
+// Configuration du proxy trust pour express-rate-limit derrière Nginx
+// IMPORTANT: Doit être configuré AVANT les middlewares de rate limiting
+app.set('trust proxy', true);
 
 // Configuration Helmet pour les headers de sécurité HTTP
 // IMPORTANT: Helmet doit être configuré AVANT les autres middlewares
@@ -109,6 +115,9 @@ app.use(helmet({
   // XSS Protection (déprécié mais gardé pour compatibilité)
   xssFilter: true,
 }));
+
+// Cookie parser pour les cookies (nécessaire pour CSRF sessionId)
+app.use(cookieParser());
 
 // Augmenter la limite de taille du body pour les uploads de fichiers (20MB)
 app.use(express.json({ limit: '20mb' }));
@@ -227,6 +236,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/translate', translateRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/chat-documents', chatDocumentsRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Error handling middleware - Gestion améliorée des erreurs
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -64,27 +64,50 @@ const api = axios.create({
     // Bypass localtunnel warning page
     'bypass-tunnel-reminder': 'true',
   },
+  withCredentials: true, // Inclure les cookies dans les requêtes (nécessaire pour CSRF sessionId)
 });
 
 // Variable pour stocker le token CSRF
 let csrfToken: string | null = null;
+// Variable pour stocker le sessionId CSRF
+let csrfSessionId: string | null = null;
 
 // Fonction pour récupérer le token CSRF depuis le serveur
 export async function getCsrfToken(): Promise<string> {
-  if (csrfToken) {
+  // CRITIQUE : Vérifier que les deux (token ET sessionId) sont présents
+  if (csrfToken && csrfSessionId) {
     return csrfToken;
+  }
+  
+  // Si seulement le token existe mais pas le sessionId, on doit récupérer à nouveau
+  if (csrfToken && !csrfSessionId) {
+    console.warn('⚠️ [CSRF] Token présent mais sessionId manquant, récupération nécessaire');
   }
 
   try {
     const baseURL = getBaseURL();
     const response = await axios.get(`${baseURL}/csrf-token`);
     const token = response.data.csrfToken;
+    const sessionId = response.data.sessionId;
     
     if (!token || typeof token !== 'string') {
       throw new Error('Token CSRF invalide reçu du serveur');
     }
     
+    // Vérifier que le sessionId est une string valide
+    if (!sessionId || typeof sessionId !== 'string') {
+      console.warn('⚠️ [CSRF] SessionId invalide ou manquant dans la réponse:', sessionId);
+    }
+    
     csrfToken = token;
+    csrfSessionId = (sessionId && typeof sessionId === 'string') ? sessionId : null;
+    
+    // Vérification finale : s'assurer que le sessionId est bien stocké
+    if (!csrfSessionId && sessionId) {
+      console.warn('⚠️ [CSRF] SessionId reçu mais non stocké:', sessionId);
+      csrfSessionId = sessionId;
+    }
+    
     return csrfToken;
   } catch (error) {
     console.error('Erreur lors de la récupération du token CSRF:', error);
@@ -95,6 +118,7 @@ export async function getCsrfToken(): Promise<string> {
 // Fonction pour réinitialiser le token CSRF (utile après certaines actions)
 export function resetCsrfToken() {
   csrfToken = null;
+  csrfSessionId = null;
 }
 
 // Intercepteur pour définir le baseURL dynamiquement et ajouter le token JWT
@@ -132,15 +156,23 @@ api.interceptors.request.use(async (config) => {
                     (config.method === 'delete' && config.url?.includes('/admin/users/'));
   
   if (needsCsrf) {
-    if (!csrfToken) {
-      console.warn('⚠️ [CSRF] Token CSRF manquant pour:', config.url, '- Tentative de récupération...');
+    if (!csrfToken || !csrfSessionId) {
+      console.warn('⚠️ [CSRF] Token CSRF ou sessionId manquant pour:', config.url, '- Tentative de récupération...');
       // Essayer de récupérer le token si manquant
       try {
         const response = await axios.get(`${baseURL}/csrf-token`);
         const token = response.data.csrfToken;
+        const sessionId = response.data.sessionId;
         if (token && typeof token === 'string') {
           csrfToken = token;
-          console.log('✅ [CSRF] Token CSRF récupéré automatiquement');
+          
+          // CRITIQUE : Récupérer aussi le sessionId !
+          if (sessionId && typeof sessionId === 'string') {
+            csrfSessionId = sessionId;
+            console.log('✅ [CSRF] Token CSRF et sessionId récupérés automatiquement');
+          } else {
+            console.warn('⚠️ [CSRF] SessionId invalide ou manquant dans la réponse');
+          }
         } else {
           console.error('❌ [CSRF] Token CSRF invalide reçu du serveur');
         }
@@ -149,8 +181,18 @@ api.interceptors.request.use(async (config) => {
       }
     }
     if (csrfToken) {
-      config.headers['X-CSRF-Token'] = csrfToken;
-      console.log('🔐 [CSRF] Token CSRF ajouté au header pour:', config.url);
+      // Utiliser la casse exacte attendue par Express (minuscules)
+      config.headers['x-csrf-token'] = csrfToken;
+      
+      // Ajouter aussi le sessionId dans un header séparé (solution hybride)
+      if (csrfSessionId) {
+        config.headers['x-csrf-session-id'] = csrfSessionId;
+        console.log('🔐 [CSRF] Token CSRF et sessionId ajoutés aux headers pour:', config.url);
+      } else {
+        console.warn('⚠️ [CSRF] Token CSRF ajouté mais sessionId manquant pour:', config.url);
+      }
+    } else {
+      console.error('❌ [CSRF] Token CSRF manquant pour:', config.url);
     }
   }
   
@@ -174,20 +216,48 @@ api.interceptors.response.use(
         }
       });
     } else {
+      // Log détaillé avec distinction 401 vs 403
+      const status = error.response?.status;
+      const errorData = error.response?.data;
+      const isCsrfError = status === 403 && (errorData?.code === 'CSRF_TOKEN_MISSING' || errorData?.code === 'CSRF_TOKEN_INVALID' || errorData?.code === 'CSRF_SESSION_MISSING');
+      
       console.error('API Error:', {
-        status: error.response?.status,
+        status: status,
         statusText: error.response?.statusText,
-        data: error.response?.data,
-        url: error.config?.baseURL + error.config?.url
+        data: errorData,
+        url: error.config?.baseURL + error.config?.url,
+        isCsrfError: isCsrfError,
+        errorCode: errorData?.code,
+        errorMessage: errorData?.message
       });
+      
+      // Log spécifique pour les erreurs CSRF
+      if (isCsrfError) {
+        console.error('🚫 [CSRF] Erreur CSRF détectée:', {
+          code: errorData?.code,
+          message: errorData?.message,
+          url: error.config?.baseURL + error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers
+        });
+      }
     }
     
     // Ne pas rediriger vers login pour les routes publiques
     const isPublicRoute = error.config?.url?.includes('/livrets/public/');
     
     // Gérer les erreurs d'authentification (401) et d'autorisation (403)
-    if ((error.response?.status === 401 || error.response?.status === 403) && !isPublicRoute) {
-      // Token expiré ou invalide
+    // Mais NE PAS traiter les erreurs CSRF (403 avec code CSRF_*) comme des erreurs d'authentification
+    const status = error.response?.status;
+    const errorData = error.response?.data;
+    const isCsrfError = status === 403 && errorData && (
+      errorData.code === 'CSRF_TOKEN_MISSING' || 
+      errorData.code === 'CSRF_TOKEN_INVALID' || 
+      errorData.code === 'CSRF_SESSION_MISSING'
+    );
+    
+    if ((status === 401 || (status === 403 && !isCsrfError)) && !isPublicRoute) {
+      // Token expiré ou invalide (mais pas erreur CSRF)
       if (typeof window !== 'undefined') {
         // Nettoyer le token et le store
         localStorage.removeItem('token');
@@ -203,6 +273,9 @@ api.interceptors.response.use(
           window.location.replace('/login');
         }
       }
+    } else if (isCsrfError) {
+      // Erreur CSRF : ne pas rediriger, juste logger
+      console.error('🚫 [CSRF] Erreur CSRF - ne pas rediriger vers login');
     }
     
     return Promise.reject(error);
@@ -211,8 +284,19 @@ api.interceptors.response.use(
 
 // Auth
 export const authApi = {
-  register: (data: { email: string; password: string; firstName?: string; lastName?: string }) =>
-    api.post('/auth/register', data),
+  register: async (data: { email: string; password: string; firstName?: string; lastName?: string }) => {
+    // S'assurer que le token CSRF est récupéré avant l'envoi
+    if (!csrfToken || !csrfSessionId) {
+      await getCsrfToken();
+    }
+    
+    // Vérifier une dernière fois que le token est disponible avant d'envoyer
+    if (!csrfToken) {
+      throw new Error('Token CSRF non disponible. Veuillez rafraîchir la page.');
+    }
+    
+    return api.post('/auth/register', data);
+  },
   login: (data: { email: string; password: string }) =>
     api.post('/auth/login', data),
   getMe: () => api.get('/auth/me'),
@@ -227,11 +311,8 @@ export const uploadApi = {
   uploadProfilePhoto: (file: File) => {
     const formData = new FormData();
     formData.append('photo', file);
-    return api.post('/upload/profile-photo', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    // NE PAS définir Content-Type manuellement - axios le fera automatiquement avec la bonne boundary
+    return api.post('/upload/profile-photo', formData);
   },
 };
 
@@ -299,6 +380,8 @@ export const adminApi = {
   getOverview: () => api.get('/admin/overview'),
   getUsers: (params?: { page?: number; limit?: number; search?: string; plan?: string; status?: string }) =>
     api.get('/admin/users', { params }),
+  updateUserRole: (userId: string, role: 'USER' | 'ADMIN') => 
+    api.put(`/admin/users/${userId}/role`, { role }),
   deleteUser: (userId: string) => api.delete(`/admin/users/${userId}`),
   getRevenue: (params?: { period?: number }) =>
     api.get('/admin/revenue', { params }),
@@ -317,6 +400,12 @@ export const chatDocumentsApi = {
     api.put(`/chat-documents/${documentId}`, data),
   getAll: (livretId: string) => api.get(`/chat-documents/${livretId}`),
   delete: (documentId: string) => api.delete(`/chat-documents/${documentId}`),
+};
+
+// API pour le chatbot IA
+export const chatApi = {
+  sendMessage: (livretId: string, data: { message: string; conversationHistory?: Array<{ role: string; content: string }> }) =>
+    api.post(`/chat/${livretId}`, data),
 };
 
 export default api;
