@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/lib/store';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/Button';
 import LanguageSelector from './LanguageSelector';
@@ -75,13 +75,19 @@ function AuthenticatedLayout({
   const [mounted, setMounted] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
+  const authCheckedRef = useRef(false);
+  const refreshedRef = useRef(false);
   
-  // Vérifier l'authentification de manière synchrone
+  // Vérifier l'authentification — utiliser useRef pour éviter la boucle infinie
+  // NE PAS mettre isAuthenticated ou user dans les dépendances car setAuth les modifie
   useEffect(() => {
+    // Si déjà vérifié, ne rien faire
+    if (authCheckedRef.current) return;
+    
     let timeoutId: NodeJS.Timeout | null = null;
     let checkInterval: NodeJS.Timeout | null = null;
     
-    // Vérifier DIRECTEMENT dans auth-storage de manière synchrone
+    // Vérifier DIRECTEMENT dans auth-storage
     if (typeof window !== 'undefined') {
       const authStorage = localStorage.getItem('auth-storage');
       if (authStorage) {
@@ -91,10 +97,15 @@ function AuthenticatedLayout({
                              parsed.state?.token && 
                              parsed.state?.user;
           if (hasAuthData) {
-            useAuthStore.getState().setAuth(parsed.state.token, parsed.state.user);
+            // Seulement mettre à jour le store si nécessaire
+            const currentState = useAuthStore.getState();
+            if (!currentState.isAuthenticated || !currentState.token) {
+              useAuthStore.getState().setAuth(parsed.state.token, parsed.state.user);
+            }
+            authCheckedRef.current = true;
             setIsReady(true);
             setShouldRedirect(false);
-            // Ne pas retourner ici - continuer pour retourner la fonction de nettoyage à la fin
+            return () => {};
           }
         } catch (e) {
           // Ignore
@@ -102,66 +113,64 @@ function AuthenticatedLayout({
       }
     }
     
-    // Vérifier depuis le store si hydraté (seulement si pas déjà authentifié)
-    if (!isReady) {
-      if (hasHydrated) {
-        const finalIsAuthenticated = isAuthenticated || (useAuthStore.getState().token && user);
-        setIsReady(true);
-        setShouldRedirect(!finalIsAuthenticated);
-      } else {
-        // Attendre l'hydratation
-        checkInterval = setInterval(() => {
-          const storeState = useAuthStore.getState();
-          if (storeState.hasHydrated) {
-            if (checkInterval) clearInterval(checkInterval);
-            const finalIsAuthenticated = storeState.isAuthenticated || (storeState.token && storeState.user);
-            setIsReady(true);
-            setShouldRedirect(!finalIsAuthenticated);
-          }
-        }, 50);
-        
-        timeoutId = setTimeout(() => {
+    // Vérifier depuis le store si hydraté
+    const storeState = useAuthStore.getState();
+    if (storeState.hasHydrated || hasHydrated) {
+      const finalIsAuthenticated = storeState.isAuthenticated || (storeState.token && storeState.user);
+      authCheckedRef.current = true;
+      setIsReady(true);
+      setShouldRedirect(!finalIsAuthenticated);
+    } else {
+      // Attendre l'hydratation
+      checkInterval = setInterval(() => {
+        const state = useAuthStore.getState();
+        if (state.hasHydrated) {
           if (checkInterval) clearInterval(checkInterval);
+          const finalIsAuthenticated = state.isAuthenticated || (state.token && state.user);
+          authCheckedRef.current = true;
           setIsReady(true);
-          setShouldRedirect(true);
-        }, 2000);
-      }
+          setShouldRedirect(!finalIsAuthenticated);
+        }
+      }, 50);
+      
+      timeoutId = setTimeout(() => {
+        if (checkInterval) clearInterval(checkInterval);
+        authCheckedRef.current = true;
+        setIsReady(true);
+        setShouldRedirect(true);
+      }, 2000);
     }
     
-    // TOUJOURS retourner une fonction de nettoyage pour respecter les règles des hooks React
     return () => {
-      if (timeoutId !== null) {
-        clearTimeout(timeoutId);
-      }
-      if (checkInterval !== null) {
-        clearInterval(checkInterval);
-      }
+      if (timeoutId !== null) clearTimeout(timeoutId);
+      if (checkInterval !== null) clearInterval(checkInterval);
     };
-  }, [hasHydrated, isAuthenticated, user]);
+  }, [hasHydrated]); // Seulement hasHydrated — PAS isAuthenticated ni user
   
-  // Maintenant on peut appeler useTranslation en toute sécurité
   const { t, ready } = useTranslation();
   
-  // Rafraîchir les données utilisateur au montage pour avoir le rôle à jour
+  // Rafraîchir les données utilisateur UNE SEULE FOIS au montage
   useEffect(() => {
+    if (!isReady || shouldRedirect || refreshedRef.current) return;
+    refreshedRef.current = true;
+    
     const refreshUserData = async () => {
-      if (isAuthenticated && typeof window !== 'undefined' && isReady && !shouldRedirect) {
-        try {
-          const { authApi } = await import('@/lib/api');
-          const response = await authApi.getMe();
-          if (response.data?.user) {
-            updateUser(response.data.user);
-          }
-        } catch (error) {
-          console.error('Erreur lors du rafraîchissement des données utilisateur:', error);
+      try {
+        const currentState = useAuthStore.getState();
+        if (!currentState.isAuthenticated) return;
+        
+        const { authApi } = await import('@/lib/api');
+        const response = await authApi.getMe();
+        if (response.data?.user) {
+          updateUser(response.data.user);
         }
+      } catch (error) {
+        console.error('Erreur lors du rafraîchissement des données utilisateur:', error);
       }
     };
     
-    if (isReady && !shouldRedirect) {
-      refreshUserData();
-    }
-  }, [isAuthenticated, updateUser, isReady, shouldRedirect]);
+    refreshUserData();
+  }, [isReady, shouldRedirect, updateUser]);
   
   // S'assurer que le composant est monté
   useEffect(() => {
@@ -174,17 +183,6 @@ function AuthenticatedLayout({
       router.push('/login');
     }
   }, [shouldRedirect, pathname, isReady, router]);
-
-  // Log pour débogage
-  console.log('🔐 [AUTH] AuthenticatedLayout rendered', {
-    pathname,
-    isReady,
-    shouldRedirect,
-    isAuthenticated,
-    hasUser: !!user,
-    ready,
-    mounted
-  });
 
   // ===== TOUS LES HOOKS SONT APPELÉS AVANT CE POINT =====
   // ===== Les returns conditionnels peuvent maintenant être utilisés =====
