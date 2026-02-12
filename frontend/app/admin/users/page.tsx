@@ -38,6 +38,12 @@ export default function AdminUsersPage() {
     userId: null,
     userEmail: ''
   });
+  const [roleConfirm, setRoleConfirm] = useState<{ isOpen: boolean; userId: string | null; userEmail: string; newRole: 'USER' | 'ADMIN' | null }>({
+    isOpen: false,
+    userId: null,
+    userEmail: '',
+    newRole: null
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -107,6 +113,30 @@ export default function AdminUsersPage() {
       toast.error(errorMessage);
     } finally {
       setDeleteConfirm({ isOpen: false, userId: null, userEmail: '' });
+    }
+  };
+
+  const handleRoleChange = (userId: string, userEmail: string, currentRole: string) => {
+    const newRole = currentRole === 'ADMIN' ? 'USER' : 'ADMIN';
+    setRoleConfirm({ isOpen: true, userId, userEmail, newRole });
+  };
+
+  const confirmRoleChange = async () => {
+    if (!roleConfirm.userId || !roleConfirm.newRole) return;
+
+    try {
+      await adminApi.updateUserRole(roleConfirm.userId, roleConfirm.newRole);
+      toast.success(
+        roleConfirm.newRole === 'ADMIN' 
+          ? t('admin.users.promoteSuccess', 'Utilisateur promu administrateur avec succès')
+          : t('admin.users.demoteSuccess', 'Utilisateur rétrogradé avec succès')
+      );
+      loadUsers();
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || t('admin.users.roleChangeError', 'Erreur lors de la modification du rôle');
+      toast.error(errorMessage);
+    } finally {
+      setRoleConfirm({ isOpen: false, userId: null, userEmail: '', newRole: null });
     }
   };
 
@@ -222,16 +252,43 @@ export default function AdminUsersPage() {
                       {formatDate(u.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <button
-                        onClick={() => handleDeleteClick(u.id, u.email)}
-                        className="text-red-600 hover:text-red-800 hover:underline flex items-center gap-1"
-                        title={t('admin.users.delete', 'Supprimer')}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        {t('admin.users.delete', 'Supprimer')}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => handleRoleChange(u.id, u.email, u.role || 'USER')}
+                          className={`${
+                            u.role === 'ADMIN' 
+                              ? 'text-orange-600 hover:text-orange-800' 
+                              : 'text-blue-600 hover:text-blue-800'
+                          } hover:underline flex items-center gap-1`}
+                          title={u.role === 'ADMIN' ? t('admin.users.demote', 'Rétrograder') : t('admin.users.promote', 'Promouvoir admin')}
+                        >
+                          {u.role === 'ADMIN' ? (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                              </svg>
+                              {t('admin.users.demote', 'Rétrograder')}
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                              </svg>
+                              {t('admin.users.promote', 'Promouvoir admin')}
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(u.id, u.email)}
+                          className="text-red-600 hover:text-red-800 hover:underline flex items-center gap-1"
+                          title={t('admin.users.delete', 'Supprimer')}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          {t('admin.users.delete', 'Supprimer')}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -274,6 +331,26 @@ export default function AdminUsersPage() {
         confirmText={t('admin.users.delete', 'Supprimer')}
         cancelText={t('common.cancel', 'Annuler')}
         variant="danger"
+      />
+
+      {/* Dialog de confirmation de changement de rôle */}
+      <ConfirmDialog
+        isOpen={roleConfirm.isOpen}
+        onCancel={() => setRoleConfirm({ isOpen: false, userId: null, userEmail: '', newRole: null })}
+        onConfirm={confirmRoleChange}
+        title={
+          roleConfirm.newRole === 'ADMIN' 
+            ? t('admin.users.promoteConfirmTitle', 'Promouvoir en administrateur')
+            : t('admin.users.demoteConfirmTitle', 'Rétrograder l\'utilisateur')
+        }
+        message={
+          roleConfirm.newRole === 'ADMIN'
+            ? t('admin.users.promoteConfirmMessage', 'Êtes-vous sûr de vouloir promouvoir {{email}} en administrateur ? Il aura accès au dashboard admin.', { email: roleConfirm.userEmail })
+            : t('admin.users.demoteConfirmMessage', 'Êtes-vous sûr de vouloir rétrograder {{email}} ? Il perdra l\'accès au dashboard admin.', { email: roleConfirm.userEmail })
+        }
+        confirmText={roleConfirm.newRole === 'ADMIN' ? t('admin.users.promote', 'Promouvoir') : t('admin.users.demote', 'Rétrograder')}
+        cancelText={t('common.cancel', 'Annuler')}
+        variant={roleConfirm.newRole === 'ADMIN' ? 'info' : 'warning'}
       />
       </div>
     </div>
