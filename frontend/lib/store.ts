@@ -136,21 +136,21 @@ export const useAuthStore = create<AuthState>()(
             }
           }
           
-          // Instrumentation pour envoyer des logs au serveur
-          fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              location: 'store.ts:onRehydrateStorage',
-              message: 'Starting hydration',
-              data: { 
-                timestamp: Date.now(),
-                hasRawStorage: !!rawStorage,
-                rawStoragePreview: rawStorage ? rawStorage.substring(0, 200) : null,
-                shouldSkipHydration
-              }
-            })
-          }).catch(() => {});
+          // Instrumentation désactivée pour éviter les erreurs CORS en production
+          // fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
+          //   method: 'POST',
+          //   headers: { 'Content-Type': 'application/json' },
+          //   body: JSON.stringify({
+          //     location: 'store.ts:onRehydrateStorage',
+          //     message: 'Starting hydration',
+          //     data: { 
+          //       timestamp: Date.now(),
+          //       hasRawStorage: !!rawStorage,
+          //       rawStoragePreview: rawStorage ? rawStorage.substring(0, 200) : null,
+          //       shouldSkipHydration
+          //     }
+          //   })
+          // }).catch(() => {});
         }
         
         return (state: AuthState | undefined) => {
@@ -188,7 +188,7 @@ export const useAuthStore = create<AuthState>()(
             hasState: !!state,
             hasToken: !!state?.token,
             hasUser: !!state?.user,
-            isAuthenticated: state?.isAuthenticated,
+            isAuthenticated: state ? state.isAuthenticated : false,
             userEmail: state?.user?.email
           };
           
@@ -224,18 +224,18 @@ export const useAuthStore = create<AuthState>()(
             }
           }
           
-          // Instrumentation pour envoyer des logs au serveur
-          if (typeof window !== 'undefined') {
-            fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                location: 'store.ts:onRehydrateStorage',
-                message: 'Hydration complete',
-                data: { ...hydrationData, timestamp: Date.now() }
-              })
-            }).catch(() => {});
-          }
+          // Instrumentation désactivée pour éviter les erreurs CORS en production
+          // if (typeof window !== 'undefined') {
+          //   fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
+          //     method: 'POST',
+          //     headers: { 'Content-Type': 'application/json' },
+          //     body: JSON.stringify({
+          //       location: 'store.ts:onRehydrateStorage',
+          //       message: 'Hydration complete',
+          //       data: { ...hydrationData, timestamp: Date.now() }
+          //     })
+          //   }).catch(() => {});
+          // }
           // Marquer comme hydraté après la réhydratation
           if (state) {
             // Toujours synchroniser le token depuis localStorage lors de l'hydratation

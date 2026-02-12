@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from './store';
 
-// Instrumentation pour envoyer des logs au serveur
+// Instrumentation pour envoyer des logs au serveur (désactivée en production)
 const logToServer = (message: string, data: any) => {
-  if (typeof window !== 'undefined') {
-    fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        location: 'useAuthCheck.ts',
-        message,
-        data,
-        timestamp: Date.now()
-      })
-    }).catch(() => {});
-  }
+  // Désactivé pour éviter les erreurs CORS en production
+  // if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  //   fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({
+  //       location: 'useAuthCheck.ts',
+  //       message,
+  //       data,
+  //       timestamp: Date.now()
+  //     })
+  //   }).catch(() => {});
+  // }
 };
 
 /**
@@ -23,6 +24,10 @@ const logToServer = (message: string, data: any) => {
  */
 export function useAuthCheck() {
   const setAuth = useAuthStore((state) => state.setAuth);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const token = useAuthStore((state) => state.token);
+  const user = useAuthStore((state) => state.user);
   const [isReady, setIsReady] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
@@ -34,7 +39,7 @@ export function useAuthCheck() {
     };
     
     console.log('🔍 [AUTH CHECK] Starting auth check...', logData);
-    logToServer('Starting auth check', logData);
+    // logToServer('Starting auth check', logData);
     
     // Vérifier DIRECTEMENT dans auth-storage de manière synchrone AVANT toute autre vérification
     let foundAuthInStorage = false;
@@ -48,7 +53,7 @@ export function useAuthCheck() {
       const hasAuthStorage = !!authStorage;
       
       console.log('🔍 [AUTH CHECK] auth-storage exists?', hasAuthStorage);
-      logToServer('Checking auth-storage', { hasAuthStorage, pathname, hasTokenInLocalStorage: !!tokenFromLocalStorage });
+      // logToServer('Checking auth-storage', { hasAuthStorage, pathname, hasTokenInLocalStorage: !!tokenFromLocalStorage });
       
       if (authStorage) {
         console.log('🔍 [AUTH CHECK] auth-storage content preview:', authStorage.substring(0, 200));
@@ -86,11 +91,11 @@ export function useAuthCheck() {
           if (hasAuthData) {
             // Restaurer l'état immédiatement
             console.log('🔍 [AUTH CHECK] ✅ Found authenticated data in storage, restoring immediately');
-            logToServer('Found authenticated data in storage', {
-              hasToken: !!parsed.state.token,
-              hasUser: !!parsed.state.user,
-              userEmail: parsed.state.user?.email
-            });
+            // logToServer('Found authenticated data in storage', {
+            //   hasToken: !!parsed.state.token,
+            //   hasUser: !!parsed.state.user,
+            //   userEmail: parsed.state.user?.email
+            // });
             setAuth(parsed.state.token, parsed.state.user);
             setIsReady(true);
             setShouldRedirect(false);
@@ -98,18 +103,18 @@ export function useAuthCheck() {
             return;
           } else {
             console.log('🔍 [AUTH CHECK] ⚠️ auth-storage exists but missing required data');
-            logToServer('auth-storage exists but missing required data', {
-              hasIsAuthenticated: !!parsed.state?.isAuthenticated,
-              hasToken: !!parsed.state?.token,
-              hasUser: !!parsed.state?.user,
-              parsedKeys: Object.keys(parsed),
-              stateKeys: parsed.state ? Object.keys(parsed.state) : []
-            });
+            // logToServer('auth-storage exists but missing required data', {
+            //   hasIsAuthenticated: !!parsed.state?.isAuthenticated,
+            //   hasToken: !!parsed.state?.token,
+            //   hasUser: !!parsed.state?.user,
+            //   parsedKeys: Object.keys(parsed),
+            //   stateKeys: parsed.state ? Object.keys(parsed.state) : []
+            // });
           }
         } catch (e) {
           console.error('🔍 [AUTH CHECK] Error parsing auth-storage', e);
-          const errorMessage = e instanceof Error ? e.message : String(e);
-          logToServer('Error parsing auth-storage', { error: errorMessage, pathname });
+          // const errorMessage = e instanceof Error ? e.message : String(e);
+          // logToServer('Error parsing auth-storage', { error: errorMessage, pathname });
         }
       } else {
         console.log('🔍 [AUTH CHECK] No auth-storage found in localStorage');
@@ -137,98 +142,76 @@ export function useAuthCheck() {
     console.log('🔍 [AUTH CHECK] No auth found in storage, checking store hydration...');
 
     // Attendre que le store soit hydraté
-    const checkHydration = setInterval(() => {
-      const storeState = useAuthStore.getState();
-      console.log('🔍 [AUTH CHECK] Checking hydration', {
-        hasHydrated: storeState.hasHydrated,
-        isAuthenticated: storeState.isAuthenticated,
-        hasToken: !!storeState.token,
-        hasUser: !!storeState.user
-      });
-      
-      if (storeState.hasHydrated) {
-        clearInterval(checkHydration);
-        
-        // Vérifier l'authentification depuis le store
-        const finalIsAuthenticated = storeState.isAuthenticated || 
-                                     (storeState.token && storeState.user);
-        
-        if (finalIsAuthenticated) {
-          console.log('🔍 [AUTH CHECK] ✅ User authenticated from store');
-          setIsReady(true);
-          setShouldRedirect(false);
-        } else {
-          // Vérifier une dernière fois dans auth-storage
-          const authStorage = localStorage.getItem('auth-storage');
-          if (authStorage) {
-            try {
-              const parsed = JSON.parse(authStorage);
-              if (parsed.state?.isAuthenticated && parsed.state?.token && parsed.state?.user) {
-                console.log('🔍 [AUTH CHECK] ✅ Found auth in storage, restoring');
-                setAuth(parsed.state.token, parsed.state.user);
-                setIsReady(true);
-                setShouldRedirect(false);
-                return;
-              }
-            } catch (e) {
-              // Ignore parsing errors
-              console.error('🔍 [AUTH CHECK] Error parsing auth-storage in hydration check', e);
-            }
-          }
-          
-          console.log('🔍 [AUTH CHECK] ❌ User not authenticated');
-          logToServer('User not authenticated - redirecting', {
-            hasHydrated: storeState.hasHydrated,
-            isAuthenticated: storeState.isAuthenticated,
-            hasToken: !!storeState.token,
-            hasUser: !!storeState.user
-          });
-          setIsReady(true);
-          setShouldRedirect(true);
-        }
-      }
-    }, 50);
-
-    // Timeout de sécurité après 2 secondes
-    const timeout = setTimeout(() => {
-      clearInterval(checkHydration);
-      const storeState = useAuthStore.getState();
-      
-      // Vérifier dans auth-storage en dernier recours
-      const authStorage = localStorage.getItem('auth-storage');
-      let finalIsAuthenticated = storeState.isAuthenticated || 
-                                 (storeState.token && storeState.user);
-      
-      if (!finalIsAuthenticated && authStorage) {
-        try {
-          const parsed = JSON.parse(authStorage);
-          if (parsed.state?.isAuthenticated && parsed.state?.token && parsed.state?.user) {
-            console.log('🔍 [AUTH CHECK] ✅ Found auth in storage (timeout), restoring');
-            setAuth(parsed.state.token, parsed.state.user);
-            finalIsAuthenticated = true;
-          }
-        } catch (e) {
-          // Ignore
-        }
-      }
+    if (hasHydrated) {
+      // Vérifier l'authentification depuis le store
+      const finalIsAuthenticated = isAuthenticated || (token && user);
       
       if (finalIsAuthenticated) {
-        console.log('🔍 [AUTH CHECK] ✅ User authenticated (timeout)');
+        console.log('🔍 [AUTH CHECK] ✅ User authenticated from store');
         setIsReady(true);
         setShouldRedirect(false);
       } else {
-        console.log('🔍 [AUTH CHECK] ❌ User not authenticated (timeout)');
+        // Vérifier une dernière fois dans auth-storage
+        const authStorage = localStorage.getItem('auth-storage');
+        if (authStorage) {
+          try {
+            const parsed = JSON.parse(authStorage);
+            if (parsed.state?.isAuthenticated && parsed.state?.token && parsed.state?.user) {
+              console.log('🔍 [AUTH CHECK] ✅ Found auth in storage, restoring');
+              setAuth(parsed.state.token, parsed.state.user);
+              setIsReady(true);
+              setShouldRedirect(false);
+              return;
+            }
+          } catch (e) {
+            // Ignore parsing errors
+            console.error('🔍 [AUTH CHECK] Error parsing auth-storage in hydration check', e);
+          }
+        }
+        
+        console.log('🔍 [AUTH CHECK] ❌ User not authenticated');
         setIsReady(true);
         setShouldRedirect(true);
       }
-    }, 2000);
-    
-    return () => {
-      clearInterval(checkHydration);
-      clearTimeout(timeout);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // setAuth est stable depuis Zustand, pas besoin de le mettre dans les dépendances
+    } else {
+      // Si pas encore hydraté, attendre un peu
+      const timeout = setTimeout(() => {
+        const storeState = useAuthStore.getState();
+        
+        // Vérifier dans auth-storage en dernier recours
+        const authStorage = localStorage.getItem('auth-storage');
+        let finalIsAuthenticated = storeState.isAuthenticated || 
+                                   (storeState.token && storeState.user);
+        
+        if (!finalIsAuthenticated && authStorage) {
+          try {
+            const parsed = JSON.parse(authStorage);
+            if (parsed.state?.isAuthenticated && parsed.state?.token && parsed.state?.user) {
+              console.log('🔍 [AUTH CHECK] ✅ Found auth in storage (timeout), restoring');
+              setAuth(parsed.state.token, parsed.state.user);
+              finalIsAuthenticated = true;
+            }
+          } catch (e) {
+            // Ignore
+          }
+        }
+        
+        if (finalIsAuthenticated) {
+          console.log('🔍 [AUTH CHECK] ✅ User authenticated (timeout)');
+          setIsReady(true);
+          setShouldRedirect(false);
+        } else {
+          console.log('🔍 [AUTH CHECK] ❌ User not authenticated (timeout)');
+          setIsReady(true);
+          setShouldRedirect(true);
+        }
+      }, 2000);
+      
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [hasHydrated, isAuthenticated, token, user, setAuth]);
 
   return { isReady, shouldRedirect };
 }

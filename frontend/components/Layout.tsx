@@ -146,25 +146,25 @@ function AuthenticatedLayout({
       hasUser: !!user
     });
     
-    // Instrumentation pour envoyer des logs au serveur
-    if (typeof window !== 'undefined') {
-      fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          location: 'Layout.tsx:AuthenticatedLayout',
-          message: 'Redirecting to login',
-          data: {
-            shouldRedirect,
-            pathname,
-            isReady,
-            isAuthenticated,
-            hasUser: !!user,
-            timestamp: Date.now()
-          }
-        })
-      }).catch(() => {});
-    }
+    // Instrumentation désactivée pour éviter les erreurs CORS en production
+    // if (typeof window !== 'undefined') {
+    //   fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({
+    //       location: 'Layout.tsx:AuthenticatedLayout',
+    //       message: 'Redirecting to login',
+    //       data: {
+    //         shouldRedirect,
+    //         pathname,
+    //         isReady,
+    //         isAuthenticated,
+    //         hasUser: !!user,
+    //         timestamp: Date.now()
+    //       }
+    //     })
+    //   }).catch(() => {});
+    // }
     
     router.push('/login');
     return (
