@@ -15,6 +15,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+  // TOUS les hooks doivent être appelés AVANT toute condition
   const router = useRouter();
   const pathname = usePathname();
   
@@ -24,30 +25,32 @@ export default function Layout({ children }: LayoutProps) {
     timestamp: new Date().toISOString()
   });
   
-  // Vérifier auth-storage AVANT toute décision de layout
-  if (typeof window !== 'undefined' && pathname !== '/login' && pathname !== '/register' && pathname !== '/forgot-password') {
-    const authStorage = localStorage.getItem('auth-storage');
-    if (authStorage) {
-      try {
-        const parsed = JSON.parse(authStorage);
-        console.log('🚀 [LAYOUT] Found auth-storage', {
-          isAuthenticated: parsed.state?.isAuthenticated,
-          hasToken: !!parsed.state?.token,
-          hasUser: !!parsed.state?.user
-        });
-      } catch (e) {
-        console.error('🚀 [LAYOUT] Error parsing auth-storage', e);
-      }
-    } else {
-      console.log('🚀 [LAYOUT] No auth-storage found');
-    }
-  }
-  
-  // Déterminer si c'est une page d'authentification AVANT d'appeler des hooks
+  // Déterminer si c'est une page d'authentification
   const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/forgot-password';
   const isPublicRoute = pathname?.startsWith('/guide') || pathname?.startsWith('/business-card');
   const isHomePage = pathname === '/';
   const isPublicPage = pathname === '/hote-airbnb' || pathname === '/blog' || pathname === '/contact';
+  
+  // Vérifier auth-storage APRÈS avoir appelé tous les hooks
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !isAuthPage && !isPublicRoute && !isHomePage && !isPublicPage) {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (authStorage) {
+        try {
+          const parsed = JSON.parse(authStorage);
+          console.log('🚀 [LAYOUT] Found auth-storage', {
+            isAuthenticated: parsed.state?.isAuthenticated,
+            hasToken: !!parsed.state?.token,
+            hasUser: !!parsed.state?.user
+          });
+        } catch (e) {
+          console.error('🚀 [LAYOUT] Error parsing auth-storage', e);
+        }
+      } else {
+        console.log('🚀 [LAYOUT] No auth-storage found');
+      }
+    }
+  }, [pathname, isAuthPage, isPublicRoute, isHomePage, isPublicPage]);
   
   // Pour les pages publiques et d'authentification, utiliser un Layout simplifié SANS i18n
   if (isAuthPage || isPublicRoute || isHomePage || isPublicPage) {

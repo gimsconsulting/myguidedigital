@@ -22,7 +22,7 @@ const logToServer = (message: string, data: any) => {
  * avant que les composants ne se rendent
  */
 export function useAuthCheck() {
-  const { setAuth } = useAuthStore();
+  const setAuth = useAuthStore((state) => state.setAuth);
   const [isReady, setIsReady] = useState(false);
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
@@ -227,7 +227,8 @@ export function useAuthCheck() {
       clearInterval(checkHydration);
       clearTimeout(timeout);
     };
-  }, [setAuth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // setAuth est stable depuis Zustand, pas besoin de le mettre dans les dépendances
 
   return { isReady, shouldRedirect };
 }
