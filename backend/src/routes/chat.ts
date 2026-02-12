@@ -67,6 +67,18 @@ router.post('/:livretId', chatLimiter, async (req: express.Request, res: express
       }
     });
 
+    // Logs de diagnostic
+    console.log(`💬 [CHAT] Livret: "${livret.name}" (ID: ${livretId})`);
+    console.log(`💬 [CHAT] Modules actifs: ${livret.modules?.length || 0}`);
+    console.log(`💬 [CHAT] Documents chat: ${chatDocuments.length}`);
+    if (chatDocuments.length > 0) {
+      chatDocuments.forEach((doc, i) => {
+        console.log(`💬 [CHAT]   Doc ${i + 1}: "${doc.title}" (${doc.content.length} chars)`);
+      });
+    } else {
+      console.log(`💬 [CHAT] ⚠️ Aucun document trouvé pour ce livret`);
+    }
+
     // Construire le contexte à partir des documents et des modules
     let contextParts: string[] = [];
 
@@ -112,6 +124,11 @@ router.post('/:livretId', chatLimiter, async (req: express.Request, res: express
     const truncatedContext = contextText.length > maxContextLength 
       ? contextText.substring(0, maxContextLength) + '\n\n[... contexte tronqué pour des raisons de longueur ...]'
       : contextText;
+
+    console.log(`💬 [CHAT] Contexte total: ${contextText.length} chars (tronqué: ${contextText.length > maxContextLength})`);
+    console.log(`💬 [CHAT] Message utilisateur: "${message.trim().substring(0, 100)}"`);
+    // Afficher les premières lignes du contexte pour vérifier
+    console.log(`💬 [CHAT] Début du contexte:\n${truncatedContext.substring(0, 500)}...`);
 
     // Construire les messages pour l'API OpenAI
     const systemPrompt = `Tu es un assistant virtuel serviable et amical pour un logement de vacances. Tu aides les voyageurs à trouver des informations sur leur séjour.
