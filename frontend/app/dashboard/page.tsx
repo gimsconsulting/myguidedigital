@@ -23,7 +23,7 @@ interface Livret {
 export default function DashboardPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, hasHydrated } = useAuthStore();
   const [livrets, setLivrets] = useState<Livret[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -33,12 +33,88 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
+    console.log('📊 [DASHBOARD] useEffect triggered', {
+      isAuthenticated,
+      hasUser: !!user,
+      hasHydrated
+    });
+    
+    // Vérifier DIRECTEMENT dans auth-storage AVANT toute autre vérification
+    if (typeof window !== 'undefined') {
+      const authStorage = localStorage.getItem('auth-storage');
+      console.log('📊 [DASHBOARD] Checking auth-storage', { hasAuthStorage: !!authStorage });
+      
+      if (authStorage) {
+        try {
+          const parsed = JSON.parse(authStorage);
+          const hasAuthData = parsed.state?.isAuthenticated && 
+                             parsed.state?.token && 
+                             parsed.state?.user;
+          
+          console.log('📊 [DASHBOARD] auth-storage parsed', {
+            hasAuthData,
+            isAuthenticated: parsed.state?.isAuthenticated,
+            hasToken: !!parsed.state?.token,
+            hasUser: !!parsed.state?.user
+          });
+          
+          if (hasAuthData) {
+            console.log('📊 [DASHBOARD] ✅ Found authenticated data in storage, loading livrets');
+            loadLivrets();
+            return;
+          }
+        } catch (e) {
+          console.error('📊 [DASHBOARD] Error parsing auth-storage', e);
+        }
+      }
+    }
+    
+    // Attendre que le store soit hydraté avant de vérifier l'authentification
+    const storeState = useAuthStore.getState();
+    console.log('📊 [DASHBOARD] Store state', {
+      hasHydrated: storeState.hasHydrated,
+      isAuthenticated: storeState.isAuthenticated,
+      hasToken: !!storeState.token,
+      hasUser: !!storeState.user
+    });
+    
+    if (!storeState.hasHydrated) {
+      console.log('[DASHBOARD] Store not hydrated yet, waiting...');
+      // Attendre un peu pour l'hydratation
+      const checkInterval = setInterval(() => {
+        const currentState = useAuthStore.getState();
+        if (currentState.hasHydrated) {
+          clearInterval(checkInterval);
+          // Re-vérifier après hydratation
+          const finalState = useAuthStore.getState();
+          if (finalState.isAuthenticated || (finalState.token && finalState.user)) {
+            console.log('[DASHBOARD] ✅ Authenticated after hydration, loading livrets');
+            loadLivrets();
+          } else {
+            console.log('[DASHBOARD] ❌ Not authenticated after hydration, redirecting');
+            router.push('/login');
+          }
+        }
+      }, 100);
+      
+      setTimeout(() => {
+        clearInterval(checkInterval);
+      }, 3000);
       return;
     }
 
-    loadLivrets();
+    // Vérifier l'authentification depuis le store directement
+    const finalIsAuthenticated = storeState.isAuthenticated || 
+                                 (storeState.token && storeState.user);
+    
+    if (finalIsAuthenticated) {
+      console.log('[DASHBOARD] ✅ User authenticated, loading livrets');
+      loadLivrets();
+    } else {
+      // Si vraiment pas authentifié après hydratation, rediriger
+      console.log('[DASHBOARD] ❌ Not authenticated, redirecting to login');
+      router.push('/login');
+    }
   }, [isAuthenticated, router]);
 
   const loadLivrets = async () => {

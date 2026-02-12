@@ -8,6 +8,7 @@ import { Button } from './ui/Button';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import AuthLayout from './AuthLayout';
+import { useAuthCheck } from '@/lib/useAuthCheck';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,31 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
+  
+  // Log très précoce pour vérifier que le code est chargé
+  console.log('🚀 [LAYOUT] Layout component rendered', {
+    pathname,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Vérifier auth-storage AVANT toute décision de layout
+  if (typeof window !== 'undefined' && pathname !== '/login' && pathname !== '/register' && pathname !== '/forgot-password') {
+    const authStorage = localStorage.getItem('auth-storage');
+    if (authStorage) {
+      try {
+        const parsed = JSON.parse(authStorage);
+        console.log('🚀 [LAYOUT] Found auth-storage', {
+          isAuthenticated: parsed.state?.isAuthenticated,
+          hasToken: !!parsed.state?.token,
+          hasUser: !!parsed.state?.user
+        });
+      } catch (e) {
+        console.error('🚀 [LAYOUT] Error parsing auth-storage', e);
+      }
+    } else {
+      console.log('🚀 [LAYOUT] No auth-storage found');
+    }
+  }
   
   // Déterminer si c'est une page d'authentification AVANT d'appeler des hooks
   const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/forgot-password';
@@ -42,12 +68,45 @@ function AuthenticatedLayout({
   pathname: string;
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, logout, updateUser } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   
+  // Utiliser le hook personnalisé pour vérifier l'authentification
+  const { isReady, shouldRedirect } = useAuthCheck();
+  
+  // Log initial pour vérifier que le code est bien chargé
+  console.log('🔐 [AUTH] AuthenticatedLayout mounted', {
+    pathname,
+    isReady,
+    shouldRedirect,
+    isAuthenticated,
+    hasUser: !!user
+  });
+  
   // Maintenant on peut appeler useTranslation en toute sécurité
   const { t, ready } = useTranslation();
+  
+  // Rafraîchir les données utilisateur au montage pour avoir le rôle à jour
+  useEffect(() => {
+    const refreshUserData = async () => {
+      if (isAuthenticated && typeof window !== 'undefined' && isReady && !shouldRedirect) {
+        try {
+          const { authApi } = await import('@/lib/api');
+          const response = await authApi.getMe();
+          if (response.data?.user) {
+            updateUser(response.data.user);
+          }
+        } catch (error) {
+          console.error('Erreur lors du rafraîchissement des données utilisateur:', error);
+        }
+      }
+    };
+    
+    if (isReady && !shouldRedirect) {
+      refreshUserData();
+    }
+  }, [isAuthenticated, updateUser, isReady, shouldRedirect]);
   
   // Attendre que i18n soit prêt
   if (!ready) {
@@ -61,33 +120,74 @@ function AuthenticatedLayout({
     );
   }
   
+  // Attendre que la vérification d'authentification soit terminée
+  if (!isReady) {
+    console.log('[AUTH DEBUG] Waiting for auth check...');
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-dark">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-400">Vérification de l'authentification...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Si la vérification indique qu'on doit rediriger, le faire
+  if (shouldRedirect && pathname !== '/login') {
+    console.log('[AUTH DEBUG] Should redirect to login', {
+      shouldRedirect,
+      pathname,
+      isReady,
+      isAuthenticated,
+      hasUser: !!user
+    });
+    
+    // Instrumentation pour envoyer des logs au serveur
+    if (typeof window !== 'undefined') {
+      fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location: 'Layout.tsx:AuthenticatedLayout',
+          message: 'Redirecting to login',
+          data: {
+            shouldRedirect,
+            pathname,
+            isReady,
+            isAuthenticated,
+            hasUser: !!user,
+            timestamp: Date.now()
+          }
+        })
+      }).catch(() => {});
+    }
+    
+    router.push('/login');
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-dark">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-400">Redirection...</p>
+        </div>
+      </div>
+    );
+  }
+  
   // S'assurer que le composant est monté avant de faire des redirections
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    // Ne pas faire de redirections avant que le composant soit monté
-    if (!mounted || typeof window === 'undefined') return;
-    
-    // Ne rediriger que si nécessaire
-    if (!isAuthenticated) {
-      if (pathname !== '/login') {
-        router.push('/login');
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, isAuthenticated, pathname]);
-  
-  const handleLogout = () => {
-    logout();
-    router.push('/login');
-  };
-
   // Attendre le montage avant de rendre le Layout complet
   if (!mounted) {
     return <>{children}</>;
   }
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -149,98 +249,126 @@ function AuthenticatedLayout({
                   {user.firstName} {user.lastName}
                 </span>
               )}
-              <LanguageSelector />
-              <Button variant="outline" size="sm" onClick={handleLogout}>
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                className="text-sm"
+              >
                 {t('nav.logout', 'Déconnexion')}
               </Button>
+              <LanguageSelector />
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile menu button */}
             <div className="md:hidden flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-md text-gray-700 hover:bg-gray-100"
-                aria-label="Menu"
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
               >
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="h-6 w-6"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
                   {isMobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
                   )}
                 </svg>
               </button>
             </div>
           </div>
 
-          {/* Mobile Menu */}
+          {/* Mobile menu */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 py-4 space-y-2">
-              <Link
-                href="/dashboard"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  pathname === '/dashboard' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {t('dashboard.title', 'Dashboard')}
-              </Link>
-              <Link
-                href="/profile"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  pathname === '/profile' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {t('profile.title', 'Profil')}
-              </Link>
-              <Link
-                href="/subscription"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  pathname === '/subscription' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {t('subscription.title', 'Abonnement')}
-              </Link>
-              <Link
-                href="/invoices"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  pathname === '/invoices' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {t('invoices.title', 'Factures')}
-              </Link>
-              {user?.role === 'ADMIN' && (
+            <div className="md:hidden">
+              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <Link
-                  href="/admin/dashboard"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  href="/dashboard"
                   className={`block px-3 py-2 rounded-md text-base font-medium ${
-                    pathname?.startsWith('/admin') ? 'bg-red-500 text-white' : 'text-red-600 hover:bg-red-50'
+                    pathname === '/dashboard' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
                   }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Admin
+                  {t('dashboard.title', 'Dashboard')}
                 </Link>
-              )}
-              {user && (
-                <div className="px-3 py-2 text-sm text-gray-600 border-t border-gray-200 mt-2">
-                  {user.firstName} {user.lastName}
-                </div>
-              )}
-              <div className="px-3 py-2">
-                <LanguageSelector />
-              </div>
-              <div className="px-3 pt-2">
-                <Button variant="outline" size="sm" onClick={handleLogout} className="w-full">
+                <Link
+                  href="/profile"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    pathname === '/profile' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {t('profile.title', 'Profil')}
+                </Link>
+                <Link
+                  href="/subscription"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    pathname === '/subscription' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {t('subscription.title', 'Abonnement')}
+                </Link>
+                <Link
+                  href="/invoices"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    pathname === '/invoices' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {t('invoices.title', 'Factures')}
+                </Link>
+                {user?.role === 'ADMIN' && (
+                  <Link
+                    href="/admin/dashboard"
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${
+                      pathname?.startsWith('/admin') ? 'bg-red-500 text-white' : 'text-red-600 hover:bg-red-50'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Admin
+                  </Link>
+                )}
+                {user && (
+                  <div className="px-3 py-2 text-sm text-gray-600">
+                    {user.firstName} {user.lastName}
+                  </div>
+                )}
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full mt-2"
+                >
                   {t('nav.logout', 'Déconnexion')}
                 </Button>
+                <div className="px-3 py-2">
+                  <LanguageSelector />
+                </div>
               </div>
             </div>
           )}
         </div>
       </nav>
-      <main>{children}</main>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {children}
+      </main>
     </div>
   );
 }
