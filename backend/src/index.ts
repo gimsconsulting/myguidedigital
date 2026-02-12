@@ -56,7 +56,8 @@ const prisma = new PrismaClient();
 
 // Configuration du proxy trust pour express-rate-limit derrière Nginx
 // IMPORTANT: Doit être configuré AVANT les middlewares de rate limiting
-app.set('trust proxy', true);
+// Utiliser 1 (nombre de proxies) au lieu de true pour satisfaire express-rate-limit v7+
+app.set('trust proxy', 1);
 
 // Configuration Helmet pour les headers de sécurité HTTP
 // IMPORTANT: Helmet doit être configuré AVANT les autres middlewares

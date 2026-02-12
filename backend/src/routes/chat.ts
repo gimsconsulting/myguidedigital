@@ -119,16 +119,15 @@ router.post('/:livretId', chatLimiter, async (req: express.Request, res: express
 
     const contextText = contextParts.join('\n');
 
-    // Limiter le contexte à ~12000 caractères pour rester dans les limites de tokens
-    const maxContextLength = 12000;
+    // GPT-4o-mini supporte 128K tokens (~400K chars), on peut garder un contexte large
+    // Limiter à ~60000 caractères pour laisser de la place aux messages de conversation
+    const maxContextLength = 60000;
     const truncatedContext = contextText.length > maxContextLength 
       ? contextText.substring(0, maxContextLength) + '\n\n[... contexte tronqué pour des raisons de longueur ...]'
       : contextText;
 
     console.log(`💬 [CHAT] Contexte total: ${contextText.length} chars (tronqué: ${contextText.length > maxContextLength})`);
     console.log(`💬 [CHAT] Message utilisateur: "${message.trim().substring(0, 100)}"`);
-    // Afficher les premières lignes du contexte pour vérifier
-    console.log(`💬 [CHAT] Début du contexte:\n${truncatedContext.substring(0, 500)}...`);
 
     // Construire les messages pour l'API OpenAI
     const systemPrompt = `Tu es un assistant virtuel serviable et amical pour un logement de vacances. Tu aides les voyageurs à trouver des informations sur leur séjour.
@@ -170,7 +169,7 @@ ${truncatedContext}`;
       {
         model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
         messages,
-        max_tokens: 500,
+        max_tokens: 1000,
         temperature: 0.7,
         top_p: 0.9,
       },
