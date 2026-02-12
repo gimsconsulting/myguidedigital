@@ -8,7 +8,6 @@ import { Button } from './ui/Button';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import AuthLayout from './AuthLayout';
-import { useAuthCheck } from '@/lib/useAuthCheck';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -71,21 +70,74 @@ function AuthenticatedLayout({
   pathname: string;
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, user, logout, updateUser } = useAuthStore();
+  const { isAuthenticated, user, logout, updateUser, hasHydrated } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
   
-  // Utiliser le hook personnalisé pour vérifier l'authentification
-  const { isReady, shouldRedirect } = useAuthCheck();
-  
-  // Log initial pour vérifier que le code est bien chargé
-  console.log('🔐 [AUTH] AuthenticatedLayout mounted', {
-    pathname,
-    isReady,
-    shouldRedirect,
-    isAuthenticated,
-    hasUser: !!user
-  });
+  // Vérifier l'authentification de manière synchrone
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null;
+    let checkInterval: NodeJS.Timeout | null = null;
+    
+    // Vérifier DIRECTEMENT dans auth-storage de manière synchrone
+    if (typeof window !== 'undefined') {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (authStorage) {
+        try {
+          const parsed = JSON.parse(authStorage);
+          const hasAuthData = parsed.state?.isAuthenticated && 
+                             parsed.state?.token && 
+                             parsed.state?.user;
+          if (hasAuthData) {
+            useAuthStore.getState().setAuth(parsed.state.token, parsed.state.user);
+            setIsReady(true);
+            setShouldRedirect(false);
+            // Ne pas retourner ici - continuer pour retourner la fonction de nettoyage à la fin
+          }
+        } catch (e) {
+          // Ignore
+        }
+      }
+    }
+    
+    // Vérifier depuis le store si hydraté (seulement si pas déjà authentifié)
+    if (!isReady) {
+      if (hasHydrated) {
+        const finalIsAuthenticated = isAuthenticated || (useAuthStore.getState().token && user);
+        setIsReady(true);
+        setShouldRedirect(!finalIsAuthenticated);
+      } else {
+        // Attendre l'hydratation
+        checkInterval = setInterval(() => {
+          const storeState = useAuthStore.getState();
+          if (storeState.hasHydrated) {
+            if (checkInterval) clearInterval(checkInterval);
+            const finalIsAuthenticated = storeState.isAuthenticated || (storeState.token && storeState.user);
+            setIsReady(true);
+            setShouldRedirect(!finalIsAuthenticated);
+          }
+        }, 50);
+        
+        timeoutId = setTimeout(() => {
+          if (checkInterval) clearInterval(checkInterval);
+          setIsReady(true);
+          setShouldRedirect(true);
+        }, 2000);
+      }
+    }
+    
+    // TOUJOURS retourner une fonction de nettoyage pour respecter les règles des hooks React
+    return () => {
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+      }
+      if (checkInterval !== null) {
+        clearInterval(checkInterval);
+      }
+    };
+  }, [hasHydrated, isAuthenticated, user]);
   
   // Maintenant on peut appeler useTranslation en toute sécurité
   const { t, ready } = useTranslation();
@@ -111,6 +163,32 @@ function AuthenticatedLayout({
     }
   }, [isAuthenticated, updateUser, isReady, shouldRedirect]);
   
+  // S'assurer que le composant est monté
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Redirection vers login si nécessaire
+  useEffect(() => {
+    if (shouldRedirect && pathname !== '/login' && isReady) {
+      router.push('/login');
+    }
+  }, [shouldRedirect, pathname, isReady, router]);
+
+  // Log pour débogage
+  console.log('🔐 [AUTH] AuthenticatedLayout rendered', {
+    pathname,
+    isReady,
+    shouldRedirect,
+    isAuthenticated,
+    hasUser: !!user,
+    ready,
+    mounted
+  });
+
+  // ===== TOUS LES HOOKS SONT APPELÉS AVANT CE POINT =====
+  // ===== Les returns conditionnels peuvent maintenant être utilisés =====
+
   // Attendre que i18n soit prêt
   if (!ready) {
     return (
@@ -125,7 +203,6 @@ function AuthenticatedLayout({
   
   // Attendre que la vérification d'authentification soit terminée
   if (!isReady) {
-    console.log('[AUTH DEBUG] Waiting for auth check...');
     return (
       <div className="flex min-h-screen items-center justify-center bg-dark">
         <div className="text-center">
@@ -136,37 +213,8 @@ function AuthenticatedLayout({
     );
   }
   
-  // Si la vérification indique qu'on doit rediriger, le faire
+  // Si la vérification indique qu'on doit rediriger
   if (shouldRedirect && pathname !== '/login') {
-    console.log('[AUTH DEBUG] Should redirect to login', {
-      shouldRedirect,
-      pathname,
-      isReady,
-      isAuthenticated,
-      hasUser: !!user
-    });
-    
-    // Instrumentation désactivée pour éviter les erreurs CORS en production
-    // if (typeof window !== 'undefined') {
-    //   fetch('http://127.0.0.1:7242/ingest/36c68756-5ba0-48a8-9b2f-5d04f05f23de', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({
-    //       location: 'Layout.tsx:AuthenticatedLayout',
-    //       message: 'Redirecting to login',
-    //       data: {
-    //         shouldRedirect,
-    //         pathname,
-    //         isReady,
-    //         isAuthenticated,
-    //         hasUser: !!user,
-    //         timestamp: Date.now()
-    //       }
-    //     })
-    //   }).catch(() => {});
-    // }
-    
-    router.push('/login');
     return (
       <div className="flex min-h-screen items-center justify-center bg-dark">
         <div className="text-center">
@@ -176,13 +224,8 @@ function AuthenticatedLayout({
       </div>
     );
   }
-  
-  // S'assurer que le composant est monté avant de faire des redirections
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
-  // Attendre le montage avant de rendre le Layout complet
+  // Attendre le montage
   if (!mounted) {
     return <>{children}</>;
   }
