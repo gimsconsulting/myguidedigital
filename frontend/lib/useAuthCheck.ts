@@ -108,7 +108,8 @@ export function useAuthCheck() {
           }
         } catch (e) {
           console.error('🔍 [AUTH CHECK] Error parsing auth-storage', e);
-          logToServer('Error parsing auth-storage', { error: e.message, pathname });
+          const errorMessage = e instanceof Error ? e.message : String(e);
+          logToServer('Error parsing auth-storage', { error: errorMessage, pathname });
         }
       } else {
         console.log('🔍 [AUTH CHECK] No auth-storage found in localStorage');
@@ -170,7 +171,8 @@ export function useAuthCheck() {
                 return;
               }
             } catch (e) {
-              // Ignore
+              // Ignore parsing errors
+              console.error('🔍 [AUTH CHECK] Error parsing auth-storage in hydration check', e);
             }
           }
           
