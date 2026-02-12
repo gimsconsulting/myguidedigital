@@ -347,6 +347,92 @@ router.get('/users', authenticateToken, requireAdmin, [
 });
 
 // Supprimer un utilisateur (action critique - CSRF même avec JWT pour double protection)
+// Mettre à jour le rôle d'un utilisateur (promouvoir en ADMIN ou rétrograder en USER)
+router.put('/users/:userId/role', authenticateToken, requireAdmin, [
+  param('userId').isUUID().withMessage('ID utilisateur invalide'),
+  body('role').isIn(['USER', 'ADMIN']).withMessage('Le rôle doit être USER ou ADMIN'),
+], async (req: express.Request, res: express.Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Données invalides',
+        errors: errors.array() 
+      });
+    }
+
+    const admin = (req as any).user;
+    const { userId } = req.params;
+    const { role } = req.body;
+
+    // Empêcher un admin de se rétrograder lui-même
+    if (userId === admin.id && role === 'USER') {
+      logAdminAction(
+        admin.id,
+        admin.email,
+        'UPDATE_USER_ROLE_ATTEMPT_SELF_DEMOTE',
+        { targetUserId: userId, attemptedRole: role },
+        req
+      );
+      return res.status(400).json({ 
+        message: 'Vous ne pouvez pas vous rétrograder vous-même' 
+      });
+    }
+
+    // Vérifier que l'utilisateur existe
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      logAdminAction(
+        admin.id,
+        admin.email,
+        'UPDATE_USER_ROLE_NOT_FOUND',
+        { targetUserId: userId, attemptedRole: role },
+        req
+      );
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    // Mettre à jour le rôle
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { role }
+    });
+
+    logAdminAction(
+      admin.id,
+      admin.email,
+      'UPDATE_USER_ROLE',
+      { 
+        targetUserId: userId,
+        targetUserEmail: user.email,
+        oldRole: user.role,
+        newRole: role
+      },
+      req
+    );
+
+    res.json({
+      message: `Rôle de l'utilisateur mis à jour avec succès`,
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        role: updatedUser.role
+      }
+    });
+  } catch (error: any) {
+    console.error('Error updating user role:', error);
+    res.status(500).json({ 
+      message: 'Erreur lors de la mise à jour du rôle',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
 router.delete('/users/:userId', authenticateToken, requireAdmin, validateCsrfToken, [
   param('userId').notEmpty().withMessage('L\'ID utilisateur est requis').isUUID().withMessage('L\'ID utilisateur doit être un UUID valide'),
 ], async (req: express.Request, res: express.Response) => {

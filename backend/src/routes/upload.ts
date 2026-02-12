@@ -45,10 +45,73 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
+// Middleware pour logger les erreurs multer
+const multerErrorHandler = (err: any, req: any, res: any, next: any) => {
+  // #region agent log
+  try {
+    const logPath = path.join(process.cwd(), '..', '..', '.cursor', 'debug.log');
+    const logEntry = JSON.stringify({
+      location: 'upload.ts:46',
+      message: 'Multer error',
+      data: {
+        error: err.message,
+        code: err.code,
+        contentType: req.headers['content-type'],
+      },
+      timestamp: Date.now(),
+      runId: 'run1',
+      hypothesisId: 'A'
+    }) + '\n';
+    fs.appendFileSync(logPath, logEntry);
+  } catch (e) {}
+  // #endregion
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ message: 'Fichier trop volumineux (max 5MB)' });
+    }
+  }
+  next(err);
+};
+
 // Upload de photo de profil
-router.post('/profile-photo', authenticateToken, upload.single('photo'), async (req: any, res) => {
+router.post('/profile-photo', authenticateToken, upload.single('photo'), multerErrorHandler, async (req: any, res) => {
+  // #region agent log
+  try {
+    const logPath = path.join(process.cwd(), '..', '..', '.cursor', 'debug.log');
+    const logEntry = JSON.stringify({
+      location: 'upload.ts:49',
+      message: 'Upload route hit',
+      data: {
+        contentType: req.headers['content-type'],
+        hasFile: !!req.file,
+        bodyKeys: Object.keys(req.body || {}),
+      },
+      timestamp: Date.now(),
+      runId: 'run1',
+      hypothesisId: 'A'
+    }) + '\n';
+    fs.appendFileSync(logPath, logEntry);
+  } catch (e) {}
+  // #endregion
   try {
     if (!req.file) {
+      // #region agent log
+      try {
+        const logPath = path.join(process.cwd(), '..', '..', '.cursor', 'debug.log');
+        const logEntry = JSON.stringify({
+          location: 'upload.ts:56',
+          message: 'No file received',
+          data: {
+            contentType: req.headers['content-type'],
+            bodyKeys: Object.keys(req.body || {}),
+          },
+          timestamp: Date.now(),
+          runId: 'run1',
+          hypothesisId: 'A'
+        }) + '\n';
+        fs.appendFileSync(logPath, logEntry);
+      } catch (e) {}
+      // #endregion
       return res.status(400).json({ message: 'Aucun fichier fourni' });
     }
 

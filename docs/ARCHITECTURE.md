@@ -90,8 +90,8 @@ Chaque consultation génère une entrée `Statistic` avec:
 
 3 plans disponibles:
 - **TRIAL** - 31 jours gratuits
-- **MONTHLY** - 10.50€/mois
-- **YEARLY** - 69€/an (5.75€/mois)
+- **MONTHLY** - 15€/mois
+- **YEARLY** - 99€/an (8.25€/mois)
 - **LIFETIME** - 199€ une fois
 
 Intégration Stripe pour les paiements.

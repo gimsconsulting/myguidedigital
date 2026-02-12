@@ -158,7 +158,7 @@ export default function SubscriptionPage() {
                 
                 {plan.id === 'monthly' && (
                   <p className="text-sm text-white/90 mb-2 line-through opacity-60">
-                    24€ / mois
+                    19€ / mois
                   </p>
                 )}
                 

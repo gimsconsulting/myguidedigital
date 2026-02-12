@@ -33,11 +33,11 @@ router.get('/plans', (req, res) => {
     {
       id: 'monthly',
       name: 'Mensuel',
-      price: 12.00,
+      price: 15.00,
       currency: 'EUR',
       interval: 'month',
-      pricePerLivret: 12.00,
-      savings: '50%'
+      pricePerLivret: 15.00,
+      savings: '21%'
     },
     {
       id: 'yearly',
@@ -71,7 +71,7 @@ router.post('/checkout', authenticateToken, async (req: any, res) => {
     }
 
     const plans: Record<string, { price: number; name: string; planType: string }> = {
-      monthly: { price: 12.00, name: 'Mensuel', planType: 'MONTHLY' },
+      monthly: { price: 15.00, name: 'Mensuel', planType: 'MONTHLY' },
       yearly: { price: 99.00, name: 'Annuel', planType: 'YEARLY' },
       lifetime: { price: 199.00, name: 'À vie', planType: 'LIFETIME' }
     };
@@ -169,7 +169,7 @@ router.post('/upgrade', authenticateToken, async (req: any, res) => {
     }
 
     const plans: Record<string, { price: number; name: string; planType: string }> = {
-      monthly: { price: 12.00, name: 'Mensuel', planType: 'MONTHLY' },
+      monthly: { price: 15.00, name: 'Mensuel', planType: 'MONTHLY' },
       yearly: { price: 99.00, name: 'Annuel', planType: 'YEARLY' },
       lifetime: { price: 199.00, name: 'À vie', planType: 'LIFETIME' }
     };

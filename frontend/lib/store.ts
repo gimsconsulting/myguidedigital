@@ -91,22 +91,13 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'auth-storage',
       skipHydration: false,
-      partialize: (state) => {
-        // Ne sauvegarder que si on a vraiment des données d'authentification
-        // Éviter de sauvegarder des valeurs null qui écraseraient les données existantes
-        if (!state.token || !state.user || !state.isAuthenticated) {
-          // Si on n'a pas de données valides, retourner undefined pour empêcher Zustand
-          // de sauvegarder quoi que ce soit dans auth-storage
-          // Cela empêchera Zustand de créer un auth-storage avec des valeurs null
-          return undefined;
-        }
-        return {
-          // Exclure hasHydrated de la persistance - il doit être réinitialisé à chaque chargement
-          user: state.user,
-          token: state.token,
-          isAuthenticated: state.isAuthenticated,
-        };
-      },
+      partialize: (state) => ({
+        // Exclure hasHydrated de la persistance - il doit être réinitialisé à chaque chargement
+        // Toujours retourner un objet valide (jamais undefined)
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
       onRehydrateStorage: () => {
         console.log('[STORE DEBUG] Starting hydration...');
         
