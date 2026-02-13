@@ -18,38 +18,11 @@ export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   
-  // Log très précoce pour vérifier que le code est chargé
-  console.log('🚀 [LAYOUT] Layout component rendered', {
-    pathname,
-    timestamp: new Date().toISOString()
-  });
-  
   // Déterminer si c'est une page d'authentification
   const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/forgot-password';
   const isPublicRoute = pathname?.startsWith('/guide') || pathname?.startsWith('/business-card');
   const isHomePage = pathname === '/';
   const isPublicPage = pathname === '/hote-airbnb' || pathname === '/blog' || pathname === '/contact';
-  
-  // Vérifier auth-storage APRÈS avoir appelé tous les hooks
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !isAuthPage && !isPublicRoute && !isHomePage && !isPublicPage) {
-      const authStorage = localStorage.getItem('auth-storage');
-      if (authStorage) {
-        try {
-          const parsed = JSON.parse(authStorage);
-          console.log('🚀 [LAYOUT] Found auth-storage', {
-            isAuthenticated: parsed.state?.isAuthenticated,
-            hasToken: !!parsed.state?.token,
-            hasUser: !!parsed.state?.user
-          });
-        } catch (e) {
-          console.error('🚀 [LAYOUT] Error parsing auth-storage', e);
-        }
-      } else {
-        console.log('🚀 [LAYOUT] No auth-storage found');
-      }
-    }
-  }, [pathname, isAuthPage, isPublicRoute, isHomePage, isPublicPage]);
   
   // Pour les pages publiques et d'authentification, utiliser un Layout simplifié SANS i18n
   if (isAuthPage || isPublicRoute || isHomePage || isPublicPage) {
@@ -73,92 +46,20 @@ function AuthenticatedLayout({
   const { isAuthenticated, user, logout, updateUser, hasHydrated } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
-  const authCheckedRef = useRef(false);
   const refreshedRef = useRef(false);
-  
-  // Vérifier l'authentification — utiliser useRef pour éviter la boucle infinie
-  // NE PAS mettre isAuthenticated ou user dans les dépendances car setAuth les modifie
-  useEffect(() => {
-    // Si déjà vérifié, ne rien faire
-    if (authCheckedRef.current) return;
-    
-    let timeoutId: NodeJS.Timeout | null = null;
-    let checkInterval: NodeJS.Timeout | null = null;
-    
-    // Vérifier DIRECTEMENT dans auth-storage
-    if (typeof window !== 'undefined') {
-      const authStorage = localStorage.getItem('auth-storage');
-      if (authStorage) {
-        try {
-          const parsed = JSON.parse(authStorage);
-          const hasAuthData = parsed.state?.isAuthenticated && 
-                             parsed.state?.token && 
-                             parsed.state?.user;
-          if (hasAuthData) {
-            // Seulement mettre à jour le store si nécessaire
-            const currentState = useAuthStore.getState();
-            if (!currentState.isAuthenticated || !currentState.token) {
-              useAuthStore.getState().setAuth(parsed.state.token, parsed.state.user);
-            }
-            authCheckedRef.current = true;
-            setIsReady(true);
-            setShouldRedirect(false);
-            return () => {};
-          }
-        } catch (e) {
-          // Ignore
-        }
-      }
-    }
-    
-    // Vérifier depuis le store si hydraté
-    const storeState = useAuthStore.getState();
-    if (storeState.hasHydrated || hasHydrated) {
-      const finalIsAuthenticated = storeState.isAuthenticated || (storeState.token && storeState.user);
-      authCheckedRef.current = true;
-      setIsReady(true);
-      setShouldRedirect(!finalIsAuthenticated);
-    } else {
-      // Attendre l'hydratation
-      checkInterval = setInterval(() => {
-        const state = useAuthStore.getState();
-        if (state.hasHydrated) {
-          if (checkInterval) clearInterval(checkInterval);
-          const finalIsAuthenticated = state.isAuthenticated || (state.token && state.user);
-          authCheckedRef.current = true;
-          setIsReady(true);
-          setShouldRedirect(!finalIsAuthenticated);
-        }
-      }, 50);
-      
-      timeoutId = setTimeout(() => {
-        if (checkInterval) clearInterval(checkInterval);
-        authCheckedRef.current = true;
-        setIsReady(true);
-        setShouldRedirect(true);
-      }, 2000);
-    }
-    
-    return () => {
-      if (timeoutId !== null) clearTimeout(timeoutId);
-      if (checkInterval !== null) clearInterval(checkInterval);
-    };
-  }, [hasHydrated]); // Seulement hasHydrated — PAS isAuthenticated ni user
   
   const { t, ready } = useTranslation();
   
   // Rafraîchir les données utilisateur UNE SEULE FOIS au montage
   useEffect(() => {
-    if (!isReady || shouldRedirect || refreshedRef.current) return;
+    if (refreshedRef.current) return;
+    if (!hasHydrated) return;
+    if (!isAuthenticated) return;
+    
     refreshedRef.current = true;
     
     const refreshUserData = async () => {
       try {
-        const currentState = useAuthStore.getState();
-        if (!currentState.isAuthenticated) return;
-        
         const { authApi } = await import('@/lib/api');
         const response = await authApi.getMe();
         if (response.data?.user) {
@@ -170,7 +71,7 @@ function AuthenticatedLayout({
     };
     
     refreshUserData();
-  }, [isReady, shouldRedirect, updateUser]);
+  }, [hasHydrated, isAuthenticated, updateUser]);
   
   // S'assurer que le composant est monté
   useEffect(() => {
@@ -179,51 +80,50 @@ function AuthenticatedLayout({
 
   // Redirection vers login si nécessaire
   useEffect(() => {
-    if (shouldRedirect && pathname !== '/login' && isReady) {
+    if (hasHydrated && !isAuthenticated && pathname !== '/login') {
       router.push('/login');
     }
-  }, [shouldRedirect, pathname, isReady, router]);
+  }, [hasHydrated, isAuthenticated, pathname, router]);
 
   // ===== TOUS LES HOOKS SONT APPELÉS AVANT CE POINT =====
-  // ===== Les returns conditionnels peuvent maintenant être utilisés =====
+
+  // Attendre l'hydratation du store
+  if (!hasHydrated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-500">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Attendre que i18n soit prêt
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-dark">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-400">Chargement...</p>
+          <p className="mt-4 text-gray-500">Chargement...</p>
         </div>
       </div>
     );
   }
   
-  // Attendre que la vérification d'authentification soit terminée
-  if (!isReady) {
+  // Rediriger si non authentifié
+  if (!isAuthenticated) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-dark">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-400">Vérification de l'authentification...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  // Si la vérification indique qu'on doit rediriger
-  if (shouldRedirect && pathname !== '/login') {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-dark">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-400">Redirection...</p>
+          <p className="mt-4 text-gray-500">Redirection...</p>
         </div>
       </div>
     );
   }
 
-  // Attendre le montage
+  // Attendre le montage côté client
   if (!mounted) {
     return <>{children}</>;
   }

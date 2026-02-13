@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { authApi, uploadApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
 import { Button } from '@/components/ui/Button';
@@ -9,8 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { toast } from '@/components/ui/Toast';
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const { user, isAuthenticated, updateUser } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -28,32 +26,22 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formInitializedRef = useRef(false);
 
-  // Initialiser le formulaire UNE SEULE FOIS quand user est disponible
-  // NE PAS mettre user dans les dépendances pour éviter les boucles
+  // Initialiser le formulaire quand user est disponible
+  // Le Layout gère déjà la redirection si non authentifié
   useEffect(() => {
     if (formInitializedRef.current) return;
+    if (!user) return;
     
-    // Lire l'état actuel du store (non-réactif pour éviter les boucles)
-    const currentUser = useAuthStore.getState().user;
-    const currentIsAuth = useAuthStore.getState().isAuthenticated;
-    
-    if (!currentIsAuth) {
-      // Le Layout gère déjà la redirection, mais par sécurité
-      return;
-    }
-
-    if (currentUser) {
-      formInitializedRef.current = true;
-      setFormData({
-        email: currentUser.email || '',
-        firstName: currentUser.firstName || '',
-        lastName: currentUser.lastName || '',
-        phone: currentUser.phone || '',
-        userType: currentUser.userType || 'PARTICULIER',
-        profilePhoto: currentUser.profilePhoto || '',
-      });
-    }
-  }, [isAuthenticated]); // Seulement isAuthenticated, PAS user
+    formInitializedRef.current = true;
+    setFormData({
+      email: user.email || '',
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      phone: user.phone || '',
+      userType: user.userType || 'PARTICULIER',
+      profilePhoto: user.profilePhoto || '',
+    });
+  }, [user]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
