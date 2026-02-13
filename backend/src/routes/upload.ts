@@ -74,7 +74,7 @@ const multerErrorHandler = (err: any, req: any, res: any, next: any) => {
 };
 
 // Upload de photo de profil
-router.post('/profile-photo', authenticateToken, upload.single('photo'), multerErrorHandler, async (req: any, res) => {
+router.post('/profile-photo', authenticateToken, upload.single('photo'), multerErrorHandler, async (req: any, res: any) => {
   // #region agent log
   try {
     const logPath = path.join(process.cwd(), '..', '..', '.cursor', 'debug.log');
