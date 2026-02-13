@@ -26,24 +26,34 @@ export default function ProfilePage() {
   const [isDragging, setIsDragging] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formInitializedRef = useRef(false);
 
+  // Initialiser le formulaire UNE SEULE FOIS quand user est disponible
+  // NE PAS mettre user dans les dépendances pour éviter les boucles
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
+    if (formInitializedRef.current) return;
+    
+    // Lire l'état actuel du store (non-réactif pour éviter les boucles)
+    const currentUser = useAuthStore.getState().user;
+    const currentIsAuth = useAuthStore.getState().isAuthenticated;
+    
+    if (!currentIsAuth) {
+      // Le Layout gère déjà la redirection, mais par sécurité
       return;
     }
 
-    if (user) {
+    if (currentUser) {
+      formInitializedRef.current = true;
       setFormData({
-        email: user.email || '',
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        phone: user.phone || '',
-        userType: user.userType || 'PARTICULIER',
-        profilePhoto: user.profilePhoto || '',
+        email: currentUser.email || '',
+        firstName: currentUser.firstName || '',
+        lastName: currentUser.lastName || '',
+        phone: currentUser.phone || '',
+        userType: currentUser.userType || 'PARTICULIER',
+        profilePhoto: currentUser.profilePhoto || '',
       });
     }
-  }, [user, isAuthenticated, router]);
+  }, [isAuthenticated]); // Seulement isAuthenticated, PAS user
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
