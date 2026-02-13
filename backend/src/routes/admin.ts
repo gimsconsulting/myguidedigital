@@ -2,7 +2,7 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from './auth';
 import jwt from 'jsonwebtoken';
-import { query, param, validationResult } from 'express-validator';
+import { query, param, body, validationResult } from 'express-validator';
 import { validateCsrfToken } from '../middleware/csrf';
 
 const router = express.Router();
