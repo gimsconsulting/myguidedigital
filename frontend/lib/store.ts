@@ -32,6 +32,11 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       hasHydrated: false,
       setAuth: (token, user) => {
+        // IMPORTANT: Sauvegarder le token aussi directement dans localStorage
+        // car l'intercepteur API lit depuis localStorage.getItem('token')
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('token', token);
+        }
         set({ token, user, isAuthenticated: true });
       },
       logout: () => {
