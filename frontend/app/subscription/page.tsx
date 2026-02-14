@@ -127,8 +127,8 @@ export default function SubscriptionPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Abonnement</h1>
-        <p className="text-gray-400">Choisissez la formule adaptée à votre type d&apos;hébergement</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Abonnement</h1>
+        <p className="text-gray-500">Choisissez la formule adaptée à votre type d&apos;hébergement</p>
       </div>
 
       {/* Trial info */}
@@ -146,17 +146,17 @@ export default function SubscriptionPage() {
       )}
 
       {/* Code promo */}
-      <div className="mb-8 glass-dark rounded-xl p-6 border border-primary/10">
-        <h2 className="text-lg font-semibold text-white mb-4">Vous avez un code promo ?</h2>
+      <div className="mb-8 bg-white rounded-xl p-6 shadow-md border border-gray-100">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Vous avez un code promo ?</h2>
         <div className="flex space-x-2">
           <input
             type="text"
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value)}
             placeholder="Entrez votre code ici"
-            className="flex-1 px-4 py-2 border border-primary/20 rounded-lg text-white bg-dark-light focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-gray-500"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-gray-400"
           />
-          <Button variant="primary" className="bg-gradient-to-r from-primary to-pink-500 text-white border-0 px-6">
+          <Button variant="primary" className="px-6">
             Valider
           </Button>
         </div>
@@ -175,7 +175,7 @@ export default function SubscriptionPage() {
             className={`px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
               activeTab === tab.id
                 ? 'bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg shadow-primary/30'
-                : 'glass-dark text-gray-400 border border-primary/20 hover:border-primary/50 hover:text-white'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-primary/50 hover:text-primary shadow-sm'
             }`}
           >
             <span className="hidden md:inline">{tab.label}</span>
@@ -188,16 +188,16 @@ export default function SubscriptionPage() {
       {/* TAB: HÔTES AIRBNB, GÎTES & CHAMBRES D'HÔTES */}
       {/* ============================================================ */}
       {activeTab === 'hotes' && (
-        <div className="animate-fade-in">
+        <div>
           {/* Toggle Annuel / Saisonnier */}
           <div className="flex justify-center mb-10">
-            <div className="glass-dark rounded-full p-1 flex border border-primary/20">
+            <div className="bg-gray-100 rounded-full p-1 flex border border-gray-200">
               <button
                 onClick={() => setHostBilling('annual')}
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
                   hostBilling === 'annual'
                     ? 'bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg'
-                    : 'text-gray-400 hover:text-white'
+                    : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
                 Annuel
@@ -207,7 +207,7 @@ export default function SubscriptionPage() {
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
                   hostBilling === 'seasonal'
                     ? 'bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg'
-                    : 'text-gray-400 hover:text-white'
+                    : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
                 Saisonnier
@@ -218,9 +218,9 @@ export default function SubscriptionPage() {
           {hostBilling === 'annual' ? (
             /* Plan Annuel unique */
             <div className="flex justify-center">
-              <div className="relative group w-full max-w-md">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
-                <div className="relative bg-gradient-to-br from-pink-500 via-rose-500 to-purple-600 rounded-2xl p-8 border-2 border-primary overflow-hidden">
+              <div className="relative w-full max-w-md transform hover:scale-105 transition-all duration-300">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-50"></div>
+                <div className="relative bg-gradient-to-br from-pink-500 via-rose-500 to-purple-600 rounded-2xl p-8 border-2 border-primary overflow-hidden shadow-xl">
                   <div className="absolute -top-0 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-sm font-bold px-6 py-1.5 rounded-b-full shadow-lg whitespace-nowrap">
                     ⭐ OFFRE DE LANCEMENT
                   </div>
@@ -256,11 +256,11 @@ export default function SubscriptionPage() {
             /* Plans Saisonniers */
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* 1 Mois */}
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
-                <div className="relative glass-dark border-2 border-primary/20 rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 h-full">
+              <div className="relative transform hover:scale-105 transition-all duration-300">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-30"></div>
+                <div className="relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 shadow-lg h-full">
                   <div className="text-center">
-                    <h3 className="text-2xl font-bold text-white mb-2">1 Mois</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">1 Mois</h3>
                     <div className="mb-2">
                       <span className="text-5xl font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">9,90€</span>
                       <span className="text-gray-400"> HT</span>
@@ -272,7 +272,7 @@ export default function SubscriptionPage() {
                           <svg className="w-5 h-5 text-primary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
-                          <span className="text-gray-300 text-sm">{item}</span>
+                          <span className="text-gray-700 text-sm">{item}</span>
                         </li>
                       ))}
                     </ul>
@@ -288,9 +288,9 @@ export default function SubscriptionPage() {
               </div>
 
               {/* 2 Mois - Featured */}
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
-                <div className="relative bg-gradient-to-br from-pink-500 via-rose-500 to-purple-600 border-2 border-primary rounded-2xl p-8 transform md:scale-105 h-full">
+              <div className="relative transform md:scale-105 hover:scale-110 transition-all duration-300">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-50"></div>
+                <div className="relative bg-gradient-to-br from-pink-500 via-rose-500 to-purple-600 border-2 border-primary rounded-2xl p-8 shadow-xl h-full">
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-sm font-bold px-6 py-1.5 rounded-full shadow-lg whitespace-nowrap">
                     ⭐ LE PLUS DEMANDÉ
                   </div>
@@ -323,14 +323,14 @@ export default function SubscriptionPage() {
               </div>
 
               {/* 3 Mois */}
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
-                <div className="relative glass-dark border-2 border-primary/20 rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 h-full">
-                  <div className="absolute top-0 right-0 glass-dark text-white px-4 py-1 rounded-bl-xl rounded-tr-2xl text-sm font-bold">
+              <div className="relative transform hover:scale-105 transition-all duration-300">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-30"></div>
+                <div className="relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 shadow-lg h-full">
+                  <div className="absolute top-0 right-0 bg-primary text-white px-4 py-1 rounded-bl-xl rounded-tr-2xl text-sm font-bold">
                     -33%
                   </div>
                   <div className="text-center">
-                    <h3 className="text-2xl font-bold text-white mb-2">3 Mois</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">3 Mois</h3>
                     <div className="mb-2">
                       <span className="text-5xl font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">19,90€</span>
                       <span className="text-gray-400"> HT</span>
@@ -342,7 +342,7 @@ export default function SubscriptionPage() {
                           <svg className="w-5 h-5 text-primary mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
-                          <span className="text-gray-300 text-sm">{item}</span>
+                          <span className="text-gray-700 text-sm">{item}</span>
                         </li>
                       ))}
                     </ul>
@@ -360,15 +360,15 @@ export default function SubscriptionPage() {
           )}
 
           {/* Features incluses */}
-          <div className="mt-10 glass-dark rounded-xl p-6 border border-primary/10">
-            <h3 className="text-lg font-bold text-white mb-4 text-center">Toutes les formules incluent</h3>
+          <div className="mt-10 bg-white rounded-xl p-6 shadow-md border border-gray-100">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">Toutes les formules incluent</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {['Livrets illimités', 'Chatbot IA 24h/24', 'Traduction multilingue', 'QR code personnalisé', 'Statistiques', 'Personnalisation complète', 'Support inclus', 'Mises à jour'].map((item, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <svg className="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-gray-300 text-sm">{item}</span>
+                  <span className="text-gray-700 text-sm">{item}</span>
                 </div>
               ))}
             </div>
@@ -380,24 +380,24 @@ export default function SubscriptionPage() {
       {/* TAB: HÔTELS */}
       {/* ============================================================ */}
       {activeTab === 'hotels' && (
-        <div className="animate-fade-in">
+        <div>
           <div className="max-w-2xl mx-auto">
             {/* Calculateur */}
-            <div className="relative group mb-8">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
-              <div className="relative glass-dark rounded-2xl p-8 border border-primary/20">
-                <h3 className="text-xl font-bold text-white mb-6 text-center">Calculez votre tarif hôtel</h3>
+            <div className="relative mb-8">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-30"></div>
+              <div className="relative bg-white rounded-2xl p-8 border border-gray-200 shadow-xl">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Calculez votre tarif hôtel</h3>
 
                 {/* Nombre de chambres */}
                 <div className="flex items-center justify-center gap-4 mb-4">
-                  <label className="text-gray-400 text-sm">Nombre de chambres :</label>
+                  <label className="text-gray-600 text-sm font-medium">Nombre de chambres :</label>
                   <input
                     type="number"
                     value={roomCount}
                     onChange={(e) => handleRoomChange(parseInt(e.target.value) || 5)}
                     min={5}
                     max={500}
-                    className="w-24 text-center bg-dark-light border border-primary/30 rounded-lg px-3 py-2 text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-24 text-center bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-gray-900 font-bold text-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
@@ -410,9 +410,9 @@ export default function SubscriptionPage() {
                     step={1}
                     value={roomCount}
                     onChange={(e) => handleRoomChange(parseInt(e.target.value))}
-                    className="w-full h-2 bg-dark-light rounded-lg appearance-none cursor-pointer accent-primary"
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                   />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <div className="flex justify-between text-xs text-gray-400 mt-1">
                     <span>5</span>
                     <span>100</span>
                     <span>200</span>
@@ -423,20 +423,20 @@ export default function SubscriptionPage() {
                 </div>
 
                 {/* Résultat prix */}
-                <div className="text-center bg-dark-light/50 rounded-xl p-6 border border-primary/10">
-                  <p className="text-gray-400 text-sm mb-2">Prix par chambre / an</p>
-                  <p className="text-4xl font-bold text-white mb-1">{pricePerRoom}€ <span className="text-lg text-gray-400">HT/chambre/an</span></p>
-                  <div className="border-t border-primary/10 mt-4 pt-4">
+                <div className="text-center bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <p className="text-gray-500 text-sm mb-2">Prix par chambre / an</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">{pricePerRoom}€ <span className="text-lg text-gray-500">HT/chambre/an</span></p>
+                  <div className="border-t border-gray-200 mt-4 pt-4">
                     <p className="text-2xl font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
                       Total : {hotelTotalPrice}€ HT/an
                     </p>
-                    <p className="text-sm text-gray-400 mt-1">Soit {hotelMonthly}€/mois pour {roomCount} chambres</p>
+                    <p className="text-sm text-gray-500 mt-1">Soit {hotelMonthly}€/mois pour {roomCount} chambres</p>
                   </div>
                 </div>
 
                 {/* Grille tarifaire */}
                 <div className="mt-6">
-                  <p className="text-center text-gray-400 text-sm mb-3">Grille tarifaire dégressive</p>
+                  <p className="text-center text-gray-500 text-sm mb-3">Grille tarifaire dégressive</p>
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
                     {hotelTiers.map((tier, i) => (
                       <div
@@ -444,7 +444,7 @@ export default function SubscriptionPage() {
                         className={`rounded-lg p-2 text-xs transition-all duration-300 ${
                           getPricePerRoom(parseInt(tier.rooms)) === pricePerRoom
                             ? 'bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg scale-105'
-                            : 'glass-dark text-gray-400 border border-primary/10'
+                            : 'bg-gray-50 text-gray-600 border border-gray-200'
                         }`}
                       >
                         <p className="font-bold">{tier.price}</p>
@@ -468,15 +468,15 @@ export default function SubscriptionPage() {
             </div>
 
             {/* Features incluses */}
-            <div className="glass-dark rounded-xl p-6 border border-primary/10">
-              <h3 className="text-lg font-bold text-white mb-4 text-center">Toutes les formules incluent</h3>
+            <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">Toutes les formules incluent</h3>
               <div className="grid grid-cols-2 gap-4">
                 {['Livret par typologie de chambre', 'QR code par chambre', 'Chatbot IA 24h/24', 'Traduction multilingue', 'Statistiques avancées', 'Personnalisation aux couleurs de l\'hôtel', 'Mise à jour en temps réel', 'Support prioritaire'].map((item, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <svg className="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-gray-300 text-sm">{item}</span>
+                    <span className="text-gray-700 text-sm">{item}</span>
                   </div>
                 ))}
               </div>
@@ -489,24 +489,24 @@ export default function SubscriptionPage() {
       {/* TAB: CAMPINGS */}
       {/* ============================================================ */}
       {activeTab === 'campings' && (
-        <div className="animate-fade-in">
+        <div>
           <div className="max-w-2xl mx-auto">
             {/* Calculateur */}
-            <div className="relative group mb-8">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
-              <div className="relative glass-dark rounded-2xl p-8 border border-primary/20">
-                <h3 className="text-xl font-bold text-white mb-6 text-center">Calculez votre tarif camping</h3>
+            <div className="relative mb-8">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-30"></div>
+              <div className="relative bg-white rounded-2xl p-8 border border-gray-200 shadow-xl">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">Calculez votre tarif camping</h3>
 
                 {/* Nombre d'emplacements */}
                 <div className="flex items-center justify-center gap-4 mb-4">
-                  <label className="text-gray-400 text-sm">Nombre d&apos;emplacements :</label>
+                  <label className="text-gray-600 text-sm font-medium">Nombre d&apos;emplacements :</label>
                   <input
                     type="number"
                     value={pitchCount}
                     onChange={(e) => handlePitchChange(parseInt(e.target.value) || 5)}
                     min={5}
                     max={300}
-                    className="w-24 text-center bg-dark-light border border-primary/30 rounded-lg px-3 py-2 text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-24 text-center bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-gray-900 font-bold text-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
@@ -519,9 +519,9 @@ export default function SubscriptionPage() {
                     step={1}
                     value={pitchCount}
                     onChange={(e) => handlePitchChange(parseInt(e.target.value))}
-                    className="w-full h-2 bg-dark-light rounded-lg appearance-none cursor-pointer accent-primary"
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                   />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <div className="flex justify-between text-xs text-gray-400 mt-1">
                     <span>5</span>
                     <span>50</span>
                     <span>100</span>
@@ -532,26 +532,26 @@ export default function SubscriptionPage() {
                 </div>
 
                 {/* Résultat prix */}
-                <div className="text-center bg-dark-light/50 rounded-xl p-6 border border-primary/10">
-                  <p className="text-gray-400 text-sm mb-2">Prix par emplacement / an</p>
-                  <p className="text-4xl font-bold text-white mb-1">{pricePerPitch}€ <span className="text-lg text-gray-400">HT/empl./an</span></p>
-                  <div className="border-t border-primary/10 mt-4 pt-4">
+                <div className="text-center bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <p className="text-gray-500 text-sm mb-2">Prix par emplacement / an</p>
+                  <p className="text-4xl font-bold text-gray-900 mb-1">{pricePerPitch}€ <span className="text-lg text-gray-500">HT/empl./an</span></p>
+                  <div className="border-t border-gray-200 mt-4 pt-4">
                     <p className="text-2xl font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
                       Total : {campingAnnualPrice}€ HT/an
                     </p>
-                    <p className="text-sm text-gray-400 mt-1">Soit {campingMonthly}€/mois pour {pitchCount} emplacements</p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      + Frais de mise en place : <strong className="text-gray-300">{SETUP_FEE_CAMPING}€ HT</strong> (unique, 1ère année)
+                    <p className="text-sm text-gray-500 mt-1">Soit {campingMonthly}€/mois pour {pitchCount} emplacements</p>
+                    <p className="text-xs text-gray-400 mt-2">
+                      + Frais de mise en place : <strong className="text-gray-700">{SETUP_FEE_CAMPING}€ HT</strong> (unique, 1ère année)
                     </p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      1ère année : <strong className="text-white">{campingFirstYear}€ HT</strong>
+                    <p className="text-sm text-gray-600 mt-1">
+                      1ère année : <strong className="text-gray-900">{campingFirstYear}€ HT</strong>
                     </p>
                   </div>
                 </div>
 
                 {/* Grille tarifaire */}
                 <div className="mt-6">
-                  <p className="text-center text-gray-400 text-sm mb-3">Grille tarifaire dégressive</p>
+                  <p className="text-center text-gray-500 text-sm mb-3">Grille tarifaire dégressive</p>
                   <div className="grid grid-cols-3 sm:grid-cols-7 gap-2 text-center">
                     {campingTiers.map((tier, i) => (
                       <div
@@ -559,7 +559,7 @@ export default function SubscriptionPage() {
                         className={`rounded-lg p-2 text-xs transition-all duration-300 ${
                           getPricePerPitch(parseInt(tier.pitches)) === pricePerPitch
                             ? 'bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg scale-105'
-                            : 'glass-dark text-gray-400 border border-primary/10'
+                            : 'bg-gray-50 text-gray-600 border border-gray-200'
                         }`}
                       >
                         <p className="font-bold">{tier.price}</p>
@@ -583,15 +583,15 @@ export default function SubscriptionPage() {
             </div>
 
             {/* Features incluses */}
-            <div className="glass-dark rounded-xl p-6 border border-primary/10">
-              <h3 className="text-lg font-bold text-white mb-4 text-center">Toutes les formules incluent</h3>
+            <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">Toutes les formules incluent</h3>
               <div className="grid grid-cols-2 gap-4">
                 {['Livret par type d\'hébergement', 'QR code par emplacement', 'Chatbot IA 24h/24', 'Traduction multilingue', 'Animations & services', 'Personnalisation complète', 'Duplication de livrets', 'Support inclus'].map((item, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <svg className="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-gray-300 text-sm">{item}</span>
+                    <span className="text-gray-700 text-sm">{item}</span>
                   </div>
                 ))}
               </div>
@@ -601,10 +601,10 @@ export default function SubscriptionPage() {
       )}
 
       {/* Contact pour devis personnalisé */}
-      <div className="mt-10 text-center glass-dark rounded-xl p-6 border border-primary/10">
-        <p className="text-gray-400 text-sm">
+      <div className="mt-10 text-center bg-white rounded-xl p-6 shadow-md border border-gray-100">
+        <p className="text-gray-500 text-sm">
           Besoin d&apos;un devis personnalisé ou d&apos;une démonstration ?{' '}
-          <a href="/contact" className="text-primary hover:text-pink-400 font-semibold transition-colors">
+          <a href="/contact" className="text-primary hover:text-pink-500 font-semibold transition-colors">
             Contactez-nous →
           </a>
         </p>
