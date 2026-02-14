@@ -16,6 +16,7 @@ export default function ProfilePage() {
     phone: '',
     userType: 'PARTICULIER',
     profilePhoto: '',
+    accommodationType: [] as string[],
   });
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,6 +41,7 @@ export default function ProfilePage() {
       phone: user.phone || '',
       userType: user.userType || 'PARTICULIER',
       profilePhoto: user.profilePhoto || '',
+      accommodationType: user.accommodationType || [],
     });
   }, [user]);
 
@@ -175,6 +177,53 @@ export default function ProfilePage() {
               <option value="PARTICULIER">Un particulier</option>
               <option value="SOCIETE">Une société</option>
             </select>
+          </div>
+
+          {/* Type d'hébergement */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+              <span className="text-xl">🏡</span>
+              Quel type d&apos;hébergement proposez-vous ?
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { value: 'CAMPING', label: 'Camping', emoji: '⛺' },
+                { value: 'CHAMBRE_HOTES', label: 'Chambre d\'hôtes', emoji: '🏠' },
+                { value: 'CONCIERGERIE', label: 'Conciergerie', emoji: '🔑' },
+                { value: 'GESTIONNAIRE', label: 'Gestionnaire de locations', emoji: '🏢' },
+                { value: 'PARTICULIER', label: 'Particulier', emoji: '👤' },
+                { value: 'GITE', label: 'Gîte', emoji: '🏡' },
+                { value: 'HOTEL', label: 'Hôtel', emoji: '🏨' },
+              ].map((type) => {
+                const isChecked = formData.accommodationType.includes(type.value);
+                return (
+                  <label
+                    key={type.value}
+                    className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                      isChecked
+                        ? 'border-primary bg-primary/5 shadow-sm'
+                        : 'border-gray-200 hover:border-primary/40 hover:bg-gray-50'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => {
+                        const newTypes = e.target.checked
+                          ? [...formData.accommodationType, type.value]
+                          : formData.accommodationType.filter((t) => t !== type.value);
+                        setFormData({ ...formData, accommodationType: newTypes });
+                      }}
+                      className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                    />
+                    <span className="text-2xl">{type.emoji}</span>
+                    <span className={`text-sm font-medium ${isChecked ? 'text-primary' : 'text-gray-700'}`}>
+                      {type.label}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
           </div>
 
           <div>
