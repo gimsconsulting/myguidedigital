@@ -57,7 +57,7 @@ export default function Home() {
                 {t('nav.home', 'Accueil')}
               </Link>
               <Link href="/hote-airbnb" className="text-white hover:text-primary transition-colors">
-                {t('nav.airbnbHost', 'Hôte AirBnB')}
+                {t('nav.services', 'Nos services')}
               </Link>
               <Link href="/tarifs" className="text-white hover:text-primary transition-colors">
                 {t('nav.pricing', 'Nos tarifs')}
@@ -115,7 +115,7 @@ export default function Home() {
                 {t('nav.home', 'Accueil')}
               </Link>
               <Link href="/hote-airbnb" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
-                {t('nav.airbnbHost', 'Hôte AirBnB')}
+                {t('nav.services', 'Nos services')}
               </Link>
               <Link href="/tarifs" className="block text-white hover:text-primary transition-colors">
                 {t('nav.pricing', 'Nos tarifs')}
@@ -599,151 +599,69 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="tarifs" className="py-20 sm:py-24 lg:py-32 bg-dark scroll-mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Demo + Migration CTA Section */}
+      <section id="tarifs" className="py-20 sm:py-24 lg:py-32 bg-dark scroll-mt-16 relative overflow-hidden">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              {t('home.pricing.title', 'Tarifs simples et transparents')}
+              {t('home.pricing.title', 'Comment démarrer ?')}
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              {t('home.pricing.subtitle', 'Choisissez le plan qui correspond à vos besoins')}
+              {t('home.pricing.subtitle', 'Nous vous accompagnons à chaque étape')}
             </p>
           </div>
 
-          {/* OFFRE DE LANCEMENT */}
-          <div className="text-center mb-12 animate-fade-in">
-            <div className="inline-block bg-dark-light/90 backdrop-blur-sm rounded-lg px-8 py-5 border-2 border-primary/50 shadow-xl">
-              <p className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
-                {t('home.pricing.launchOffer', 'OFFRE DE LANCEMENT')}
-              </p>
-              <p className="text-base text-gray-300 font-medium">
-                {t('home.pricing.launchOfferSubtitle', 'Valable pendant une durée limitée')}
-              </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Demo Block */}
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary via-pink-500 to-purple-600 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+              <div className="relative bg-gradient-purple-pink rounded-2xl p-8 sm:p-10 overflow-hidden">
+                <div className="absolute inset-0 bg-dark/30"></div>
+                <div className="relative text-center">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+                    {t('home.demo.title', 'Vous souhaitez une démonstration ?')}
+                  </h3>
+                  <p className="text-white/90 mb-6 leading-relaxed">
+                    {t('home.demo.desc', 'En moins de 30 minutes, découvrez l\'outil et permettez à vos équipes une prise en main immédiate.')}
+                  </p>
+                  <Link href="/contact">
+                    <Button variant="primary" className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 hover:from-yellow-500 hover:to-yellow-600 border-0 shadow-lg font-bold px-8 py-3 rounded-full">
+                      {t('home.demo.cta', 'Demander une démo')}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Migration Block */}
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-primary to-pink-500 rounded-2xl blur-lg opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+              <div className="relative glass-dark rounded-2xl p-8 sm:p-10 border-2 border-primary/30 overflow-hidden">
+                <div className="text-center">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+                    {t('home.migration.title', 'On s\'occupe de tout')}
+                  </h3>
+                  <p className="text-gray-400 mb-6 leading-relaxed">
+                    {t('home.migration.desc', 'Vous avez un livret papier ou un document existant ? Envoyez-le nous et nous le transformons en livret digital complet, traduit et enrichi de recommandations locales.')}
+                  </p>
+                  <Link href="/contact">
+                    <Button variant="primary" className="bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 border-0 shadow-lg font-bold px-8 py-3 rounded-full">
+                      {t('home.migration.cta', 'Nous contacter')}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-            {/* Plan Mensuel */}
-            <div className="glass-dark border-2 border-primary/20 rounded-2xl p-8 hover:border-primary/50 hover:scale-105 transition-all duration-300 animate-slide-up glow-purple hover:glow-gradient relative">
-              <div className="absolute top-0 right-0 glass-dark text-white px-4 py-1 rounded-bl-xl rounded-tr-2xl text-sm font-bold">
-                {t('home.pricing.monthly.savings', 'ÉCONOMIE 21%')}
-              </div>
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-white mb-2">{t('home.pricing.monthly.title', 'Mensuel')}</h3>
-                <div className="mb-2">
-                  <span className="text-xl text-gray-400 line-through mr-2 font-semibold">{t('home.pricing.monthly.oldPrice', '19€')}</span>
-                  <span className="text-5xl font-bold bg-gradient-purple-pink bg-clip-text text-transparent">{t('home.pricing.monthly.price', '15€')}</span>
-                  <span className="text-gray-400">{t('home.pricing.monthly.period', '/mois')}</span>
-                </div>
-                <ul className="text-left space-y-4 mb-8">
-                  <li className="flex items-start">
-                    <svg className="w-5 h-5 text-primary mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{t('home.pricing.monthly.unlimited', 'Livrets illimités')}</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-5 h-5 text-primary mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{t('home.pricing.monthly.allModules', 'Tous les modules')}</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-5 h-5 text-primary mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{t('home.pricing.monthly.support', 'Support inclus')}</span>
-                  </li>
-                </ul>
-                <Link href="/register">
-                  <Button variant="primary" className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 border-0 shadow-lg">
-                    {t('home.pricing.monthly.cta', 'Commencer')}
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Plan Annuel - Featured */}
-            <div className="bg-gradient-purple-pink border-2 border-primary rounded-2xl p-8 hover:scale-105 transition-all duration-300 transform scale-105 animate-slide-up relative glow-gradient">
-              <div className="absolute top-0 right-0 glass-dark text-white px-4 py-1 rounded-bl-xl rounded-tr-2xl text-sm font-bold">
-                {t('home.pricing.yearly.savings', 'ÉCONOMIE 34%')}
-              </div>
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-white mb-2">{t('home.pricing.yearly.title', 'Annuel')}</h3>
-                <div className="mb-2">
-                  <span className="text-xl text-white/70 line-through mr-2 font-semibold">{t('home.pricing.yearly.oldPrice', '149€')}</span>
-                  <span className="text-5xl font-bold text-white">{t('home.pricing.yearly.price', '99€')}</span>
-                  <span className="text-white/80">{t('home.pricing.yearly.period', '/an')}</span>
-                </div>
-                <div className="text-sm text-white/90 mb-4">{t('home.pricing.yearly.monthlyPrice', 'Soit 8,25€/mois')}</div>
-                <ul className="text-left space-y-4 mb-8">
-                  <li className="flex items-start">
-                    <svg className="w-5 h-5 text-white mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-white">{t('home.pricing.yearly.allMonthly', 'Tout du plan mensuel')}</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-5 h-5 text-white mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-white">{t('home.pricing.yearly.savingsYear', 'Économie de 31€/an')}</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-5 h-5 text-white mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-white">{t('home.pricing.yearly.priority', 'Support prioritaire')}</span>
-                  </li>
-                </ul>
-                <Link href="/register">
-                  <Button variant="primary" className="w-full bg-gradient-to-r from-purple-500 to-violet-500 text-white hover:from-purple-600 hover:to-violet-600 border-0 shadow-lg">
-                    {t('home.pricing.yearly.cta', 'Commencer')}
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Plan À vie */}
-            <div className="glass-dark border-2 border-primary/20 rounded-2xl p-8 hover:border-primary/50 hover:scale-105 transition-all duration-300 animate-slide-up glow-purple hover:glow-gradient relative">
-              <div className="absolute top-0 right-0 glass-dark text-white px-4 py-1 rounded-bl-xl rounded-tr-2xl text-sm font-bold">
-                {t('home.pricing.lifetime.savings', 'ÉCONOMIE 33%')}
-              </div>
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-white mb-2">{t('home.pricing.lifetime.title', 'À vie')}</h3>
-                <div className="mb-2">
-                  <span className="text-xl text-gray-400 line-through mr-2 font-semibold">{t('home.pricing.lifetime.oldPrice', '299€')}</span>
-                  <span className="text-5xl font-bold bg-gradient-purple-pink bg-clip-text text-transparent">{t('home.pricing.lifetime.price', '199€')}</span>
-                  <span className="text-gray-400">{t('home.pricing.lifetime.period', '/unique')}</span>
-                </div>
-                <ul className="text-left space-y-4 mb-8">
-                  <li className="flex items-start">
-                    <svg className="w-5 h-5 text-primary mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{t('home.pricing.lifetime.permanent', 'Accès permanent')}</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-5 h-5 text-primary mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{t('home.pricing.lifetime.allFeatures', 'Toutes les fonctionnalités')}</span>
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="w-5 h-5 text-primary mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-gray-300">{t('home.pricing.lifetime.updates', 'Mises à jour incluses')}</span>
-                  </li>
-                </ul>
-                <Link href="/register">
-                  <Button variant="primary" className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 border-0 shadow-lg">
-                    {t('home.pricing.lifetime.cta', 'Commencer')}
-                  </Button>
-                </Link>
-              </div>
-            </div>
+          {/* Lien vers tarifs détaillés */}
+          <div className="text-center mt-12 animate-fade-in">
+            <Link href="/tarifs" className="inline-flex items-center text-primary hover:text-pink-400 transition-colors text-lg font-semibold group">
+              {t('home.pricing.seeAll', 'Découvrir tous nos tarifs détaillés')}
+              <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
@@ -1039,7 +957,7 @@ export default function Home() {
               <h4 className="font-semibold mb-4 text-white">{t('home.footer.navigation', 'Navigation')}</h4>
               <ul className="space-y-2 text-gray-400">
                 <li><Link href="/" className="hover:text-primary transition-colors">{t('nav.home', 'Accueil')}</Link></li>
-                <li><Link href="/hote-airbnb" className="hover:text-primary transition-colors">{t('nav.airbnbHost', 'Hôte AirBnB')}</Link></li>
+                <li><Link href="/hote-airbnb" className="hover:text-primary transition-colors">{t('nav.services', 'Nos services')}</Link></li>
                 <li><Link href="/tarifs" className="hover:text-primary transition-colors">{t('nav.pricing', 'Nos tarifs')}</Link></li>
                 <li><Link href="/blog" className="hover:text-primary transition-colors">{t('nav.blog', 'Blog')}</Link></li>
                 <li><Link href="/login" className="hover:text-primary transition-colors">{t('nav.login', 'Connexion')}</Link></li>

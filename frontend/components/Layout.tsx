@@ -22,7 +22,7 @@ export default function Layout({ children }: LayoutProps) {
   const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/forgot-password';
   const isPublicRoute = pathname?.startsWith('/guide') || pathname?.startsWith('/business-card');
   const isHomePage = pathname === '/';
-  const isPublicPage = pathname === '/hote-airbnb' || pathname === '/blog' || pathname === '/contact';
+  const isPublicPage = pathname === '/hote-airbnb' || pathname === '/blog' || pathname === '/contact' || pathname === '/tarifs' || pathname?.startsWith('/tarifs/');
   
   // Pour les pages publiques et d'authentification, utiliser un Layout simplifié SANS i18n
   if (isAuthPage || isPublicRoute || isHomePage || isPublicPage) {
