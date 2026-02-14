@@ -47,7 +47,7 @@ export default function BlogPage() {
             <div className="hidden md:flex items-center gap-8">
               <Link href="/" className="text-white hover:text-primary transition-colors">{t('nav.home', 'Accueil')}</Link>
               <Link href="/hote-airbnb" className="text-white hover:text-primary transition-colors">{t('nav.airbnbHost', 'Hôte AirBnB')}</Link>
-              <Link href="/#tarifs" className="text-white hover:text-primary transition-colors">{t('nav.pricing', 'Nos tarifs')}</Link>
+              <Link href="/tarifs" className="text-white hover:text-primary transition-colors">{t('nav.pricing', 'Nos tarifs')}</Link>
               <Link href="/blog" className="text-primary font-semibold">{t('nav.blog', 'Blog')}</Link>
               <Link href="/contact" className="text-white hover:text-primary transition-colors">{t('nav.contact', 'Contact')}</Link>
               <Link href="/login" className="text-white hover:text-primary transition-colors">{t('nav.login', 'Connexion')}</Link>
@@ -85,7 +85,7 @@ export default function BlogPage() {
             <div className="md:hidden border-t border-primary/20 py-4 space-y-3">
               <Link href="/" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>{t('nav.home', 'Accueil')}</Link>
               <Link href="/hote-airbnb" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>{t('nav.airbnbHost', 'Hôte AirBnB')}</Link>
-              <Link href="/#tarifs" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>{t('nav.pricing', 'Nos tarifs')}</Link>
+              <Link href="/tarifs" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>{t('nav.pricing', 'Nos tarifs')}</Link>
               <Link href="/blog" className="block text-primary font-semibold" onClick={() => setIsMobileMenuOpen(false)}>{t('nav.blog', 'Blog')}</Link>
               <Link href="/contact" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>{t('nav.contact', 'Contact')}</Link>
               <Link href="/login" className="block text-white hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>{t('nav.login', 'Connexion')}</Link>
