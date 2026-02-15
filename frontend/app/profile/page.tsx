@@ -3,9 +3,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { authApi, uploadApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { toast } from '@/components/ui/Toast';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const { user, updateUser } = useAuthStore();
@@ -25,18 +24,15 @@ export default function ProfilePage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [message, setMessage] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [activeSection, setActiveSection] = useState('info');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formInitializedRef = useRef(false);
 
-  // Initialiser le formulaire quand user est disponible
-  // Le Layout gère déjà la redirection si non authentifié
   useEffect(() => {
     if (formInitializedRef.current) return;
     if (!user) return;
-    
     formInitializedRef.current = true;
     setFormData({
       email: user.email || '',
@@ -56,43 +52,35 @@ export default function ProfilePage() {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setMessage('');
-
     try {
       const response = await authApi.updateProfile(formData);
       updateUser(response.data.user);
       toast.success('Profil mis à jour avec succès');
-      setMessage('Profil mis à jour avec succès');
     } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Erreur lors de la mise à jour');
+      toast.error(err.response?.data?.message || 'Erreur lors de la mise à jour');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleFileUpload = async (file: File) => {
-    // Vérifier le type de fichier
     if (!file.type.startsWith('image/')) {
       toast.error('Veuillez sélectionner une image');
       return;
     }
-
-    // Vérifier la taille (5MB max)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('L\'image est trop volumineuse (max 5MB)');
+      toast.error("L'image est trop volumineuse (max 5MB)");
       return;
     }
-
     setIsUploading(true);
     try {
       const response = await uploadApi.uploadProfilePhoto(file);
       const profilePhotoUrl = response.data.profilePhoto;
       setFormData({ ...formData, profilePhoto: profilePhotoUrl });
       updateUser(response.data.user);
-      toast.success('Photo de profil uploadée avec succès !');
+      toast.success('Photo de profil mise à jour !');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Erreur lors de l\'upload de la photo');
-      console.error('Upload error:', err);
+      toast.error(err.response?.data?.message || "Erreur lors de l'upload");
     } finally {
       setIsUploading(false);
     }
@@ -101,16 +89,12 @@ export default function ProfilePage() {
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setMessage('');
-
     try {
       if (!password || password.length < 8) {
         toast.error('Le mot de passe doit contenir au moins 8 caractères');
         setIsLoading(false);
         return;
       }
-
-      // Vérifier la complexité du mot de passe côté client (le backend vérifiera aussi)
       if (!/[A-Z]/.test(password)) {
         toast.error('Le mot de passe doit contenir au moins une majuscule');
         setIsLoading(false);
@@ -126,402 +110,763 @@ export default function ProfilePage() {
         setIsLoading(false);
         return;
       }
-
       await authApi.updatePassword({ password });
       setPassword('');
       toast.success('Mot de passe mis à jour avec succès');
-      setMessage('Mot de passe mis à jour avec succès');
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Erreur lors de la mise à jour';
-      setMessage(errorMessage);
-      toast.error(errorMessage);
+      toast.error(err.response?.data?.message || 'Erreur lors de la mise à jour');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const getProfilePhotoUrl = () => {
+    const photoPath = formData.profilePhoto;
+    if (!photoPath) return '';
+    if (photoPath.startsWith('http')) return photoPath;
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+    const isLocalNetwork = hostname !== 'localhost' && hostname !== '127.0.0.1';
+    const backendHost = isLocalNetwork ? hostname : 'localhost';
+    return `http://${backendHost}:3001${photoPath}`;
+  };
+
+  const completionFields = [
+    { label: 'Prénom', done: !!formData.firstName },
+    { label: 'Nom', done: !!formData.lastName },
+    { label: 'Email', done: !!formData.email },
+    { label: 'Téléphone', done: !!formData.phone },
+    { label: 'Adresse', done: !!formData.address },
+    { label: 'Pays', done: !!formData.country },
+    { label: 'Hébergement', done: formData.accommodationType.length > 0 },
+    { label: 'Photo', done: !!formData.profilePhoto },
+  ];
+  const completionCount = completionFields.filter(f => f.done).length;
+  const completionPercent = Math.round((completionCount / completionFields.length) * 100);
+
+  const accommodationTypes = [
+    { value: 'CAMPING', label: 'Camping', emoji: '⛺', desc: 'Campings & aires de plein air' },
+    { value: 'CHAMBRE_HOTES', label: "Chambre d'hôtes", emoji: '🏠', desc: 'Chambres chez l\'habitant' },
+    { value: 'CONCIERGERIE', label: 'Conciergerie', emoji: '🔑', desc: 'Services de conciergerie' },
+    { value: 'GESTIONNAIRE', label: 'Gestionnaire', emoji: '🏢', desc: 'Gestion multi-locations' },
+    { value: 'PARTICULIER', label: 'Particulier', emoji: '👤', desc: 'Location saisonnière privée' },
+    { value: 'GITE', label: 'Gîte', emoji: '🏡', desc: 'Gîtes ruraux & de charme' },
+    { value: 'HOTEL', label: 'Hôtel', emoji: '🏨', desc: 'Hôtels & résidences' },
+  ];
+
+  const sections = [
+    { id: 'info', label: 'Informations', icon: '👤' },
+    { id: 'accommodation', label: 'Hébergement', icon: '🏡' },
+    { id: 'photo', label: 'Photo', icon: '📷' },
+    { id: 'password', label: 'Sécurité', icon: '🔒' },
+  ];
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Mon Profil</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-      {message && (
-        <div className={`mb-6 px-4 py-3 rounded-lg ${
-          message.includes('succès') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
-        }`}>
-          {message}
-        </div>
-      )}
-
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-          Informations personnelles
-        </h2>
-        <form onSubmit={handleUpdateProfile} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Prénom"
-              value={formData.firstName}
-              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-            />
-            <Input
-              label="Nom"
-              value={formData.lastName}
-              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Vous êtes
-            </label>
-            <select
-              value={formData.userType}
-              onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="PARTICULIER">Un particulier</option>
-              <option value="SOCIETE">Une société</option>
-            </select>
-          </div>
-
-          {/* Champs conditionnels Société */}
-          {formData.userType === 'SOCIETE' && (
-            <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                <span className="text-lg">🏢</span> Coordonnées de la société
-              </h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nom de la société</label>
-                <input
-                  type="text"
-                  value={formData.companyName}
-                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  placeholder="Ma Société"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de TVA</label>
-                <input
-                  type="text"
-                  value={formData.vatNumber}
-                  onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
-                  placeholder="BE0123456789"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse complète</label>
-                <textarea
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="Rue, numéro, code postal, ville"
-                  rows={2}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
-                <select
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+        {/* ══════════════════════════════════════ */}
+        {/* HEADER PROFIL */}
+        {/* ══════════════════════════════════════ */}
+        <div className="relative mb-8 overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 shadow-2xl">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-pink-500/10 rounded-full translate-y-1/2 -translate-x-1/4 blur-3xl"></div>
+          
+          <div className="relative z-10 p-8">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              {/* Avatar */}
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-pink-500 rounded-full blur opacity-60 group-hover:opacity-100 transition duration-300"></div>
+                <div
+                  className="relative w-28 h-28 rounded-full bg-gradient-to-br from-primary/20 to-pink-500/20 flex items-center justify-center cursor-pointer overflow-hidden border-4 border-white/20"
+                  onClick={() => fileInputRef.current?.click()}
                 >
-                  <option value="">Sélectionnez un pays</option>
-                  <option value="Belgique">🇧🇪 Belgique</option>
-                  <option value="France">🇫🇷 France</option>
-                  <option value="Luxembourg">🇱🇺 Luxembourg</option>
-                  <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
-                  <option value="Allemagne">🇩🇪 Allemagne</option>
-                  <option value="Suisse">🇨🇭 Suisse</option>
-                  <option value="Espagne">🇪🇸 Espagne</option>
-                  <option value="Portugal">🇵🇹 Portugal</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* Champs conditionnels Particulier */}
-          {formData.userType === 'PARTICULIER' && (
-            <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                <span className="text-lg">👤</span> Vos coordonnées
-              </h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse complète</label>
-                <textarea
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="Rue, numéro, code postal, ville"
-                  rows={2}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
-                <select
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="">Sélectionnez un pays</option>
-                  <option value="Belgique">🇧🇪 Belgique</option>
-                  <option value="France">🇫🇷 France</option>
-                  <option value="Luxembourg">🇱🇺 Luxembourg</option>
-                  <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
-                  <option value="Allemagne">🇩🇪 Allemagne</option>
-                  <option value="Suisse">🇨🇭 Suisse</option>
-                  <option value="Espagne">🇪🇸 Espagne</option>
-                  <option value="Portugal">🇵🇹 Portugal</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* Type d'hébergement */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-              <span className="text-xl">🏡</span>
-              Quel type d&apos;hébergement proposez-vous ?
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {[
-                { value: 'CAMPING', label: 'Camping', emoji: '⛺' },
-                { value: 'CHAMBRE_HOTES', label: 'Chambre d\'hôtes', emoji: '🏠' },
-                { value: 'CONCIERGERIE', label: 'Conciergerie', emoji: '🔑' },
-                { value: 'GESTIONNAIRE', label: 'Gestionnaire de locations', emoji: '🏢' },
-                { value: 'PARTICULIER', label: 'Particulier', emoji: '👤' },
-                { value: 'GITE', label: 'Gîte', emoji: '🏡' },
-                { value: 'HOTEL', label: 'Hôtel', emoji: '🏨' },
-              ].map((type) => {
-                const isChecked = formData.accommodationType.includes(type.value);
-                return (
-                  <label
-                    key={type.value}
-                    className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                      isChecked
-                        ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-gray-200 hover:border-primary/40 hover:bg-gray-50'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={(e) => {
-                        const newTypes = e.target.checked
-                          ? [...formData.accommodationType, type.value]
-                          : formData.accommodationType.filter((t) => t !== type.value);
-                        setFormData({ ...formData, accommodationType: newTypes });
+                  {formData.profilePhoto ? (
+                    <img
+                      src={getProfilePhotoUrl()}
+                      alt="Profil"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
                       }}
-                      className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
                     />
-                    <span className="text-2xl">{type.emoji}</span>
-                    <span className={`text-sm font-medium ${isChecked ? 'text-primary' : 'text-gray-700'}`}>
-                      {type.label}
+                  ) : (
+                    <span className="text-4xl">
+                      {formData.firstName ? formData.firstName.charAt(0).toUpperCase() : '👤'}
                     </span>
-                  </label>
-                );
-              })}
+                  )}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                </div>
+                {isUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-28 h-28 rounded-full border-4 border-transparent border-t-white animate-spin"></div>
+                  </div>
+                )}
+              </div>
+
+              {/* Info header */}
+              <div className="text-center md:text-left flex-1">
+                <h1 className="text-2xl md:text-3xl font-bold text-white">
+                  {formData.firstName || formData.lastName
+                    ? `${formData.firstName} ${formData.lastName}`.trim()
+                    : 'Mon Profil'}
+                </h1>
+                <p className="text-white/60 mt-1">{formData.email}</p>
+                <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
+                  <span className="px-3 py-1 text-xs font-semibold rounded-full bg-white/10 text-white/80 border border-white/10">
+                    {formData.userType === 'SOCIETE' ? '🏢 Société' : '👤 Particulier'}
+                  </span>
+                  {formData.accommodationType.length > 0 && (
+                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-primary/20 text-primary-light border border-primary/20">
+                      {formData.accommodationType.length} type{formData.accommodationType.length > 1 ? 's' : ''} d&apos;hébergement
+                    </span>
+                  )}
+                  {formData.country && (
+                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/20">
+                      📍 {formData.country}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Completion */}
+              <div className="flex flex-col items-center gap-2 flex-shrink-0">
+                <div className="relative w-20 h-20">
+                  <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
+                    <circle
+                      cx="40" cy="40" r="32" fill="none"
+                      stroke="url(#grad-completion)"
+                      strokeWidth="6"
+                      strokeDasharray={`${(completionPercent / 100) * 201} 201`}
+                      strokeLinecap="round"
+                    />
+                    <defs>
+                      <linearGradient id="grad-completion" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#8b5cf6" />
+                        <stop offset="100%" stopColor="#ec4899" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-lg font-bold text-white">{completionPercent}%</span>
+                  </div>
+                </div>
+                <span className="text-xs text-white/50">Profil complété</span>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-              Téléphone
-            </label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              Email
-            </label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              Photo de profil
-            </label>
-            
-            {/* Zone de glisser-déposer */}
-            <div
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setIsDragging(false);
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                  handleFileUpload(files[0]);
-                }
-              }}
-              onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
-                isDragging
-                  ? 'border-primary bg-primary/10'
-                  : 'border-gray-300 hover:border-primary hover:bg-gray-50'
+        {/* ══════════════════════════════════════ */}
+        {/* NAVIGATION SECTIONS */}
+        {/* ══════════════════════════════════════ */}
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+          {sections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => setActiveSection(section.id)}
+              className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all duration-300 whitespace-nowrap ${
+                activeSection === section.id
+                  ? 'bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg shadow-primary/20'
+                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 hover:border-primary/30'
               }`}
             >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    handleFileUpload(e.target.files[0]);
-                  }
-                }}
-              />
-              {formData.profilePhoto ? (
-                <div className="flex flex-col items-center">
-                  <img
-                    src={(() => {
-                      const photoPath = formData.profilePhoto;
-                      if (photoPath.startsWith('http')) {
-                        return photoPath;
-                      }
-                      // Utiliser l'IP locale si on est sur le réseau local, sinon localhost
-                      const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-                      const isLocalNetwork = hostname !== 'localhost' && hostname !== '127.0.0.1';
-                      const backendHost = isLocalNetwork ? hostname : 'localhost';
-                      return `http://${backendHost}:3001${photoPath}`;
-                    })()}
-                    alt="Photo de profil"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg mb-4"
-                    onError={(e) => {
-                      console.error('Erreur chargement image:', formData.profilePhoto);
+              <span>{section.icon}</span>
+              {section.label}
+            </button>
+          ))}
+        </div>
+
+        {/* ══════════════════════════════════════ */}
+        {/* SECTION: INFORMATIONS PERSONNELLES */}
+        {/* ══════════════════════════════════════ */}
+        {activeSection === 'info' && (
+          <form onSubmit={handleUpdateProfile} className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-primary/5 to-pink-500/5">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
+                    <span className="text-white">👤</span>
+                  </div>
+                  Informations personnelles
+                </h2>
+                <p className="text-sm text-gray-500 mt-1 ml-13">Gérez votre identité et vos coordonnées</p>
+              </div>
+
+              <div className="p-6 space-y-5">
+                {/* Nom / Prénom */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        placeholder="Votre prénom"
+                        className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                      />
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <span className="text-xs">👤</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        placeholder="Votre nom"
+                        className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                      />
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <span className="text-xs">✏️</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                      className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                    />
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                      <span className="text-xs">✉️</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Téléphone */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+32 xxx xx xx xx"
+                      className="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                    />
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                      <span className="text-xs">📱</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Type utilisateur */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Vous êtes</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { value: 'PARTICULIER', label: 'Particulier', icon: '👤', desc: 'Propriétaire individuel' },
+                      { value: 'SOCIETE', label: 'Société', icon: '🏢', desc: 'Entreprise ou organisation' },
+                    ].map((type) => (
+                      <button
+                        key={type.value}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, userType: type.value })}
+                        className={`relative p-4 rounded-xl border-2 text-left transition-all duration-300 ${
+                          formData.userType === type.value
+                            ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
+                            : 'border-gray-200 hover:border-primary/30 bg-white'
+                        }`}
+                      >
+                        {formData.userType === type.value && (
+                          <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-gradient-to-r from-primary to-pink-500 flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
+                        <span className="text-2xl">{type.icon}</span>
+                        <p className="font-semibold text-gray-900 mt-2">{type.label}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{type.desc}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Champs conditionnels Société */}
+                {formData.userType === 'SOCIETE' && (
+                  <div className="space-y-4 p-5 bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-xl border border-primary/10">
+                    <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
+                        <span className="text-white text-xs">🏢</span>
+                      </div>
+                      Coordonnées de la société
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Nom de la société</label>
+                        <input
+                          type="text"
+                          value={formData.companyName}
+                          onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                          placeholder="Ma Société"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de TVA</label>
+                        <input
+                          type="text"
+                          value={formData.vatNumber}
+                          onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
+                          placeholder="BE0123456789"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Adresse complète</label>
+                      <textarea
+                        value={formData.address}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        placeholder="Rue, numéro, code postal, ville"
+                        rows={2}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                      <select
+                        value={formData.country}
+                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                      >
+                        <option value="">Sélectionnez un pays</option>
+                        <option value="Belgique">🇧🇪 Belgique</option>
+                        <option value="France">🇫🇷 France</option>
+                        <option value="Luxembourg">🇱🇺 Luxembourg</option>
+                        <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
+                        <option value="Allemagne">🇩🇪 Allemagne</option>
+                        <option value="Suisse">🇨🇭 Suisse</option>
+                        <option value="Espagne">🇪🇸 Espagne</option>
+                        <option value="Portugal">🇵🇹 Portugal</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {/* Champs conditionnels Particulier */}
+                {formData.userType === 'PARTICULIER' && (
+                  <div className="space-y-4 p-5 bg-gradient-to-br from-emerald-50/50 to-teal-50/50 rounded-xl border border-emerald-200/50">
+                    <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+                        <span className="text-white text-xs">👤</span>
+                      </div>
+                      Vos coordonnées
+                    </h3>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Adresse complète</label>
+                      <textarea
+                        value={formData.address}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        placeholder="Rue, numéro, code postal, ville"
+                        rows={2}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                      <select
+                        value={formData.country}
+                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                      >
+                        <option value="">Sélectionnez un pays</option>
+                        <option value="Belgique">🇧🇪 Belgique</option>
+                        <option value="France">🇫🇷 France</option>
+                        <option value="Luxembourg">🇱🇺 Luxembourg</option>
+                        <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
+                        <option value="Allemagne">🇩🇪 Allemagne</option>
+                        <option value="Suisse">🇨🇭 Suisse</option>
+                        <option value="Espagne">🇪🇸 Espagne</option>
+                        <option value="Portugal">🇵🇹 Portugal</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton save */}
+              <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 transition-all duration-300 shadow-lg shadow-pink-200 hover:shadow-xl hover:shadow-pink-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Enregistrement...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Créer mon compte
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+
+        {/* ══════════════════════════════════════ */}
+        {/* SECTION: TYPE D'HÉBERGEMENT */}
+        {/* ══════════════════════════════════════ */}
+        {activeSection === 'accommodation' && (
+          <form onSubmit={handleUpdateProfile} className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-emerald-50/50 to-teal-50/50">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+                    <span className="text-white">🏡</span>
+                  </div>
+                  Type d&apos;hébergement
+                </h2>
+                <p className="text-sm text-gray-500 mt-1 ml-13">Sélectionnez un ou plusieurs types d&apos;hébergement que vous proposez</p>
+              </div>
+
+              <div className="p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {accommodationTypes.map((type) => {
+                    const isChecked = formData.accommodationType.includes(type.value);
+                    return (
+                      <label
+                        key={type.value}
+                        className={`relative group cursor-pointer rounded-2xl border-2 p-5 transition-all duration-300 ${
+                          isChecked
+                            ? 'border-primary bg-gradient-to-br from-primary/5 to-pink-500/5 shadow-lg shadow-primary/10'
+                            : 'border-gray-200 hover:border-primary/40 bg-white hover:shadow-md'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            const newTypes = e.target.checked
+                              ? [...formData.accommodationType, type.value]
+                              : formData.accommodationType.filter((t) => t !== type.value);
+                            setFormData({ ...formData, accommodationType: newTypes });
+                          }}
+                          className="sr-only"
+                        />
+                        {/* Checkmark */}
+                        <div className={`absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                          isChecked
+                            ? 'bg-gradient-to-r from-primary to-pink-500 scale-100'
+                            : 'bg-gray-100 scale-90'
+                        }`}>
+                          {isChecked && (
+                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </div>
+
+                        <span className="text-4xl block mb-3">{type.emoji}</span>
+                        <p className={`font-bold text-sm ${isChecked ? 'text-primary' : 'text-gray-900'}`}>
+                          {type.label}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">{type.desc}</p>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                {/* Résumé sélection */}
+                {formData.accommodationType.length > 0 && (
+                  <div className="mt-6 p-4 bg-gradient-to-r from-primary/5 to-pink-500/5 rounded-xl border border-primary/10">
+                    <p className="text-sm text-gray-700">
+                      <span className="font-semibold text-primary">{formData.accommodationType.length}</span> type{formData.accommodationType.length > 1 ? 's' : ''} sélectionné{formData.accommodationType.length > 1 ? 's' : ''} :
+                      {' '}
+                      {formData.accommodationType.map(v => {
+                        const t = accommodationTypes.find(at => at.value === v);
+                        return t ? `${t.emoji} ${t.label}` : v;
+                      }).join(' • ')}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 transition-all duration-300 shadow-lg shadow-pink-200 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Enregistrement...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Enregistrer mes choix
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+
+        {/* ══════════════════════════════════════ */}
+        {/* SECTION: PHOTO DE PROFIL */}
+        {/* ══════════════════════════════════════ */}
+        {activeSection === 'photo' && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-violet-50/50 to-indigo-50/50">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
+                  <span className="text-white">📷</span>
+                </div>
+                Photo de profil
+              </h2>
+              <p className="text-sm text-gray-500 mt-1 ml-13">Personnalisez votre avatar pour une touche professionnelle</p>
+            </div>
+
+            <div className="p-8">
+              <div className="flex flex-col items-center">
+                {/* Preview */}
+                <div className="relative group mb-8">
+                  <div className="absolute -inset-2 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-300"></div>
+                  <div className="relative w-40 h-40 rounded-full bg-gradient-to-br from-violet-100 to-indigo-100 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">
+                    {formData.profilePhoto ? (
+                      <img
+                        src={getProfilePhotoUrl()}
+                        alt="Profil"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-6xl">
+                        {formData.firstName ? formData.firstName.charAt(0).toUpperCase() : '👤'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Drop zone */}
+                <div
+                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                    if (e.dataTransfer.files.length > 0) handleFileUpload(e.dataTransfer.files[0]);
+                  }}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`w-full max-w-md border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
+                    isDragging
+                      ? 'border-violet-500 bg-violet-50 scale-[1.02]'
+                      : 'border-gray-300 hover:border-violet-400 hover:bg-violet-50/30'
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) handleFileUpload(e.target.files[0]);
                     }}
                   />
-                  <p className="text-sm text-gray-600 mb-2">Photo actuelle</p>
-                  <p className="text-xs text-gray-500">Cliquez ou glissez-déposez pour changer</p>
+                  {isUploading ? (
+                    <div className="flex flex-col items-center py-4">
+                      <div className="w-12 h-12 rounded-full border-4 border-violet-200 border-t-violet-500 animate-spin mb-4"></div>
+                      <p className="text-sm text-gray-600">Upload en cours...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 flex items-center justify-center mb-4">
+                        <svg className="w-8 h-8 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                      </div>
+                      <p className="text-gray-700 font-medium mb-1">Glissez-déposez votre photo ici</p>
+                      <p className="text-sm text-gray-400">ou cliquez pour parcourir vos fichiers</p>
+                      <div className="flex gap-2 justify-center mt-4">
+                        <span className="px-3 py-1 text-xs bg-gray-100 text-gray-500 rounded-full">JPG</span>
+                        <span className="px-3 py-1 text-xs bg-gray-100 text-gray-500 rounded-full">PNG</span>
+                        <span className="px-3 py-1 text-xs bg-gray-100 text-gray-500 rounded-full">GIF</span>
+                        <span className="px-3 py-1 text-xs bg-gray-100 text-gray-500 rounded-full">Max 5MB</span>
+                      </div>
+                    </>
+                  )}
                 </div>
-              ) : (
-                <div className="flex flex-col items-center">
-                  <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <p className="text-gray-600 mb-2">Glissez-déposez votre photo ici</p>
-                  <p className="text-sm text-gray-500">ou cliquez pour sélectionner</p>
-                  <p className="text-xs text-gray-400 mt-2">Formats acceptés: JPG, PNG, GIF (max 5MB)</p>
-                </div>
-              )}
+              </div>
             </div>
           </div>
+        )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="px-8 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Enregistrement...' : 'Créer mon compte'}
-          </button>
-        </form>
-      </div>
+        {/* ══════════════════════════════════════ */}
+        {/* SECTION: SÉCURITÉ */}
+        {/* ══════════════════════════════════════ */}
+        {activeSection === 'password' && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-amber-50/50 to-orange-50/50">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                    <span className="text-white">🔒</span>
+                  </div>
+                  Sécurité du compte
+                </h2>
+                <p className="text-sm text-gray-500 mt-1 ml-13">Changez votre mot de passe pour sécuriser votre compte</p>
+              </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">Changer le mot de passe</h2>
-        <form onSubmit={handleUpdatePassword} className="space-y-4">
-          <div className="w-full">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nouveau mot de passe
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-                placeholder="Minimum 8 caractères, majuscule, minuscule, chiffre"
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-              >
-                {showPassword ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
+              <form onSubmit={handleUpdatePassword} className="p-6 space-y-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nouveau mot de passe</label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={8}
+                      placeholder="Minimum 8 caractères"
+                      className="w-full pl-11 pr-12 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 transition-all"
+                    />
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg bg-amber-400/10 flex items-center justify-center">
+                      <span className="text-xs">🔐</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
+                    >
+                      {showPassword ? (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Indicateurs force du mot de passe */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[
+                    { label: '8+ caractères', met: password.length >= 8 },
+                    { label: '1 majuscule', met: /[A-Z]/.test(password) },
+                    { label: '1 minuscule', met: /[a-z]/.test(password) },
+                    { label: '1 chiffre', met: /[0-9]/.test(password) },
+                  ].map((rule, i) => (
+                    <div
+                      key={i}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
+                        rule.met
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-gray-50 text-gray-400 border border-gray-100'
+                      }`}
+                    >
+                      {rule.met ? (
+                        <svg className="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        <div className="w-4 h-4 rounded-full border-2 border-gray-300"></div>
+                      )}
+                      {rule.label}
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 transition-all duration-300 shadow-lg shadow-amber-200 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Mise à jour...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      Mettre à jour le mot de passe
+                    </>
+                  )}
+                </button>
+              </form>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
-              Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════ */}
+        {/* CTA CRÉER MON LIVRET */}
+        {/* ══════════════════════════════════════ */}
+        <div className="mt-8 relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-purple-900 to-pink-900 p-8 shadow-2xl">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/20 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-60 h-60 bg-pink-500/20 rounded-full translate-y-1/2 -translate-x-1/4 blur-3xl"></div>
+          <div className="relative z-10 text-left">
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Prêt à accueillir vos voyageurs ? ✨
+            </h2>
+            <p className="text-white/60 mb-6 max-w-xl">
+              Créez votre livret d&apos;accueil digital en quelques clics et offrez une expérience unique à vos hôtes.
             </p>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 transition-all duration-300 shadow-lg shadow-pink-500/30 hover:shadow-xl"
+            >
+              Créer mon livret
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
           </div>
-          <Button type="submit" variant="primary" isLoading={isLoading}>
-            Mettre à jour le mot de passe
-          </Button>
-        </form>
-      </div>
+        </div>
 
-      {/* Bloc Créer mon livret */}
-      <div className="bg-white rounded-lg shadow-md p-6 mt-6">
-        <h2 className="text-xl font-semibold mb-2 text-gray-900">Prêt à accueillir vos voyageurs ?</h2>
-        <p className="text-gray-500 mb-6 text-sm">Créez votre livret d&apos;accueil digital en quelques clics et offrez une expérience unique à vos hôtes.</p>
-        <button
-          onClick={() => window.location.href = '/dashboard'}
-          className="px-8 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
-        >
-          Créer mon livret
-        </button>
-      </div>
-
-      {/* Mentions légales */}
-      <div className="bg-white rounded-lg shadow-md p-6 mt-6">
-        <div className="space-y-2">
+        {/* ══════════════════════════════════════ */}
+        {/* MENTIONS LÉGALES */}
+        {/* ══════════════════════════════════════ */}
+        <div className="mt-6 p-5 rounded-xl bg-white/60 border border-gray-100">
           <p className="text-xs text-gray-400 leading-relaxed">
             En sélectionnant « Créer mon livret », vous confirmez avoir lu et accepté
             l&apos;ensemble des{' '}
-            <a href="/conditions-generales" className="text-primary hover:underline">
+            <a href="/conditions-generales" className="text-primary hover:underline font-medium">
               Conditions Générales d&apos;Utilisation et de Vente
             </a>{' '}
             de My Guide Digital.
-          </p>
-          <p className="text-xs text-gray-400 leading-relaxed">
             Pour comprendre comment My Guide Digital collecte, utilise et sécurise vos
             informations personnelles, nous vous invitons à consulter notre{' '}
-            <a href="/politique-confidentialite" className="text-primary hover:underline">
+            <a href="/politique-confidentialite" className="text-primary hover:underline font-medium">
               Politique de confidentialité
             </a>.
           </p>
         </div>
+
       </div>
     </div>
   );
