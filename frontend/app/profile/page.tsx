@@ -384,6 +384,37 @@ export default function ProfilePage() {
           </Button>
         </form>
       </div>
+
+      {/* Bloc Créer mon livret + mentions légales */}
+      <div className="bg-white rounded-lg shadow-md p-6 text-center">
+        <h2 className="text-xl font-semibold mb-2 text-gray-900">Prêt à accueillir vos voyageurs ?</h2>
+        <p className="text-gray-500 mb-6 text-sm">Créez votre livret d&apos;accueil digital en quelques clics et offrez une expérience unique à vos hôtes.</p>
+        <Button
+          variant="primary"
+          size="lg"
+          className="w-full sm:w-auto px-8"
+          onClick={() => window.location.href = '/dashboard'}
+        >
+          Créer mon livret
+        </Button>
+        <div className="mt-6 space-y-2">
+          <p className="text-xs text-gray-400 leading-relaxed">
+            En sélectionnant « Créer mon livret », vous confirmez avoir lu et accepté
+            l&apos;ensemble des{' '}
+            <a href="/conditions-generales" className="text-primary hover:underline">
+              Conditions Générales d&apos;Utilisation et de Vente
+            </a>{' '}
+            de My Guide Digital.
+          </p>
+          <p className="text-xs text-gray-400 leading-relaxed">
+            Pour comprendre comment My Guide Digital collecte, utilise et sécurise vos
+            informations personnelles, nous vous invitons à consulter notre{' '}
+            <a href="/politique-confidentialite" className="text-primary hover:underline">
+              Politique de confidentialité
+            </a>.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
