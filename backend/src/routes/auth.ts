@@ -7,7 +7,7 @@ import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { loginLimiter, registerLimiter } from '../middleware/rateLimiter';
 import { validateCsrfToken } from '../middleware/csrf';
-import { sendWelcomeEmail } from '../services/email';
+import { sendWelcomeEmail, sendTrialExpiredEmail } from '../services/email';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -425,7 +425,7 @@ router.get('/me', authenticateToken, async (req: any, res: express.Response) => 
       where: { id: req.userId },
       include: {
         subscriptions: {
-          where: { status: 'ACTIVE' },
+          where: { status: { in: ['ACTIVE', 'EXPIRED'] } },
           orderBy: { createdAt: 'desc' },
           take: 1
         }
@@ -465,6 +465,15 @@ router.get('/me', authenticateToken, async (req: any, res: express.Response) => 
           data: { status: 'EXPIRED' }
         });
         subscription.status = 'EXPIRED';
+
+        // Envoyer un email de notification d'expiration du trial
+        sendTrialExpiredEmail({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+        }).catch((error) => {
+          console.error('Erreur envoi email expiration trial:', error);
+        });
       }
     }
 

@@ -8,6 +8,7 @@ import { Button } from './ui/Button';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import AuthLayout from './AuthLayout';
+import TrialExpiredModal from './TrialExpiredModal';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -123,6 +124,12 @@ function AuthenticatedLayout({
     );
   }
 
+  // Vérifier si le trial est expiré
+  const isTrialExpired = user?.subscription?.plan === 'TRIAL' && user?.subscription?.status === 'EXPIRED';
+  // Ne PAS bloquer la page /subscription pour que l'utilisateur puisse souscrire
+  const isSubscriptionPage = pathname === '/subscription' || pathname?.startsWith('/subscription/');
+  const showTrialExpiredModal = isTrialExpired && !isSubscriptionPage;
+
   // Attendre le montage côté client
   if (!mounted) {
     return <>{children}</>;
@@ -135,6 +142,9 @@ function AuthenticatedLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Popup blocage trial expiré */}
+      <TrialExpiredModal isOpen={showTrialExpiredModal} />
+
       <nav className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
