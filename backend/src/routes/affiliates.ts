@@ -7,13 +7,23 @@ import { authenticateToken } from './auth';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Middleware admin
+// Middleware admin — vérifie que l'utilisateur authentifié est ADMIN
 const requireAdmin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const user = (req as any).user;
-  if (!user || user.role !== 'ADMIN') {
-    return res.status(403).json({ message: 'Accès réservé aux administrateurs' });
+  try {
+    const userId = (req as any).userId;
+    if (!userId) {
+      return res.status(401).json({ message: 'Non authentifié' });
+    }
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true, email: true } });
+    if (!user || user.role !== 'ADMIN') {
+      return res.status(403).json({ message: 'Accès réservé aux administrateurs' });
+    }
+    (req as any).user = user;
+    next();
+  } catch (error) {
+    console.error('requireAdmin error:', error);
+    return res.status(500).json({ message: 'Erreur serveur' });
   }
-  next();
 };
 
 // Générer un code d'affiliation unique (ex: MGD-A7X3K9)
