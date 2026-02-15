@@ -10,6 +10,7 @@ interface User {
   userType?: string;
   role?: string;
   profilePhoto?: string;
+  accommodationType?: string[];
   subscription?: any;
 }
 
