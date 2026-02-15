@@ -385,19 +385,21 @@ export default function ProfilePage() {
         </form>
       </div>
 
-      {/* Bloc Créer mon livret + mentions légales */}
-      <div className="bg-white rounded-lg shadow-md p-6 text-center">
+      {/* Bloc Créer mon livret */}
+      <div className="bg-white rounded-lg shadow-md p-6 mt-6">
         <h2 className="text-xl font-semibold mb-2 text-gray-900">Prêt à accueillir vos voyageurs ?</h2>
         <p className="text-gray-500 mb-6 text-sm">Créez votre livret d&apos;accueil digital en quelques clics et offrez une expérience unique à vos hôtes.</p>
-        <Button
-          variant="primary"
-          size="lg"
-          className="w-full sm:w-auto px-8"
+        <button
           onClick={() => window.location.href = '/dashboard'}
+          className="px-8 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 transition-all duration-200 shadow-md hover:shadow-lg"
         >
           Créer mon livret
-        </Button>
-        <div className="mt-6 space-y-2">
+        </button>
+      </div>
+
+      {/* Mentions légales */}
+      <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+        <div className="space-y-2">
           <p className="text-xs text-gray-400 leading-relaxed">
             En sélectionnant « Créer mon livret », vous confirmez avoir lu et accepté
             l&apos;ensemble des{' '}
