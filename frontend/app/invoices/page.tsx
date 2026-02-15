@@ -9,6 +9,7 @@ import Link from 'next/link';
 
 interface Invoice {
   id: string;
+  invoiceNumber?: string;
   amount: number;
   currency: string;
   status: string;
@@ -154,7 +155,13 @@ export default function InvoicesPage() {
                     Date
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Montant
+                    HT
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    TVA (21%)
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    TTC
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Statut
@@ -169,7 +176,7 @@ export default function InvoicesPage() {
                   <tr key={invoice.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        #{invoice.id.substring(0, 8)}
+                        {invoice.invoiceNumber || `#${invoice.id.substring(0, 8)}`}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -182,8 +189,18 @@ export default function InvoicesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {(invoice.amount / 1.21).toFixed(2)} €
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {(invoice.amount - invoice.amount / 1.21).toFixed(2)} €
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-semibold text-gray-900">
-                        {invoice.amount.toFixed(2)} {invoice.currency}
+                        {invoice.amount.toFixed(2)} €
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

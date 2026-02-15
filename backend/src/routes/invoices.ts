@@ -84,11 +84,9 @@ router.get('/:id/pdf', authenticateToken, async (req: any, res) => {
       return res.status(404).json({ message: 'Facture non trouvée' });
     }
 
-    // Générer un numéro de facture lisible basé sur la date et l'ID
+    // Utiliser le numéro séquentiel ou fallback
     const invoiceDate = new Date(invoice.createdAt);
-    const year = invoiceDate.getFullYear();
-    const shortId = invoice.id.substring(0, 6).toUpperCase();
-    const invoiceNumber = `MGD-${year}-${shortId}`;
+    const invoiceNumber = invoice.invoiceNumber || `${invoiceDate.getFullYear()}-${invoice.id.substring(0, 5).toUpperCase()}`;
 
     // Déterminer le libellé du plan
     const planLabels: Record<string, string> = {
@@ -128,11 +126,13 @@ router.get('/:id/pdf', authenticateToken, async (req: any, res) => {
 
     // ===== ÉMETTEUR (gauche) =====
     let yPos = 120;
-    doc.fontSize(10).font('Helvetica-Bold').fillColor('#111827').text('My Guide Digital', 50, yPos);
+    doc.fontSize(11).font('Helvetica-Bold').fillColor('#111827').text('Gims Consulting SRL', 50, yPos);
     doc.fontSize(9).font('Helvetica').fillColor('#6b7280');
-    doc.text('Plateforme de livrets d\'accueil digitaux', 50, yPos + 14);
-    doc.text('support@myguidedigital.com', 50, yPos + 28);
-    doc.text('www.myguidedigital.com', 50, yPos + 42);
+    doc.text('Avenue Louise 143/4', 50, yPos + 15);
+    doc.text('1050 Bruxelles, Belgique', 50, yPos + 28);
+    doc.text('TVA : BE0848903319', 50, yPos + 41);
+    doc.text('info@gims-consulting.be', 50, yPos + 54);
+    doc.text('www.myguidedigital.com', 50, yPos + 67);
 
     // ===== CLIENT (droite) =====
     doc.fontSize(10).font('Helvetica-Bold').fillColor('#111827').text('Facturé à :', 350, yPos);
@@ -184,39 +184,50 @@ router.get('/:id/pdf', authenticateToken, async (req: any, res) => {
     doc.rect(50, yPos, 495, 25).fill('#f3f4f6');
     doc.fontSize(9).font('Helvetica-Bold').fillColor('#374151');
     doc.text('Description', 60, yPos + 7);
-    doc.text('Montant HT', 380, yPos + 7);
-    doc.text('Total', 470, yPos + 7);
+    doc.text('Montant HT', 370, yPos + 7);
+    doc.text('TVA', 430, yPos + 7);
+    doc.text('Total TTC', 480, yPos + 7);
     yPos += 25;
 
+    // Calculs TVA 21%
+    // Le montant stocké est le montant TTC (ce que Stripe facture)
+    const amountTTC = invoice.amount;
+    const amountHT = parseFloat((amountTTC / 1.21).toFixed(2));
+    const amountTVA = parseFloat((amountTTC - amountHT).toFixed(2));
+
     // Ligne du tableau
-    const amountHT = invoice.amount;
     doc.fontSize(9).font('Helvetica').fillColor('#111827');
-    doc.text(`${planLabel} — My Guide Digital`, 60, yPos + 8);
-    doc.text(`${amountHT.toFixed(2)} €`, 380, yPos + 8);
-    doc.text(`${amountHT.toFixed(2)} €`, 470, yPos + 8);
+    doc.text(`${planLabel} — My Guide Digital`, 60, yPos + 8, { width: 300 });
+    doc.text(`${amountHT.toFixed(2)} €`, 370, yPos + 8);
+    doc.text(`${amountTVA.toFixed(2)} €`, 430, yPos + 8);
+    doc.text(`${amountTTC.toFixed(2)} €`, 480, yPos + 8);
     yPos += 28;
 
     // Ligne de séparation
     doc.moveTo(50, yPos).lineTo(545, yPos).strokeColor('#e5e7eb').lineWidth(0.5).stroke();
-    yPos += 15;
+    yPos += 20;
 
-    // ===== TOTAL =====
+    // ===== TOTAUX =====
+    // Total HT
     doc.fontSize(10).font('Helvetica').fillColor('#6b7280');
-    doc.text('Total HT', 380, yPos);
-    doc.font('Helvetica-Bold').fillColor('#111827').text(`${amountHT.toFixed(2)} €`, 470, yPos);
-    yPos += 18;
+    doc.text('Total HT', 370, yPos);
+    doc.font('Helvetica').fillColor('#111827').text(`${amountHT.toFixed(2)} €`, 480, yPos);
+    yPos += 20;
 
+    // TVA 21%
     doc.font('Helvetica').fillColor('#6b7280');
-    doc.text('TVA (0%)', 380, yPos);
-    doc.fillColor('#111827').text('0.00 €', 470, yPos);
-    yPos += 18;
+    doc.text('TVA (21%)', 370, yPos);
+    doc.fillColor('#111827').text(`${amountTVA.toFixed(2)} €`, 480, yPos);
+    yPos += 20;
 
-    doc.moveTo(370, yPos).lineTo(545, yPos).strokeColor('#6366f1').lineWidth(1.5).stroke();
-    yPos += 10;
+    // Ligne séparateur total
+    doc.moveTo(360, yPos).lineTo(545, yPos).strokeColor('#6366f1').lineWidth(2).stroke();
+    yPos += 12;
 
-    doc.fontSize(12).font('Helvetica-Bold').fillColor('#6366f1');
-    doc.text('Total TTC', 380, yPos);
-    doc.text(`${amountHT.toFixed(2)} €`, 460, yPos);
+    // Total TTC
+    doc.fontSize(13).font('Helvetica-Bold').fillColor('#6366f1');
+    doc.text('Total TTC', 370, yPos);
+    doc.text(`${amountTTC.toFixed(2)} €`, 475, yPos);
 
     // ===== FOOTER =====
     const footerY = 750;
@@ -224,7 +235,7 @@ router.get('/:id/pdf', authenticateToken, async (req: any, res) => {
     
     doc.fontSize(8).font('Helvetica').fillColor('#9ca3af');
     doc.text('Merci pour votre confiance !', 50, footerY + 10, { align: 'center', width: 495 });
-    doc.text('My Guide Digital — Plateforme de livrets d\'accueil digitaux', 50, footerY + 22, { align: 'center', width: 495 });
+    doc.text('Gims Consulting SRL — Avenue Louise 143/4, 1050 Bruxelles — TVA BE0848903319', 50, footerY + 22, { align: 'center', width: 495 });
     doc.text(`Facture générée automatiquement le ${new Date().toLocaleDateString('fr-FR')}`, 50, footerY + 34, { align: 'center', width: 495 });
 
     // Finalize PDF

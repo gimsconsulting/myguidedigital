@@ -9,6 +9,34 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
 });
 
+/**
+ * Générer le prochain numéro de facture séquentiel au format YYYY-NNNNN
+ */
+async function generateInvoiceNumber(): Promise<string> {
+  const year = new Date().getFullYear();
+  const prefix = `${year}-`;
+
+  // Trouver la dernière facture de l'année en cours
+  const lastInvoice = await prisma.invoice.findFirst({
+    where: {
+      invoiceNumber: {
+        startsWith: prefix,
+      }
+    },
+    orderBy: { invoiceNumber: 'desc' },
+  });
+
+  let nextNumber = 1;
+  if (lastInvoice?.invoiceNumber) {
+    const lastNumber = parseInt(lastInvoice.invoiceNumber.replace(prefix, ''), 10);
+    if (!isNaN(lastNumber)) {
+      nextNumber = lastNumber + 1;
+    }
+  }
+
+  return `${prefix}${nextNumber.toString().padStart(5, '0')}`;
+}
+
 // Get current subscription
 router.get('/', authenticateToken, async (req: any, res) => {
   try {
@@ -333,9 +361,11 @@ router.post('/webhook', async (req: any, res) => {
           }
         });
 
-            // Créer la facture
+            // Créer la facture avec numéro séquentiel
+            const invoiceNumber1 = await generateInvoiceNumber();
             await prisma.invoice.create({
               data: {
+                invoiceNumber: invoiceNumber1,
                 userId: userId,
                 subscriptionId: subscription.id,
                 amount: session.amount_total ? session.amount_total / 100 : 0,
@@ -378,9 +408,11 @@ router.post('/webhook', async (req: any, res) => {
           });
 
           if (subscription) {
-            // Créer la facture
+            // Créer la facture avec numéro séquentiel
+            const invoiceNumber2 = await generateInvoiceNumber();
             await prisma.invoice.create({
               data: {
+                invoiceNumber: invoiceNumber2,
                 userId: subscription.userId,
                 subscriptionId: subscription.id,
                 amount: invoice.amount_paid / 100,
