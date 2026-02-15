@@ -165,14 +165,14 @@ export default function SubscriptionPage() {
       {/* Category Tabs */}
       <div className="flex flex-wrap gap-3 mb-8">
         {[
-          { id: 'hotes' as CategoryTab, label: '🏠 Hôtes Airbnb, gîtes & chambres d\'hôtes', shortLabel: '🏠 Hôtes & locations' },
+          { id: 'hotes' as CategoryTab, label: '🏠 Hôtes Airbnb, gîtes, chambres d\'hôtes\n& conciergeries', shortLabel: '🏠 Hôtes & locations' },
           { id: 'hotels' as CategoryTab, label: '🏨 Hôtels', shortLabel: '🏨 Hôtels' },
           { id: 'campings' as CategoryTab, label: '🏕️ Campings & résidences de tourisme', shortLabel: '🏕️ Campings' },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
+            className={`px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300 whitespace-pre-line text-center ${
               activeTab === tab.id
                 ? 'bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg shadow-primary/30'
                 : 'bg-white text-gray-600 border border-gray-200 hover:border-primary/50 hover:text-primary shadow-sm'
