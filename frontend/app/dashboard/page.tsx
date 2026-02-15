@@ -202,7 +202,7 @@ export default function DashboardPage() {
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">
-                {greeting()}, {user?.firstName || user?.name || 'Utilisateur'} 👋
+                {greeting()}, {user?.firstName || 'Utilisateur'} 👋
               </h1>
               <p className="text-white/80 mt-2 text-sm md:text-base">
                 Bienvenue sur votre tableau de bord My Guide Digital
