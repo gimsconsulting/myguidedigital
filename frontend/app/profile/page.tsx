@@ -199,7 +199,7 @@ export default function ProfilePage() {
                   type="text"
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  placeholder="Ma Société SARL"
+                  placeholder="Ma Société"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
@@ -225,13 +225,21 @@ export default function ProfilePage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
-                <input
-                  type="text"
+                <select
                   value={formData.country}
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  placeholder="Belgique"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">Sélectionnez un pays</option>
+                  <option value="Belgique">🇧🇪 Belgique</option>
+                  <option value="France">🇫🇷 France</option>
+                  <option value="Luxembourg">🇱🇺 Luxembourg</option>
+                  <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
+                  <option value="Allemagne">🇩🇪 Allemagne</option>
+                  <option value="Suisse">🇨🇭 Suisse</option>
+                  <option value="Espagne">🇪🇸 Espagne</option>
+                  <option value="Portugal">🇵🇹 Portugal</option>
+                </select>
               </div>
             </div>
           )}
@@ -254,13 +262,21 @@ export default function ProfilePage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
-                <input
-                  type="text"
+                <select
                   value={formData.country}
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  placeholder="Belgique"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">Sélectionnez un pays</option>
+                  <option value="Belgique">🇧🇪 Belgique</option>
+                  <option value="France">🇫🇷 France</option>
+                  <option value="Luxembourg">🇱🇺 Luxembourg</option>
+                  <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
+                  <option value="Allemagne">🇩🇪 Allemagne</option>
+                  <option value="Suisse">🇨🇭 Suisse</option>
+                  <option value="Espagne">🇪🇸 Espagne</option>
+                  <option value="Portugal">🇵🇹 Portugal</option>
+                </select>
               </div>
             </div>
           )}
