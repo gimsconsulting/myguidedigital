@@ -46,15 +46,23 @@ export default function InvoicesPage() {
   const handleDownloadPDF = async (invoiceId: string) => {
     try {
       const token = localStorage.getItem('token');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const url = `${apiUrl}/api/invoices/${invoiceId}/pdf`;
       
-      // Créer un lien temporaire avec le token
-      const link = document.createElement('a');
-      link.href = url;
-      link.target = '_blank';
+      // Construire l'URL dynamiquement (même logique que api.ts)
+      let apiBase = '';
+      if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        const protocol = window.location.protocol;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          apiBase = 'http://localhost:3001';
+        } else if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
+          apiBase = `${protocol}//${hostname}:3001`;
+        } else {
+          apiBase = `${protocol}//${hostname}`;
+        }
+      }
       
-      // Ajouter le token dans les headers via fetch puis créer un blob
+      const url = `${apiBase}/api/invoices/${invoiceId}/pdf`;
+      
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -67,8 +75,9 @@ export default function InvoicesPage() {
 
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
       link.href = blobUrl;
-      link.download = `facture-${invoiceId}.pdf`;
+      link.download = `facture-${invoiceId.substring(0, 8)}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

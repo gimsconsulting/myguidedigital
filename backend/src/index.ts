@@ -120,6 +120,10 @@ app.use(helmet({
 // Cookie parser pour les cookies (nécessaire pour CSRF sessionId)
 app.use(cookieParser());
 
+// IMPORTANT: Le webhook Stripe DOIT recevoir le raw body AVANT express.json()
+// Sinon la vérification de signature Stripe échouera
+app.use('/api/subscriptions/webhook', express.raw({ type: 'application/json' }));
+
 // Augmenter la limite de taille du body pour les uploads de fichiers (20MB)
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
@@ -182,7 +186,7 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'bypass-tunnel-reminder', 'X-Requested-With', 'Accept'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'bypass-tunnel-reminder', 'X-Requested-With', 'Accept', 'x-csrf-token', 'x-csrf-session-id'],
   exposedHeaders: ['Content-Length', 'Content-Type'],
   preflightContinue: false,
   optionsSuccessStatus: 204,
@@ -207,10 +211,7 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
   console.log(`📥 ${req.method} ${req.path} - Origin: ${req.headers.origin || 'none'}`);
   next();
 });
-// Middleware pour parser JSON (sauf pour le webhook Stripe qui utilise raw body)
-app.use('/api/subscriptions/webhook', express.raw({ type: 'application/json' }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Note: express.json() et express.raw() pour le webhook sont configurés plus haut
 
 // Servir les fichiers statiques (uploads)
 const uploadDir = process.env.UPLOAD_DIR || './uploads';
