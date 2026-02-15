@@ -334,9 +334,13 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <Button type="submit" variant="primary" isLoading={isLoading}>
-            Enregistrer
-          </Button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="px-8 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Enregistrement...' : 'Créer mon compte'}
+          </button>
         </form>
       </div>
 
