@@ -115,7 +115,7 @@ router.post('/register', registerLimiter, validateCsrfToken, [
         plan: 'TRIAL',
         status: 'ACTIVE',
         startDate: startDate,
-        trialDaysLeft: 30, // 30 jours d'essai
+        trialDaysLeft: 14, // 14 jours d'essai
       }
     });
 
@@ -299,8 +299,8 @@ router.get('/me', authenticateToken, async (req: any, res: express.Response) => 
       const diffTime = now.getTime() - startDate.getTime();
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
       
-      // Les jours restants = 30 jours - jours écoulés
-      const daysRemaining = Math.max(0, 30 - diffDays);
+      // Les jours restants = 14 jours - jours écoulés
+      const daysRemaining = Math.max(0, 14 - diffDays);
       
       // Mettre à jour trialDaysLeft dans la base de données si nécessaire
       if (subscription.trialDaysLeft !== daysRemaining) {

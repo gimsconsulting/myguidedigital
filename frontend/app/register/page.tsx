@@ -106,7 +106,7 @@ export default function RegisterPage() {
             {t('register.title', 'Créer un compte')}
           </h1>
           <p className="text-gray-600">
-            {t('register.subtitle', 'Commencez votre essai gratuit de 30 jours')}
+            {t('register.subtitle', 'Commencez votre essai gratuit de 14 jours')}
           </p>
           <div className="mt-4 flex justify-center">
             <LanguageSelector />

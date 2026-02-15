@@ -91,7 +91,7 @@ model Subscription {
   status               String    @default("ACTIVE")
   startDate            DateTime  @default(now())
   endDate              DateTime?
-  trialDaysLeft        Int?      @default(30)
+  trialDaysLeft        Int?      @default(14)
   stripeSubscriptionId String?   @unique
   stripeCustomerId     String?
   createdAt            DateTime  @default(now())
