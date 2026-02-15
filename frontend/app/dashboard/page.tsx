@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { livretsApi, subscriptionsApi } from '@/lib/api';
+import { livretsApi, subscriptionsApi, invoicesApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -25,6 +25,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated, hasHydrated } = useAuthStore();
   const [livrets, setLivrets] = useState<Livret[]>([]);
+  const [invoiceCount, setInvoiceCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; livretId: string | null }>({
@@ -32,117 +33,96 @@ export default function DashboardPage() {
     livretId: null,
   });
 
+  // Stats calculées
+  const stats = useMemo(() => {
+    const total = livrets.length;
+    const active = livrets.filter(l => l.isActive).length;
+    const inactive = total - active;
+    const totalModules = livrets.reduce((sum, l) => sum + (l.modules?.length || 0), 0);
+    return { total, active, inactive, totalModules };
+  }, [livrets]);
+
+  // Infos abonnement
+  const subscriptionInfo = useMemo(() => {
+    const sub = user?.subscription;
+    if (!sub) return null;
+    const plan = sub.plan || 'TRIAL';
+    const daysLeft = sub.trialDaysLeft || 0;
+    const status = sub.status || 'ACTIVE';
+    return { plan, daysLeft, status };
+  }, [user]);
+
   useEffect(() => {
-    console.log('📊 [DASHBOARD] useEffect triggered', {
-      isAuthenticated,
-      hasUser: !!user,
-      hasHydrated
-    });
-    
-    // Vérifier DIRECTEMENT dans auth-storage AVANT toute autre vérification
     if (typeof window !== 'undefined') {
       const authStorage = localStorage.getItem('auth-storage');
-      console.log('📊 [DASHBOARD] Checking auth-storage', { hasAuthStorage: !!authStorage });
-      
       if (authStorage) {
         try {
           const parsed = JSON.parse(authStorage);
           const hasAuthData = parsed.state?.isAuthenticated && 
                              parsed.state?.token && 
                              parsed.state?.user;
-          
-          console.log('📊 [DASHBOARD] auth-storage parsed', {
-            hasAuthData,
-            isAuthenticated: parsed.state?.isAuthenticated,
-            hasToken: !!parsed.state?.token,
-            hasUser: !!parsed.state?.user
-          });
-          
           if (hasAuthData) {
-            console.log('📊 [DASHBOARD] ✅ Found authenticated data in storage, loading livrets');
-            loadLivrets();
+            loadData();
             return;
           }
         } catch (e) {
-          console.error('📊 [DASHBOARD] Error parsing auth-storage', e);
+          console.error('Error parsing auth-storage', e);
         }
       }
     }
     
-    // Attendre que le store soit hydraté avant de vérifier l'authentification
     const storeState = useAuthStore.getState();
-    console.log('📊 [DASHBOARD] Store state', {
-      hasHydrated: storeState.hasHydrated,
-      isAuthenticated: storeState.isAuthenticated,
-      hasToken: !!storeState.token,
-      hasUser: !!storeState.user
-    });
-    
     if (!storeState.hasHydrated) {
-      console.log('[DASHBOARD] Store not hydrated yet, waiting...');
-      // Attendre un peu pour l'hydratation
       const checkInterval = setInterval(() => {
         const currentState = useAuthStore.getState();
         if (currentState.hasHydrated) {
           clearInterval(checkInterval);
-          // Re-vérifier après hydratation
           const finalState = useAuthStore.getState();
           if (finalState.isAuthenticated || (finalState.token && finalState.user)) {
-            console.log('[DASHBOARD] ✅ Authenticated after hydration, loading livrets');
-            loadLivrets();
+            loadData();
           } else {
-            console.log('[DASHBOARD] ❌ Not authenticated after hydration, redirecting');
             router.push('/login');
           }
         }
       }, 100);
-      
-      setTimeout(() => {
-        clearInterval(checkInterval);
-      }, 3000);
+      setTimeout(() => clearInterval(checkInterval), 3000);
       return;
     }
 
-    // Vérifier l'authentification depuis le store directement
     const finalIsAuthenticated = storeState.isAuthenticated || 
                                  (storeState.token && storeState.user);
-    
     if (finalIsAuthenticated) {
-      console.log('[DASHBOARD] ✅ User authenticated, loading livrets');
-      loadLivrets();
+      loadData();
     } else {
-      // Si vraiment pas authentifié après hydratation, rediriger
-      console.log('[DASHBOARD] ❌ Not authenticated, redirecting to login');
       router.push('/login');
     }
   }, [isAuthenticated, router]);
 
-  const loadLivrets = async () => {
+  const loadData = async () => {
     try {
-      const response = await livretsApi.getAll();
-      setLivrets(response.data);
+      const [livretsRes, invoicesRes] = await Promise.allSettled([
+        livretsApi.getAll(),
+        invoicesApi.getAll(),
+      ]);
+      if (livretsRes.status === 'fulfilled') setLivrets(livretsRes.value.data);
+      if (invoicesRes.status === 'fulfilled') setInvoiceCount(invoicesRes.value.data?.length || 0);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erreur lors du chargement des livrets');
+      setError(err.response?.data?.message || 'Erreur lors du chargement');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCreateLivret = () => {
-    router.push('/dashboard/livrets/new');
-  };
+  const handleCreateLivret = () => router.push('/dashboard/livrets/new');
 
-  const handleDelete = (id: string) => {
-    setDeleteConfirm({ isOpen: true, livretId: id });
-  };
+  const handleDelete = (id: string) => setDeleteConfirm({ isOpen: true, livretId: id });
 
   const confirmDelete = async () => {
     if (!deleteConfirm.livretId) return;
-
     try {
       await livretsApi.delete(deleteConfirm.livretId);
       toast.success(t('dashboard.bookletDeleted', 'Livret supprimé avec succès'));
-      loadLivrets();
+      loadData();
     } catch (err: any) {
       toast.error(t('dashboard.deleteError', 'Erreur lors de la suppression du livret'));
     } finally {
@@ -154,194 +134,507 @@ export default function DashboardPage() {
     try {
       await livretsApi.update(livret.id, { isActive: !livret.isActive });
       toast.success(livret.isActive 
-        ? t('dashboard.bookletDeactivated', 'Livret désactivé avec succès')
-        : t('dashboard.bookletActivated', 'Livret activé avec succès'));
-      loadLivrets();
+        ? t('dashboard.bookletDeactivated', 'Livret désactivé')
+        : t('dashboard.bookletActivated', 'Livret activé'));
+      loadData();
     } catch (err: any) {
       toast.error(t('dashboard.updateError', 'Erreur lors de la mise à jour'));
     }
   };
 
+  // Plan label
+  const getPlanLabel = (plan: string) => {
+    const labels: Record<string, string> = {
+      TRIAL: 'Essai gratuit',
+      HOTES_ANNUEL: 'Hôtes — Annuel',
+      HOTES_SAISON_1: 'Hôtes — 1 Mois',
+      HOTES_SAISON_2: 'Hôtes — 2 Mois',
+      HOTES_SAISON_3: 'Hôtes — 3 Mois',
+      HOTEL_ANNUEL: 'Hôtel — Annuel',
+      CAMPING_ANNUEL: 'Camping — Annuel',
+      MONTHLY: 'Mensuel',
+      YEARLY: 'Annuel',
+    };
+    return labels[plan] || plan;
+  };
+
+  const getPlanColor = (plan: string) => {
+    if (plan === 'TRIAL') return 'from-amber-400 to-orange-500';
+    if (plan.startsWith('HOTES')) return 'from-primary to-pink-500';
+    if (plan.startsWith('HOTEL')) return 'from-violet-500 to-purple-600';
+    if (plan.startsWith('CAMPING')) return 'from-emerald-500 to-teal-600';
+    return 'from-primary to-pink-500';
+  };
+
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center">{t('common.loading', 'Chargement...')}</div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex flex-col items-center justify-center">
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
+              <div className="absolute inset-0 w-16 h-16 rounded-full bg-gradient-to-r from-primary/10 to-pink-500/10 animate-pulse"></div>
+            </div>
+            <p className="mt-6 text-gray-500 font-medium">{t('common.loading', 'Chargement...')}</p>
+          </div>
+        </div>
       </div>
     );
   }
 
+  const greeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bonjour';
+    if (hour < 18) return 'Bon après-midi';
+    return 'Bonsoir';
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <div className="flex items-center gap-4 mb-2">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('dashboard.myBooklets', 'Mes Livrets')}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {/* ══════════════════════════════════════ */}
+        {/* HEADER DE BIENVENUE */}
+        {/* ══════════════════════════════════════ */}
+        <div className="relative mb-8 overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-purple-600 to-pink-500 p-8 shadow-xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4"></div>
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                {greeting()}, {user?.firstName || user?.name || 'Utilisateur'} 👋
+              </h1>
+              <p className="text-white/80 mt-2 text-sm md:text-base">
+                Bienvenue sur votre tableau de bord My Guide Digital
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                onClick={handleCreateLivret} 
+                variant="primary" 
+                className="bg-white text-primary hover:bg-white/90 border-0 shadow-lg font-semibold px-6"
+              >
+                <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                {t('dashboard.createBooklet', 'Créer un livret')}
+              </Button>
               <Link
                 href="/profile"
-                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 text-sm"
+                className="px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-colors flex items-center gap-2 text-sm font-medium border border-white/20"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                {t('profile.title', 'Mon Profil')}
+                {t('profile.title', 'Profil')}
               </Link>
             </div>
-            <p className="mt-2 text-gray-600 text-sm sm:text-base">
-              {t('dashboard.myBookletsDescription', 'Gérez vos livrets d\'accueil digitaux')}
-            </p>
-          </div>
-          <Button onClick={handleCreateLivret} variant="primary" className="w-full sm:w-auto">
-            {t('dashboard.createBooklet', '+ Créer un livret')}
-          </Button>
-        </div>
-      </div>
-
-      {user?.subscription?.plan === 'TRIAL' && (
-        <div className="mb-6 bg-primary/10 border border-primary/20 rounded-lg p-4">
-          <p className="text-primary font-medium">
-            {t('dashboard.trialMessage', 'Vous bénéficiez actuellement de la période d\'essai gratuite.')}
-            {user.subscription.trialDaysLeft && (
-              <span className="ml-2">
-                {t('dashboard.trialDaysLeft', 'Nombre de jours restants :')} {user.subscription.trialDaysLeft}
-              </span>
-            )}
-          </p>
-        </div>
-      )}
-
-      {/* Section Upgrade */}
-      {user?.subscription?.plan && ['MONTHLY', 'YEARLY'].includes(user.subscription.plan) && (
-        <div className="mb-6 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
-            {t('dashboard.upgrade.title', 'Améliorez votre abonnement')}
-          </h2>
-          <p className="text-gray-700 mb-4">
-            {t('dashboard.upgrade.description', 'Passez à un plan supérieur et économisez encore plus !')}
-          </p>
-          <div className="flex flex-wrap gap-3">
-            {user.subscription.plan === 'MONTHLY' && (
-              <>
-                <Button
-                  variant="primary"
-                  onClick={async () => {
-                    try {
-                      const response = await subscriptionsApi.upgrade({ targetPlanId: 'yearly' });
-                      if (response.data.url) {
-                        window.location.href = response.data.url;
-                      }
-                    } catch (err: any) {
-                      toast.error(err.response?.data?.message || t('dashboard.upgrade.error', 'Erreur lors de l\'upgrade'));
-                    }
-                  }}
-                  className="bg-gradient-to-r from-purple-500 to-violet-500 hover:from-purple-600 hover:to-violet-600"
-                >
-                  {t('dashboard.upgrade.toYearly', 'Passer à Annuel (99€/an)')}
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={async () => {
-                    try {
-                      const response = await subscriptionsApi.upgrade({ targetPlanId: 'lifetime' });
-                      if (response.data.url) {
-                        window.location.href = response.data.url;
-                      }
-                    } catch (err: any) {
-                      toast.error(err.response?.data?.message || t('dashboard.upgrade.error', 'Erreur lors de l\'upgrade'));
-                    }
-                  }}
-                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
-                >
-                  {t('dashboard.upgrade.toLifetime', 'Passer à À vie (199€)')}
-                </Button>
-              </>
-            )}
-            {user.subscription.plan === 'YEARLY' && (
-              <Button
-                variant="primary"
-                onClick={async () => {
-                  try {
-                    const response = await subscriptionsApi.upgrade({ targetPlanId: 'lifetime' });
-                    if (response.data.url) {
-                      window.location.href = response.data.url;
-                    }
-                  } catch (err: any) {
-                    toast.error(err.response?.data?.message || t('dashboard.upgrade.error', 'Erreur lors de l\'upgrade'));
-                  }
-                }}
-                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
-              >
-                {t('dashboard.upgrade.toLifetime', 'Passer à À vie (199€)')}
-              </Button>
-            )}
           </div>
         </div>
-      )}
 
-      {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          {error}
-        </div>
-      )}
-
-      {livrets.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow">
-          <p className="text-gray-600 mb-4">{t('dashboard.noBooklets', 'Aucun livret créé pour le moment')}</p>
-          <Button onClick={handleCreateLivret} variant="primary">
-            {t('dashboard.createBooklet', '+ Créer un livret')}
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {livrets.map((livret) => (
-            <div key={livret.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">{livret.name}</h3>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={livret.isActive}
-                      onChange={() => handleToggleActive(livret)}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
-                </div>
-
-                {livret.address && (
-                  <p className="text-sm text-gray-600 mb-4">{livret.address}</p>
-                )}
-
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <span>{livret.modules?.length || 0} {t('modules.activeModules', 'modules actifs')}</span>
-                </div>
-
-                <div className="flex space-x-2">
-                  <Link href={`/dashboard/livrets/${livret.id}`}>
-                    <Button variant="primary" size="sm" className="flex-1">
-                      {t('common.edit', 'Modifier')}
-                    </Button>
-                  </Link>
-                  <Link href={`/dashboard/livrets/${livret.id}/statistics`}>
-                    <Button variant="outline" size="sm" title={t('livret.statistics', 'Statistiques')}>
-                      📊
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDelete(livret.id)}
+        {/* ══════════════════════════════════════ */}
+        {/* BANDEAU ABONNEMENT */}
+        {/* ══════════════════════════════════════ */}
+        {subscriptionInfo && (
+          <div className={`mb-8 rounded-2xl overflow-hidden shadow-md border ${
+            subscriptionInfo.plan === 'TRIAL' ? 'border-amber-200' : 'border-primary/20'
+          }`}>
+            <div className={`bg-gradient-to-r ${getPlanColor(subscriptionInfo.plan)} p-1`}>
+              <div className="bg-white rounded-xl p-5">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getPlanColor(subscriptionInfo.plan)} flex items-center justify-center text-white text-xl shadow-lg`}>
+                      {subscriptionInfo.plan === 'TRIAL' ? '⏱️' : '✨'}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-gray-900">{getPlanLabel(subscriptionInfo.plan)}</h3>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          subscriptionInfo.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
+                          subscriptionInfo.status === 'EXPIRED' ? 'bg-red-100 text-red-700' :
+                          'bg-gray-100 text-gray-700'
+                        }`}>
+                          {subscriptionInfo.status === 'ACTIVE' ? '● Actif' : subscriptionInfo.status === 'EXPIRED' ? '● Expiré' : subscriptionInfo.status}
+                        </span>
+                      </div>
+                      {subscriptionInfo.plan === 'TRIAL' && subscriptionInfo.daysLeft > 0 && (
+                        <div className="mt-2">
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <span>{subscriptionInfo.daysLeft} jours restants</span>
+                          </div>
+                          <div className="w-48 h-2 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500"
+                              style={{ width: `${(subscriptionInfo.daysLeft / 14) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <Link
+                    href="/subscription"
+                    className="px-5 py-2.5 bg-gradient-to-r from-primary to-pink-500 text-white rounded-lg hover:shadow-lg transition-all duration-300 text-sm font-semibold"
                   >
-                    {t('common.delete', 'Supprimer')}
-                  </Button>
+                    {subscriptionInfo.plan === 'TRIAL' ? 'Choisir un abonnement →' : 'Gérer mon abonnement →'}
+                  </Link>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
 
+        {/* ══════════════════════════════════════ */}
+        {/* STATISTIQUES RAPIDES */}
+        {/* ══════════════════════════════════════ */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {/* Card: Total Livrets */}
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-purple-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+            <div className="relative bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-purple-100 flex items-center justify-center">
+                  <span className="text-xl">📚</span>
+                </div>
+                <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">Total</span>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+              <p className="text-sm text-gray-500 mt-1">Livrets créés</p>
+            </div>
+          </div>
+
+          {/* Card: Livrets Actifs */}
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-400 to-green-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+            <div className="relative bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-50 to-green-100 flex items-center justify-center">
+                  <span className="text-xl">✅</span>
+                </div>
+                <span className="text-xs font-medium text-emerald-500 uppercase tracking-wider">Actifs</span>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{stats.active}</p>
+              <p className="text-sm text-gray-500 mt-1">Livrets en ligne</p>
+              {stats.total > 0 && (
+                <div className="mt-2">
+                  <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-emerald-400 to-green-500 rounded-full" style={{ width: `${(stats.active / stats.total) * 100}%` }}></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Card: Modules actifs */}
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-400 to-rose-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+            <div className="relative bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center">
+                  <span className="text-xl">🧩</span>
+                </div>
+                <span className="text-xs font-medium text-pink-500 uppercase tracking-wider">Modules</span>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{stats.totalModules}</p>
+              <p className="text-sm text-gray-500 mt-1">Modules configurés</p>
+            </div>
+          </div>
+
+          {/* Card: Factures */}
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-400 to-indigo-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
+            <div className="relative bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-50 to-indigo-100 flex items-center justify-center">
+                  <span className="text-xl">🧾</span>
+                </div>
+                <span className="text-xs font-medium text-violet-500 uppercase tracking-wider">Factures</span>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{invoiceCount}</p>
+              <p className="text-sm text-gray-500 mt-1">
+                <Link href="/invoices" className="text-primary hover:text-pink-500 transition-colors">Voir mes factures →</Link>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════ */}
+        {/* ACTIONS RAPIDES */}
+        {/* ══════════════════════════════════════ */}
+        <div className="mb-8">
+          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-6 bg-gradient-to-b from-primary to-pink-500 rounded-full"></span>
+            Actions rapides
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button
+              onClick={handleCreateLivret}
+              className="group bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-primary/30 transition-all duration-300 text-left"
+            >
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white text-lg mb-3 group-hover:scale-110 transition-transform duration-300">
+                ✏️
+              </div>
+              <p className="font-semibold text-gray-900 text-sm">Créer un livret</p>
+              <p className="text-xs text-gray-400 mt-1">Nouveau livret d&apos;accueil</p>
+            </button>
+
+            <Link
+              href="/subscription"
+              className="group bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-pink-300 transition-all duration-300 text-left"
+            >
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white text-lg mb-3 group-hover:scale-110 transition-transform duration-300">
+                💎
+              </div>
+              <p className="font-semibold text-gray-900 text-sm">Abonnement</p>
+              <p className="text-xs text-gray-400 mt-1">Gérer ou upgrader</p>
+            </Link>
+
+            <Link
+              href="/invoices"
+              className="group bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-violet-300 transition-all duration-300 text-left"
+            >
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-lg mb-3 group-hover:scale-110 transition-transform duration-300">
+                🧾
+              </div>
+              <p className="font-semibold text-gray-900 text-sm">Factures</p>
+              <p className="text-xs text-gray-400 mt-1">Historique et PDF</p>
+            </Link>
+
+            <Link
+              href="/profile"
+              className="group bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-emerald-300 transition-all duration-300 text-left"
+            >
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-lg mb-3 group-hover:scale-110 transition-transform duration-300">
+                ⚙️
+              </div>
+              <p className="font-semibold text-gray-900 text-sm">Mon profil</p>
+              <p className="text-xs text-gray-400 mt-1">Infos et paramètres</p>
+            </Link>
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════ */}
+        {/* GRAPHIQUE D'ACTIVITÉ — Répartition des livrets */}
+        {/* ══════════════════════════════════════ */}
+        {stats.total > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-full"></span>
+              Vue d&apos;ensemble
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Répartition Actif/Inactif */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Statut des livrets</h3>
+                <div className="flex items-center gap-6">
+                  {/* Mini donut chart CSS */}
+                  <div className="relative w-28 h-28 flex-shrink-0">
+                    <svg className="w-28 h-28 -rotate-90" viewBox="0 0 120 120">
+                      <circle cx="60" cy="60" r="50" fill="none" stroke="#f3f4f6" strokeWidth="12" />
+                      <circle 
+                        cx="60" cy="60" r="50" fill="none" 
+                        stroke="url(#gradient-active)" 
+                        strokeWidth="12" 
+                        strokeDasharray={`${(stats.active / Math.max(stats.total, 1)) * 314} 314`}
+                        strokeLinecap="round"
+                      />
+                      <defs>
+                        <linearGradient id="gradient-active" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#10b981" />
+                          <stop offset="100%" stopColor="#06b6d4" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-gray-900">{stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0}%</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500"></div>
+                        <span className="text-sm text-gray-600">Actifs</span>
+                      </div>
+                      <span className="font-bold text-gray-900">{stats.active}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-gray-200"></div>
+                        <span className="text-sm text-gray-600">Inactifs</span>
+                      </div>
+                      <span className="font-bold text-gray-900">{stats.inactive}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Barres de progression — Modules par livret */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Modules par livret</h3>
+                <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
+                  {livrets.length === 0 ? (
+                    <p className="text-gray-400 text-sm text-center py-4">Aucun livret</p>
+                  ) : (
+                    livrets.slice(0, 6).map((livret) => {
+                      const moduleCount = livret.modules?.length || 0;
+                      const maxModules = Math.max(...livrets.map(l => l.modules?.length || 0), 1);
+                      return (
+                        <div key={livret.id}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="text-gray-700 font-medium truncate max-w-[70%]">{livret.name}</span>
+                            <span className="text-gray-500">{moduleCount} modules</span>
+                          </div>
+                          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full rounded-full bg-gradient-to-r from-primary to-pink-500 transition-all duration-700"
+                              style={{ width: `${(moduleCount / maxModules) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════ */}
+        {/* LISTE DES LIVRETS */}
+        {/* ══════════════════════════════════════ */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-gradient-to-b from-violet-500 to-purple-600 rounded-full"></span>
+              {t('dashboard.myBooklets', 'Mes livrets')}
+              {stats.total > 0 && (
+                <span className="ml-2 text-sm font-normal text-gray-400">({stats.total})</span>
+              )}
+            </h2>
+            {stats.total > 0 && (
+              <Button onClick={handleCreateLivret} variant="primary" className="bg-gradient-to-r from-primary to-pink-500 border-0 text-sm px-4 py-2">
+                + Nouveau livret
+              </Button>
+            )}
+          </div>
+
+          {error && (
+            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+              {error}
+            </div>
+          )}
+
+          {livrets.length === 0 ? (
+            <div className="relative overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-pink-500/5"></div>
+              <div className="relative text-center py-16 px-8">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/10 to-pink-100 flex items-center justify-center">
+                  <span className="text-4xl">📝</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Créez votre premier livret !</h3>
+                <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                  Commencez à offrir une expérience unique à vos voyageurs avec un livret d&apos;accueil digital personnalisé.
+                </p>
+                <Button 
+                  onClick={handleCreateLivret} 
+                  variant="primary" 
+                  className="bg-gradient-to-r from-primary to-pink-500 border-0 shadow-lg px-8 py-3 text-base font-semibold"
+                >
+                  <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Créer mon premier livret
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {livrets.map((livret) => (
+                <div key={livret.id} className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
+                  {/* Bande de couleur en haut */}
+                  <div className={`h-1.5 ${livret.isActive ? 'bg-gradient-to-r from-emerald-400 to-cyan-500' : 'bg-gray-200'}`}></div>
+                  
+                  <div className="p-6">
+                    {/* En-tête avec nom + toggle */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1 min-w-0 mr-3">
+                        <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-primary transition-colors">{livret.name}</h3>
+                        {livret.address && (
+                          <p className="text-sm text-gray-400 truncate mt-0.5">{livret.address}</p>
+                        )}
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={livret.isActive}
+                          onChange={() => handleToggleActive(livret)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-emerald-400 peer-checked:to-cyan-500"></div>
+                      </label>
+                    </div>
+
+                    {/* Infos */}
+                    <div className="flex items-center gap-4 mb-5 text-sm">
+                      <div className="flex items-center gap-1.5 text-gray-500">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        {livret.modules?.length || 0} modules
+                      </div>
+                      <div className={`flex items-center gap-1.5 ${livret.isActive ? 'text-emerald-500' : 'text-gray-400'}`}>
+                        <div className={`w-2 h-2 rounded-full ${livret.isActive ? 'bg-emerald-400 animate-pulse' : 'bg-gray-300'}`}></div>
+                        {livret.isActive ? 'En ligne' : 'Hors ligne'}
+                      </div>
+                      <div className="text-gray-400 text-xs">
+                        {new Date(livret.createdAt).toLocaleDateString('fr-FR')}
+                      </div>
+                    </div>
+
+                    {/* Boutons */}
+                    <div className="flex gap-2">
+                      <Link href={`/dashboard/livrets/${livret.id}`} className="flex-1">
+                        <Button variant="primary" size="sm" className="w-full bg-gradient-to-r from-primary to-purple-600 border-0 text-sm">
+                          ✏️ Modifier
+                        </Button>
+                      </Link>
+                      <Link href={`/dashboard/livrets/${livret.id}/statistics`}>
+                        <Button variant="outline" size="sm" className="border-gray-200 hover:border-primary/50 hover:bg-primary/5 text-sm" title="Statistiques">
+                          📊
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(livret.id)}
+                        className="border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 text-sm"
+                      >
+                        🗑️
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ══════════════════════════════════════ */}
+        {/* FOOTER AIDE */}
+        {/* ══════════════════════════════════════ */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+          <p className="text-gray-500 text-sm">
+            Besoin d&apos;aide ou d&apos;une démonstration personnalisée ?{' '}
+            <Link href="/contact" className="text-primary hover:text-pink-500 font-semibold transition-colors">
+              Contactez-nous →
+            </Link>
+          </p>
+        </div>
+
+      </div>
+
+      {/* Confirm Dialog */}
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         title={t('dashboard.deleteConfirmTitle', 'Supprimer le livret')}
