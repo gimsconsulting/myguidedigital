@@ -262,6 +262,17 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Input file TOUJOURS présent dans le DOM pour upload photo */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            if (e.target.files && e.target.files[0]) handleFileUpload(e.target.files[0]);
+          }}
+        />
+
         {/* ══════════════════════════════════════ */}
         {/* NAVIGATION SECTIONS */}
         {/* ══════════════════════════════════════ */}
@@ -683,15 +694,6 @@ export default function ProfilePage() {
                       : 'border-gray-300 hover:border-violet-400 hover:bg-violet-50/30'
                   }`}
                 >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) handleFileUpload(e.target.files[0]);
-                    }}
-                  />
                   {isUploading ? (
                     <div className="flex flex-col items-center py-4">
                       <div className="w-12 h-12 rounded-full border-4 border-violet-200 border-t-violet-500 animate-spin mb-4"></div>
