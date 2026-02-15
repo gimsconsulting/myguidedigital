@@ -149,10 +149,12 @@ router.get('/plans', (req, res) => {
 // Create checkout session — accepte 3 catégories : hotes, hotel, camping
 router.post('/checkout', authenticateToken, async (req: any, res) => {
   try {
-    const { planId, category, unitCount } = req.body;
-    // planId  : 'hotes-annuel' | 'hotes-saison-1' | 'hotes-saison-2' | 'hotes-saison-3' | 'hotel' | 'camping'
-    // category: 'hotes' | 'hotel' | 'camping'
+    const { planId, category, unitCount, quantity: rawQuantity } = req.body;
+    // planId   : 'hotes-annuel' | 'hotes-saison-1' | 'hotes-saison-2' | 'hotes-saison-3' | 'hotel' | 'camping'
+    // category : 'hotes' | 'hotel' | 'camping'
     // unitCount: nombre de chambres (hotel) ou emplacements (camping)
+    // quantity : nombre de locations/hôtels/campings (défaut: 1)
+    const quantity = Math.max(1, Math.min(50, parseInt(rawQuantity) || 1));
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return res.status(500).json({ message: 'Stripe n\'est pas configuré' });
@@ -180,9 +182,9 @@ router.post('/checkout', authenticateToken, async (req: any, res) => {
         return res.status(400).json({ message: 'Plan hôte invalide' });
       }
 
-      priceHT = hostPlan.price;
-      productName = `My Guide Digital — ${hostPlan.name}`;
-      productDescription = `Livrets d'accueil digitaux — ${hostPlan.name}`;
+      priceHT = hostPlan.price * quantity; // prix unitaire × nombre de locations
+      productName = `My Guide Digital — ${hostPlan.name}${quantity > 1 ? ` (${quantity} locations)` : ''}`;
+      productDescription = `Livret d'accueil digital — ${hostPlan.name} — ${quantity} location${quantity > 1 ? 's' : ''}`;
       planType = hostPlan.planType;
       durationDays = hostPlan.durationDays;
 
@@ -202,19 +204,20 @@ router.post('/checkout', authenticateToken, async (req: any, res) => {
             name: productName,
             description: productDescription,
           },
-          unit_amount: Math.round(priceHT * 100), // Stripe attend des centimes
+          unit_amount: Math.round(hostPlan.price * 100), // prix unitaire en centimes
           ...(recurring && { recurring }),
         },
-        quantity: 1,
+        quantity: quantity, // Stripe multiplie automatiquement
       }];
 
     // ─── HÔTELS ───
     } else if (category === 'hotel') {
       const count = Math.max(5, Math.min(500, unitCount || 20));
       const calc = calculateDynamicPrice('hotel', count);
-      priceHT = calc.priceHT;
-      productName = `My Guide Digital — Hôtel (${count} chambres)`;
-      productDescription = calc.description;
+      const hotelUnitPrice = calc.priceHT; // prix pour 1 hôtel
+      priceHT = hotelUnitPrice * quantity; // prix total pour N hôtels
+      productName = `My Guide Digital — Hôtel (${count} chambres)${quantity > 1 ? ` × ${quantity} hôtels` : ''}`;
+      productDescription = `${calc.description}${quantity > 1 ? ` — ${quantity} hôtels` : ''}`;
       planType = calc.planType;
       mode = 'subscription';
       recurring = { interval: 'year' };
@@ -226,65 +229,40 @@ router.post('/checkout', authenticateToken, async (req: any, res) => {
             name: productName,
             description: productDescription,
           },
-          unit_amount: Math.round(priceHT * 100),
+          unit_amount: Math.round(hotelUnitPrice * 100), // prix unitaire pour 1 hôtel
           recurring: { interval: 'year' },
         },
-        quantity: 1,
+        quantity: quantity, // Stripe multiplie automatiquement
       }];
 
     // ─── CAMPINGS ───
     } else if (category === 'camping') {
       const count = Math.max(5, Math.min(300, unitCount || 20));
       const calc = calculateDynamicPrice('camping', count);
-      priceHT = calc.priceHT;
-      productName = `My Guide Digital — Camping (${count} emplacements)`;
-      productDescription = calc.description;
+      const campingUnitAnnual = calc.priceHT; // prix annuel pour 1 camping
+      const campingSetupTotal = calc.setupFee * quantity; // frais de mise en place × nombre de campings
+      const campingTotalAnnual = campingUnitAnnual * quantity; // prix annuel total
+      priceHT = campingTotalAnnual + campingSetupTotal; // total 1ère année
+      productName = `My Guide Digital — Camping (${count} emplacements)${quantity > 1 ? ` × ${quantity} campings` : ''} — 1ère année`;
+      productDescription = `${count} emplacements × ${calc.unitPrice}€/empl./an${quantity > 1 ? ` × ${quantity} campings` : ''} + Frais de mise en place ${calc.setupFee}€${quantity > 1 ? ` × ${quantity}` : ''}`;
       planType = calc.planType;
-      mode = 'subscription'; // abonnement annuel récurrent
+      mode = 'payment'; // 1ère année = paiement unique (inclut frais de mise en place)
 
-      // Ligne 1 : Abonnement annuel récurrent
-      lineItems = [{
-        price_data: {
-          currency: 'eur',
-          product_data: {
-            name: productName,
-            description: `Camping — ${count} emplacements × ${calc.unitPrice}€ HT/empl./an`,
-          },
-          unit_amount: Math.round(priceHT * 100),
-          recurring: { interval: 'year' },
-        },
-        quantity: 1,
-      }];
-
-      // Frais de mise en place = paiement unique en plus
-      // On utilise Stripe Checkout en mode subscription, mais on peut ajouter un prix one-time
-      // via une deuxième ligne sans recurring
-      // NOTE: en mode 'subscription', Stripe accepte un mix de lignes récurrentes et one-time
-      // seulement si payment_mode_types inclut 'card' et en mode subscription
-      // Alternativement, on peut ajouter les frais dans invoice_creation ou via metadata
-      // Pour simplifier, on inclut les frais de mise en place dans les metadata et on les ajoute manuellement
-      // Stripe mode 'subscription' ne supporte pas facilement les one-time fees à côté.
-      // Solution: On utilise mode 'payment' la première fois et on traite comme un paiement unique
-      // OU on ajoute les frais au prix de la 1ère année.
-
-      // Solution retenue : inclure les frais de mise en place dans le total la 1ère année
-      // Le montant affiché sera priceHT + SETUP_FEE
-      const totalFirstYear = priceHT + calc.setupFee;
+      // Le prix unitaire par camping (annuel + setup) pour Stripe
+      const campingFirstYearPerUnit = campingUnitAnnual + calc.setupFee;
       lineItems = [
         {
           price_data: {
             currency: 'eur',
             product_data: {
               name: `My Guide Digital — Camping (${count} emplacements) — 1ère année`,
-              description: `${count} emplacements × ${calc.unitPrice}€/empl./an (${priceHT}€) + Frais de mise en place ${calc.setupFee}€`,
+              description: `${count} emplacements × ${calc.unitPrice}€/empl./an (${campingUnitAnnual}€) + Frais de mise en place ${calc.setupFee}€`,
             },
-            unit_amount: Math.round(totalFirstYear * 100),
+            unit_amount: Math.round(campingFirstYearPerUnit * 100),
           },
-          quantity: 1,
+          quantity: quantity,
         },
       ];
-      mode = 'payment'; // 1ère année = paiement unique (récurrence manuelle possible après)
-      priceHT = totalFirstYear; // pour la facture
 
     } else {
       return res.status(400).json({ message: 'Catégorie invalide. Utilisez: hotes, hotel, camping' });
@@ -304,6 +282,7 @@ router.post('/checkout', authenticateToken, async (req: any, res) => {
         planType: planType,
         category: category,
         unitCount: String(unitCount || ''),
+        quantity: String(quantity),
         priceHT: String(priceHT),
         durationDays: String(durationDays),
       },
@@ -322,7 +301,8 @@ router.post('/checkout', authenticateToken, async (req: any, res) => {
 // Upgrade subscription — redirige vers un nouveau checkout
 router.post('/upgrade', authenticateToken, async (req: any, res) => {
   try {
-    const { planId, category, unitCount } = req.body;
+    const { planId, category, unitCount, quantity: rawQty } = req.body;
+    const quantity = Math.max(1, Math.min(50, parseInt(rawQty) || 1));
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return res.status(500).json({ message: 'Stripe n\'est pas configuré' });
@@ -359,9 +339,9 @@ router.post('/upgrade', authenticateToken, async (req: any, res) => {
     if (category === 'hotes') {
       const hostPlan = HOST_PLANS[planId];
       if (!hostPlan) return res.status(400).json({ message: 'Plan invalide' });
-      priceHT = hostPlan.price;
-      productName = `Upgrade — ${hostPlan.name}`;
-      productDescription = `Upgrade vers ${hostPlan.name}`;
+      priceHT = hostPlan.price * quantity;
+      productName = `Upgrade — ${hostPlan.name}${quantity > 1 ? ` (${quantity} locations)` : ''}`;
+      productDescription = `Upgrade vers ${hostPlan.name} — ${quantity} location${quantity > 1 ? 's' : ''}`;
       planType = hostPlan.planType;
       durationDays = hostPlan.durationDays;
       if (planId === 'hotes-annuel') { mode = 'subscription'; }
@@ -369,43 +349,44 @@ router.post('/upgrade', authenticateToken, async (req: any, res) => {
         price_data: {
           currency: 'eur',
           product_data: { name: productName, description: productDescription },
-          unit_amount: Math.round(priceHT * 100),
+          unit_amount: Math.round(hostPlan.price * 100),
           ...(planId === 'hotes-annuel' && { recurring: { interval: 'year' as const } }),
         },
-        quantity: 1,
+        quantity: quantity,
       }];
     } else if (category === 'hotel') {
       const count = Math.max(5, Math.min(500, unitCount || 20));
       const calc = calculateDynamicPrice('hotel', count);
-      priceHT = calc.priceHT;
-      productName = `Upgrade — Hôtel (${count} chambres)`;
-      productDescription = calc.description;
+      priceHT = calc.priceHT * quantity;
+      productName = `Upgrade — Hôtel (${count} chambres)${quantity > 1 ? ` × ${quantity}` : ''}`;
+      productDescription = `${calc.description}${quantity > 1 ? ` — ${quantity} hôtels` : ''}`;
       planType = calc.planType;
       mode = 'subscription';
       lineItems = [{
         price_data: {
           currency: 'eur',
           product_data: { name: productName, description: productDescription },
-          unit_amount: Math.round(priceHT * 100),
+          unit_amount: Math.round(calc.priceHT * 100),
           recurring: { interval: 'year' },
         },
-        quantity: 1,
+        quantity: quantity,
       }];
     } else if (category === 'camping') {
       const count = Math.max(5, Math.min(300, unitCount || 20));
       const calc = calculateDynamicPrice('camping', count);
-      priceHT = calc.priceHT + calc.setupFee;
-      productName = `Upgrade — Camping (${count} emplacements) — 1ère année`;
-      productDescription = calc.description;
+      const campingFirstYearPerUnit = calc.priceHT + calc.setupFee;
+      priceHT = campingFirstYearPerUnit * quantity;
+      productName = `Upgrade — Camping (${count} emplacements)${quantity > 1 ? ` × ${quantity}` : ''} — 1ère année`;
+      productDescription = `${calc.description}${quantity > 1 ? ` — ${quantity} campings` : ''}`;
       planType = calc.planType;
       mode = 'payment';
       lineItems = [{
         price_data: {
           currency: 'eur',
           product_data: { name: productName, description: productDescription },
-          unit_amount: Math.round(priceHT * 100),
+          unit_amount: Math.round(campingFirstYearPerUnit * 100),
         },
-        quantity: 1,
+        quantity: quantity,
       }];
     } else {
       return res.status(400).json({ message: 'Catégorie invalide' });
@@ -424,6 +405,7 @@ router.post('/upgrade', authenticateToken, async (req: any, res) => {
         planType,
         category,
         unitCount: String(unitCount || ''),
+        quantity: String(quantity),
         priceHT: String(priceHT),
         durationDays: String(durationDays),
         isUpgrade: 'true',
