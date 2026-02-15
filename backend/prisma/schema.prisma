@@ -17,6 +17,7 @@ model User {
   userType      String                @default("PARTICULIER")
   role          String                @default("USER") // USER ou ADMIN
   profilePhoto      String?
+  googleId          String?           @unique
   accommodationType String?           @db.Text // JSON array of accommodation types
   createdAt         DateTime          @default(now())
   updatedAt     DateTime              @updatedAt

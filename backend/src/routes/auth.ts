@@ -4,12 +4,14 @@ import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { body, validationResult, CustomValidator } from 'express-validator';
 import crypto from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
 import { loginLimiter, registerLimiter } from '../middleware/rateLimiter';
 import { validateCsrfToken } from '../middleware/csrf';
 import { sendWelcomeEmail } from '../services/email';
 
 const router = express.Router();
 const prisma = new PrismaClient();
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Validation personnalisée pour la complexité du mot de passe
 const passwordComplexity: CustomValidator = (value: string) => {
@@ -268,6 +270,143 @@ router.post('/login', loginLimiter, [
   } catch (error: any) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Erreur lors de la connexion' });
+  }
+});
+
+// Google OAuth - Connexion / Inscription via Google
+router.post('/google', async (req: express.Request, res: express.Response) => {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({ message: 'Token Google manquant' });
+    }
+
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      console.error('GOOGLE_CLIENT_ID is not defined!');
+      return res.status(500).json({ message: 'Connexion Google non configurée' });
+    }
+
+    // Vérifier le token Google
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(400).json({ message: 'Token Google invalide' });
+    }
+
+    const { email, given_name, family_name, picture, sub: googleId } = payload;
+
+    // Chercher un utilisateur existant par email ou googleId
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { googleId },
+        ]
+      },
+      include: {
+        subscriptions: {
+          where: { status: 'ACTIVE' },
+          orderBy: { createdAt: 'desc' },
+          take: 1
+        }
+      }
+    });
+
+    if (user) {
+      // Utilisateur existant → mettre à jour le googleId si pas encore lié
+      if (!user.googleId) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { googleId }
+        });
+      }
+    } else {
+      // Nouvel utilisateur → inscription automatique
+      // Générer un mot de passe aléatoire (l'utilisateur se connecte via Google)
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+      user = await prisma.user.create({
+        data: {
+          email: email!,
+          password: hashedPassword,
+          firstName: given_name || '',
+          lastName: family_name || '',
+          googleId,
+          profilePhoto: picture || '',
+        },
+        include: {
+          subscriptions: {
+            where: { status: 'ACTIVE' },
+            orderBy: { createdAt: 'desc' },
+            take: 1
+          }
+        }
+      });
+
+      // Créer l'abonnement d'essai
+      await prisma.subscription.create({
+        data: {
+          userId: user.id,
+          plan: 'TRIAL',
+          status: 'ACTIVE',
+          startDate: new Date(),
+          trialDaysLeft: 14,
+        }
+      });
+
+      // Recharger avec la subscription
+      user = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+          subscriptions: {
+            where: { status: 'ACTIVE' },
+            orderBy: { createdAt: 'desc' },
+            take: 1
+          }
+        }
+      }) as any;
+
+      // Envoyer l'email de bienvenue
+      sendWelcomeEmail({
+        firstName: user!.firstName,
+        lastName: user!.lastName,
+        email: user!.email,
+      }).catch((error) => {
+        console.error('Erreur email bienvenue (Google):', error);
+      });
+    }
+
+    // Générer le JWT
+    const token = jwt.sign(
+      { userId: user!.id, email: user!.email },
+      process.env.JWT_SECRET as string,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as jwt.SignOptions
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user!.id,
+        email: user!.email,
+        firstName: user!.firstName,
+        lastName: user!.lastName,
+        phone: user!.phone,
+        userType: user!.userType,
+        role: user!.role,
+        profilePhoto: user!.profilePhoto,
+        accommodationType: user!.accommodationType ? JSON.parse(user!.accommodationType) : [],
+        subscription: (user as any).subscriptions?.[0] || null,
+      }
+    });
+  } catch (error: any) {
+    console.error('Google auth error:', error);
+    res.status(500).json({ message: 'Erreur lors de la connexion avec Google' });
   }
 });
 

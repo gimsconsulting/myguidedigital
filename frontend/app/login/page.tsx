@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
@@ -10,6 +10,12 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { toast } from '@/components/ui/Toast';
 import LanguageSelector from '@/components/LanguageSelector';
+
+declare global {
+  interface Window {
+    google?: any;
+  }
+}
 
 const ERROR_STORAGE_KEY = 'login-error';
 
@@ -21,8 +27,66 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
+  const handleGoogleSuccess = useCallback(async (response: any) => {
+    setIsGoogleLoading(true);
+    try {
+      const result = await authApi.googleAuth({ credential: response.credential });
+      const { token, user } = result.data;
+      setError('');
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(ERROR_STORAGE_KEY);
+      }
+      toast.success(t('login.success', 'Connexion réussie !'));
+      setAuth(token, user);
+      router.push('/dashboard');
+    } catch (err: any) {
+      console.error('Erreur Google Auth:', err);
+      const errorMessage = err.response?.data?.message || 'Erreur lors de la connexion avec Google';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  }, [router, setAuth, t]);
+
+  // Charger le script Google Identity Services
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          callback: handleGoogleSuccess,
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById('google-signin-btn-login'),
+          {
+            theme: 'outline',
+            size: 'large',
+            width: '100%',
+            text: 'signin_with',
+            shape: 'pill',
+            logo_alignment: 'center',
+          }
+        );
+      }
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
+  }, [handleGoogleSuccess]);
 
   // Charger l'erreur depuis sessionStorage au montage et la garder
   useEffect(() => {
@@ -127,6 +191,29 @@ export default function LoginPage() {
           </p>
           <div className="mt-4 flex justify-center">
             <LanguageSelector />
+          </div>
+        </div>
+
+        {/* Bouton Google */}
+        <div className="mb-6">
+          <div id="google-signin-btn-login" className="flex justify-center"></div>
+          {isGoogleLoading && (
+            <div className="flex items-center justify-center mt-2">
+              <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span className="ml-2 text-sm text-gray-500">Connexion en cours...</span>
+            </div>
+          )}
+        </div>
+
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-white text-gray-500">ou</span>
           </div>
         </div>
 
