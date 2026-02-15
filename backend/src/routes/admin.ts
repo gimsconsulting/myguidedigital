@@ -115,56 +115,29 @@ const requireAdmin = async (req: express.Request, res: express.Response, next: e
 router.get('/overview', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
   try {
     const admin = (req as any).user;
-    logAdminAction(
-      admin.id,
-      admin.email,
-      'VIEW_OVERVIEW',
-      {},
-      req
-    );
+    logAdminAction(admin.id, admin.email, 'VIEW_OVERVIEW', {}, req);
+
     // Total utilisateurs
     const totalUsers = await prisma.user.count();
     const activeUsers = await prisma.user.count({
-      where: {
-        subscriptions: {
-          some: {
-            status: 'ACTIVE'
-          }
-        }
-      }
+      where: { subscriptions: { some: { status: 'ACTIVE' } } }
     });
     const trialUsers = await prisma.user.count({
-      where: {
-        subscriptions: {
-          some: {
-            plan: 'TRIAL',
-            status: 'ACTIVE'
-          }
-        }
-      }
+      where: { subscriptions: { some: { plan: 'TRIAL', status: 'ACTIVE' } } }
     });
+    // Utilisateurs payants = tous les plans sauf TRIAL
+    const PAID_PLANS = ['MONTHLY', 'YEARLY', 'HOTES_ANNUEL', 'HOTES_SAISON_1', 'HOTES_SAISON_2', 'HOTES_SAISON_3', 'HOTEL_ANNUEL', 'CAMPING_ANNUEL'];
     const paidUsers = await prisma.user.count({
-      where: {
-        subscriptions: {
-          some: {
-            plan: { in: ['MONTHLY', 'YEARLY', 'LIFETIME'] },
-            status: 'ACTIVE'
-          }
-        }
-      }
+      where: { subscriptions: { some: { plan: { in: PAID_PLANS }, status: 'ACTIVE' } } }
     });
 
-    // Revenus
+    // Toutes les factures payées
     const invoices = await prisma.invoice.findMany({
-      where: {
-        status: 'PAID'
-      },
-      include: {
-        subscription: true
-      }
+      where: { status: 'PAID' },
+      include: { subscription: true }
     });
     const totalRevenue = invoices.reduce((sum, inv) => sum + inv.amount, 0);
-    
+
     const currentMonth = new Date();
     currentMonth.setDate(1);
     currentMonth.setHours(0, 0, 0, 0);
@@ -172,24 +145,30 @@ router.get('/overview', authenticateToken, requireAdmin, async (req: express.Req
       .filter(inv => inv.paidAt && new Date(inv.paidAt) >= currentMonth)
       .reduce((sum, inv) => sum + inv.amount, 0);
 
-    // Revenus par plan
-    const monthlyInvoices = invoices.filter(inv => {
-      const sub = inv.subscription;
-      return sub && sub.plan === 'MONTHLY' && inv.status === 'PAID';
-    });
-    const yearlyInvoices = invoices.filter(inv => {
-      const sub = inv.subscription;
-      return sub && sub.plan === 'YEARLY' && inv.status === 'PAID';
-    });
-    const lifetimeInvoices = invoices.filter(inv => {
-      const sub = inv.subscription;
-      return sub && sub.plan === 'LIFETIME' && inv.status === 'PAID';
-    });
+    // Revenus par catégorie
+    const hotesPlanTypes = ['HOTES_ANNUEL', 'HOTES_SAISON_1', 'HOTES_SAISON_2', 'HOTES_SAISON_3'];
+    const hotelPlanTypes = ['HOTEL_ANNUEL'];
+    const campingPlanTypes = ['CAMPING_ANNUEL'];
+    const legacyPlanTypes = ['MONTHLY', 'YEARLY'];
 
-    const revenueByPlan = {
-      monthly: monthlyInvoices.reduce((sum, inv) => sum + inv.amount, 0),
-      yearly: yearlyInvoices.reduce((sum, inv) => sum + inv.amount, 0),
-      lifetime: lifetimeInvoices.reduce((sum, inv) => sum + inv.amount, 0)
+    const revenueByCategory = {
+      hotes: invoices.filter(inv => inv.subscription && hotesPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + inv.amount, 0),
+      hotels: invoices.filter(inv => inv.subscription && hotelPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + inv.amount, 0),
+      campings: invoices.filter(inv => inv.subscription && campingPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + inv.amount, 0),
+      legacy: invoices.filter(inv => inv.subscription && legacyPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + inv.amount, 0),
+    };
+
+    // Abonnements actifs par catégorie
+    const allActiveSubs = await prisma.subscription.findMany({ where: { status: 'ACTIVE' } });
+    const subscriptionsByCategory = {
+      trial: allActiveSubs.filter(s => s.plan === 'TRIAL').length,
+      hotes: allActiveSubs.filter(s => hotesPlanTypes.includes(s.plan)).length,
+      hotesAnnuel: allActiveSubs.filter(s => s.plan === 'HOTES_ANNUEL').length,
+      hotesSaison: allActiveSubs.filter(s => ['HOTES_SAISON_1', 'HOTES_SAISON_2', 'HOTES_SAISON_3'].includes(s.plan)).length,
+      hotels: allActiveSubs.filter(s => hotelPlanTypes.includes(s.plan)).length,
+      campings: allActiveSubs.filter(s => campingPlanTypes.includes(s.plan)).length,
+      legacy: allActiveSubs.filter(s => legacyPlanTypes.includes(s.plan)).length,
+      total: allActiveSubs.length,
     };
 
     // Livrets
@@ -201,26 +180,29 @@ router.get('/overview', authenticateToken, requireAdmin, async (req: express.Req
     const sevenDaysFromNow = new Date();
     sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
     const expiringSoon = await prisma.subscription.count({
-      where: {
-        status: 'ACTIVE',
-        endDate: {
-          lte: sevenDaysFromNow,
-          gte: new Date()
-        }
-      }
+      where: { status: 'ACTIVE', endDate: { lte: sevenDaysFromNow, gte: new Date() } }
     });
 
-    // Taux de conversion
-    const totalTrials = await prisma.subscription.count({
-      where: { plan: 'TRIAL' }
+    // Abonnements expirés récemment (30 derniers jours)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentlyExpired = await prisma.subscription.count({
+      where: { status: 'EXPIRED', endDate: { gte: thirtyDaysAgo } }
     });
+
+    // Taux de conversion (essai → payant)
+    const totalTrials = await prisma.subscription.count({ where: { plan: 'TRIAL' } });
     const convertedTrials = await prisma.subscription.count({
-      where: {
-        plan: { in: ['MONTHLY', 'YEARLY', 'LIFETIME'] },
-        status: 'ACTIVE'
-      }
+      where: { plan: { in: PAID_PLANS }, status: 'ACTIVE' }
     });
     const conversionRate = totalTrials > 0 ? (convertedTrials / totalTrials * 100).toFixed(1) : '0';
+
+    // Dernières inscriptions (5 dernières)
+    const recentUsers = await prisma.user.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, email: true, firstName: true, lastName: true, createdAt: true, userType: true }
+    });
 
     res.json({
       users: {
@@ -232,7 +214,7 @@ router.get('/overview', authenticateToken, requireAdmin, async (req: express.Req
       revenue: {
         total: totalRevenue,
         monthly: monthlyRevenue,
-        byPlan: revenueByPlan
+        byCategory: revenueByCategory
       },
       livrets: {
         total: totalLivrets,
@@ -240,9 +222,12 @@ router.get('/overview', authenticateToken, requireAdmin, async (req: express.Req
         inactive: inactiveLivrets
       },
       subscriptions: {
-        expiringSoon
+        expiringSoon,
+        recentlyExpired,
+        byCategory: subscriptionsByCategory
       },
-      conversionRate: parseFloat(conversionRate)
+      conversionRate: parseFloat(conversionRate as string),
+      recentUsers
     });
   } catch (error: any) {
     console.error('Erreur overview admin:', error);
