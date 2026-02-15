@@ -357,8 +357,8 @@ export const statisticsApi = {
 export const subscriptionsApi = {
   getCurrent: () => api.get('/subscriptions'),
   getPlans: () => api.get('/subscriptions/plans'),
-  checkout: (data: { planId: string }) => api.post('/subscriptions/checkout', data),
-  upgrade: (data: { targetPlanId: string }) => api.post('/subscriptions/upgrade', data),
+  checkout: (data: { planId: string; category: string; unitCount?: number }) => api.post('/subscriptions/checkout', data),
+  upgrade: (data: { planId: string; category: string; unitCount?: number }) => api.post('/subscriptions/upgrade', data),
   applyPromo: (data: { code: string }) => api.post('/subscriptions/promo', data),
 };
 

@@ -55,98 +55,257 @@ router.get('/', authenticateToken, async (req: any, res) => {
   }
 });
 
-// Get available plans
+// --- Fonctions de calcul de prix (identiques au frontend) ---
+function getPricePerRoom(roomCount: number): number {
+  if (roomCount >= 400) return 5;
+  if (roomCount >= 300) return 6;
+  if (roomCount >= 200) return 7;
+  if (roomCount >= 150) return 8;
+  if (roomCount >= 100) return 9;
+  if (roomCount >= 75) return 10;
+  if (roomCount >= 50) return 11;
+  if (roomCount >= 30) return 13;
+  if (roomCount >= 20) return 15;
+  if (roomCount >= 10) return 17;
+  return 19;
+}
+
+function getPricePerPitch(pitchCount: number): number {
+  if (pitchCount >= 150) return 10;
+  if (pitchCount >= 100) return 14;
+  if (pitchCount >= 75) return 18;
+  if (pitchCount >= 50) return 22;
+  if (pitchCount >= 30) return 27;
+  if (pitchCount >= 10) return 33;
+  return 39;
+}
+
+const SETUP_FEE_CAMPING = 160; // frais de mise en place 1ère année
+
+// Tarifs fixes Hôtes & Locations / Conciergerie
+const HOST_PLANS: Record<string, { price: number; name: string; planType: string; interval: 'year' | 'month'; durationDays: number }> = {
+  'hotes-annuel':     { price: 59.00,  name: 'Hôtes & Locations — Annuel',     planType: 'HOTES_ANNUEL',     interval: 'year',  durationDays: 365 },
+  'hotes-saison-1':   { price: 9.90,   name: 'Hôtes & Locations — 1 Mois',     planType: 'HOTES_SAISON_1',   interval: 'month', durationDays: 30 },
+  'hotes-saison-2':   { price: 14.90,  name: 'Hôtes & Locations — 2 Mois',     planType: 'HOTES_SAISON_2',   interval: 'month', durationDays: 60 },
+  'hotes-saison-3':   { price: 19.90,  name: 'Hôtes & Locations — 3 Mois',     planType: 'HOTES_SAISON_3',   interval: 'month', durationDays: 90 },
+};
+
+/**
+ * Calculer le prix d'un plan dynamique (hôtels ou campings)
+ */
+function calculateDynamicPrice(category: 'hotel' | 'camping', unitCount: number): { priceHT: number; unitPrice: number; description: string; planType: string; setupFee: number } {
+  if (category === 'hotel') {
+    const clamped = Math.max(5, Math.min(500, unitCount));
+    const unitPrice = getPricePerRoom(clamped);
+    const priceHT = unitPrice * clamped;
+    return {
+      priceHT,
+      unitPrice,
+      description: `Hôtel — ${clamped} chambres × ${unitPrice}€ HT/chambre/an`,
+      planType: 'HOTEL_ANNUEL',
+      setupFee: 0,
+    };
+  } else {
+    const clamped = Math.max(5, Math.min(300, unitCount));
+    const unitPrice = getPricePerPitch(clamped);
+    const priceHT = unitPrice * clamped;
+    return {
+      priceHT,
+      unitPrice,
+      description: `Camping — ${clamped} emplacements × ${unitPrice}€ HT/empl./an + Frais de mise en place ${SETUP_FEE_CAMPING}€ HT`,
+      planType: 'CAMPING_ANNUEL',
+      setupFee: SETUP_FEE_CAMPING,
+    };
+  }
+}
+
+// Get available plans (informational)
 router.get('/plans', (req, res) => {
-  res.json([
-    {
-      id: 'monthly',
-      name: 'Mensuel',
-      price: 15.00,
-      currency: 'EUR',
-      interval: 'month',
-      pricePerLivret: 15.00,
-      savings: '21%'
-    },
-    {
-      id: 'yearly',
-      name: 'Annuel',
-      price: 99.00,
+  res.json({
+    hotes: [
+      { id: 'hotes-annuel',   name: 'Annuel',  price: 59.00,  interval: 'year' },
+      { id: 'hotes-saison-1', name: '1 Mois',  price: 9.90,   interval: 'month' },
+      { id: 'hotes-saison-2', name: '2 Mois',  price: 14.90,  interval: 'month' },
+      { id: 'hotes-saison-3', name: '3 Mois',  price: 19.90,  interval: 'month' },
+    ],
+    hotels: {
+      type: 'dynamic',
+      basePrice: 19,
       currency: 'EUR',
       interval: 'year',
-      pricePerLivret: 99.00,
-      monthlyPrice: 8.25,
-      savings: '31%'
+      description: 'Prix dégressif par chambre / an',
     },
-    {
-      id: 'lifetime',
-      name: 'À vie',
-      price: 199.00,
+    campings: {
+      type: 'dynamic',
+      basePrice: 39,
+      setupFee: SETUP_FEE_CAMPING,
       currency: 'EUR',
-      interval: 'lifetime',
-      pricePerLivret: 199.00,
-      savings: '33%'
-    }
-  ]);
+      interval: 'year',
+      description: 'Prix dégressif par emplacement / an + frais de mise en place',
+    },
+  });
 });
 
-// Create checkout session
+// Create checkout session — accepte 3 catégories : hotes, hotel, camping
 router.post('/checkout', authenticateToken, async (req: any, res) => {
   try {
-    const { planId } = req.body;
+    const { planId, category, unitCount } = req.body;
+    // planId  : 'hotes-annuel' | 'hotes-saison-1' | 'hotes-saison-2' | 'hotes-saison-3' | 'hotel' | 'camping'
+    // category: 'hotes' | 'hotel' | 'camping'
+    // unitCount: nombre de chambres (hotel) ou emplacements (camping)
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return res.status(500).json({ message: 'Stripe n\'est pas configuré' });
     }
 
-    const plans: Record<string, { price: number; name: string; planType: string }> = {
-      monthly: { price: 15.00, name: 'Mensuel', planType: 'MONTHLY' },
-      yearly: { price: 99.00, name: 'Annuel', planType: 'YEARLY' },
-      lifetime: { price: 199.00, name: 'À vie', planType: 'LIFETIME' }
-    };
-
-    const plan = plans[planId];
-    if (!plan) {
-      return res.status(400).json({ message: 'Plan invalide' });
-    }
-
     // Get user
-    const user = await prisma.user.findUnique({
-      where: { id: req.userId }
-    });
-
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    let priceHT: number;
+    let productName: string;
+    let productDescription: string;
+    let planType: string;
+    let mode: 'payment' | 'subscription' = 'payment';
+    let recurring: { interval: 'year' | 'month' } | undefined;
+    let durationDays: number = 365;
+    let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+
+    // ─── HÔTES & LOCATIONS / CONCIERGERIE ───
+    if (category === 'hotes') {
+      const hostPlan = HOST_PLANS[planId];
+      if (!hostPlan) {
+        return res.status(400).json({ message: 'Plan hôte invalide' });
+      }
+
+      priceHT = hostPlan.price;
+      productName = `My Guide Digital — ${hostPlan.name}`;
+      productDescription = `Livrets d'accueil digitaux — ${hostPlan.name}`;
+      planType = hostPlan.planType;
+      durationDays = hostPlan.durationDays;
+
+      // Les plans saisonniers (1, 2, 3 mois) sont des paiements uniques sans reconduction
+      // Le plan annuel est un abonnement récurrent
+      if (planId === 'hotes-annuel') {
+        mode = 'subscription';
+        recurring = { interval: 'year' };
+      } else {
+        mode = 'payment'; // saisonnier = paiement unique
+      }
+
+      lineItems = [{
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: productName,
+            description: productDescription,
+          },
+          unit_amount: Math.round(priceHT * 100), // Stripe attend des centimes
+          ...(recurring && { recurring }),
+        },
+        quantity: 1,
+      }];
+
+    // ─── HÔTELS ───
+    } else if (category === 'hotel') {
+      const count = Math.max(5, Math.min(500, unitCount || 20));
+      const calc = calculateDynamicPrice('hotel', count);
+      priceHT = calc.priceHT;
+      productName = `My Guide Digital — Hôtel (${count} chambres)`;
+      productDescription = calc.description;
+      planType = calc.planType;
+      mode = 'subscription';
+      recurring = { interval: 'year' };
+
+      lineItems = [{
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: productName,
+            description: productDescription,
+          },
+          unit_amount: Math.round(priceHT * 100),
+          recurring: { interval: 'year' },
+        },
+        quantity: 1,
+      }];
+
+    // ─── CAMPINGS ───
+    } else if (category === 'camping') {
+      const count = Math.max(5, Math.min(300, unitCount || 20));
+      const calc = calculateDynamicPrice('camping', count);
+      priceHT = calc.priceHT;
+      productName = `My Guide Digital — Camping (${count} emplacements)`;
+      productDescription = calc.description;
+      planType = calc.planType;
+      mode = 'subscription'; // abonnement annuel récurrent
+
+      // Ligne 1 : Abonnement annuel récurrent
+      lineItems = [{
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: productName,
+            description: `Camping — ${count} emplacements × ${calc.unitPrice}€ HT/empl./an`,
+          },
+          unit_amount: Math.round(priceHT * 100),
+          recurring: { interval: 'year' },
+        },
+        quantity: 1,
+      }];
+
+      // Frais de mise en place = paiement unique en plus
+      // On utilise Stripe Checkout en mode subscription, mais on peut ajouter un prix one-time
+      // via une deuxième ligne sans recurring
+      // NOTE: en mode 'subscription', Stripe accepte un mix de lignes récurrentes et one-time
+      // seulement si payment_mode_types inclut 'card' et en mode subscription
+      // Alternativement, on peut ajouter les frais dans invoice_creation ou via metadata
+      // Pour simplifier, on inclut les frais de mise en place dans les metadata et on les ajoute manuellement
+      // Stripe mode 'subscription' ne supporte pas facilement les one-time fees à côté.
+      // Solution: On utilise mode 'payment' la première fois et on traite comme un paiement unique
+      // OU on ajoute les frais au prix de la 1ère année.
+
+      // Solution retenue : inclure les frais de mise en place dans le total la 1ère année
+      // Le montant affiché sera priceHT + SETUP_FEE
+      const totalFirstYear = priceHT + calc.setupFee;
+      lineItems = [
+        {
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: `My Guide Digital — Camping (${count} emplacements) — 1ère année`,
+              description: `${count} emplacements × ${calc.unitPrice}€/empl./an (${priceHT}€) + Frais de mise en place ${calc.setupFee}€`,
+            },
+            unit_amount: Math.round(totalFirstYear * 100),
+          },
+          quantity: 1,
+        },
+      ];
+      mode = 'payment'; // 1ère année = paiement unique (récurrence manuelle possible après)
+      priceHT = totalFirstYear; // pour la facture
+
+    } else {
+      return res.status(400).json({ message: 'Catégorie invalide. Utilisez: hotes, hotel, camping' });
     }
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: `Abonnement ${plan.name} - Livrets d'Accueil`,
-              description: `Accès illimité à la plateforme pour créer des livrets d'accueil digitaux`,
-            },
-            unit_amount: Math.round(plan.price * 100),
-            ...(planId !== 'lifetime' && {
-              recurring: {
-                interval: planId === 'yearly' ? 'year' : 'month'
-              }
-            })
-          },
-          quantity: 1,
-        },
-      ],
-      mode: planId === 'lifetime' ? 'payment' : 'subscription',
+      line_items: lineItems,
+      mode,
       success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription`,
       metadata: {
         userId: req.userId,
         planId: planId,
-        planType: plan.planType,
+        planType: planType,
+        category: category,
+        unitCount: String(unitCount || ''),
+        priceHT: String(priceHT),
+        durationDays: String(durationDays),
       },
     });
 
@@ -160,10 +319,10 @@ router.post('/checkout', authenticateToken, async (req: any, res) => {
   }
 });
 
-// Upgrade subscription
+// Upgrade subscription — redirige vers un nouveau checkout
 router.post('/upgrade', authenticateToken, async (req: any, res) => {
   try {
-    const { targetPlanId } = req.body;
+    const { planId, category, unitCount } = req.body;
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return res.status(500).json({ message: 'Stripe n\'est pas configuré' });
@@ -182,100 +341,97 @@ router.post('/upgrade', authenticateToken, async (req: any, res) => {
       return res.status(404).json({ message: 'Aucun abonnement actif trouvé' });
     }
 
-    // Vérifier que l'upgrade est valide
-    const currentPlan = currentSubscription.plan;
-    const validUpgrades: Record<string, string[]> = {
-      'MONTHLY': ['YEARLY', 'LIFETIME'],
-      'YEARLY': ['LIFETIME'],
-      'TRIAL': ['MONTHLY', 'YEARLY', 'LIFETIME']
-    };
-
-    const targetPlanType = targetPlanId === 'yearly' ? 'YEARLY' : targetPlanId === 'lifetime' ? 'LIFETIME' : 'MONTHLY';
-    
-    if (!validUpgrades[currentPlan]?.includes(targetPlanType)) {
-      return res.status(400).json({ message: 'Upgrade non autorisé depuis ce plan' });
-    }
-
-    const plans: Record<string, { price: number; name: string; planType: string }> = {
-      monthly: { price: 15.00, name: 'Mensuel', planType: 'MONTHLY' },
-      yearly: { price: 99.00, name: 'Annuel', planType: 'YEARLY' },
-      lifetime: { price: 199.00, name: 'À vie', planType: 'LIFETIME' }
-    };
-
-    const targetPlan = plans[targetPlanId];
-    if (!targetPlan) {
-      return res.status(400).json({ message: 'Plan invalide' });
-    }
-
-    // Calculer le crédit du temps restant
-    let credit = 0;
-    if (currentSubscription.endDate && currentPlan !== 'TRIAL') {
-      const now = new Date();
-      const endDate = new Date(currentSubscription.endDate);
-      const daysRemaining = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-      
-      if (currentPlan === 'MONTHLY') {
-        // Crédit proportionnel : (jours restants / 30) * 12€
-        credit = (daysRemaining / 30) * 12;
-      } else if (currentPlan === 'YEARLY') {
-        // Crédit proportionnel : (jours restants / 365) * 99€
-        credit = (daysRemaining / 365) * 99;
-      }
-    }
-
-    // Calculer le prix à payer
-    const finalPrice = Math.max(0, targetPlan.price - credit);
-
     // Get user
-    const user = await prisma.user.findUnique({
-      where: { id: req.userId }
-    });
-
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
 
-    // Create Stripe checkout session for upgrade
+    // Calculer le prix selon la catégorie (réutilise la même logique que checkout)
+    let priceHT: number;
+    let productName: string;
+    let productDescription: string;
+    let planType: string;
+    let mode: 'payment' | 'subscription' = 'payment';
+    let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+    let durationDays = 365;
+
+    if (category === 'hotes') {
+      const hostPlan = HOST_PLANS[planId];
+      if (!hostPlan) return res.status(400).json({ message: 'Plan invalide' });
+      priceHT = hostPlan.price;
+      productName = `Upgrade — ${hostPlan.name}`;
+      productDescription = `Upgrade vers ${hostPlan.name}`;
+      planType = hostPlan.planType;
+      durationDays = hostPlan.durationDays;
+      if (planId === 'hotes-annuel') { mode = 'subscription'; }
+      lineItems = [{
+        price_data: {
+          currency: 'eur',
+          product_data: { name: productName, description: productDescription },
+          unit_amount: Math.round(priceHT * 100),
+          ...(planId === 'hotes-annuel' && { recurring: { interval: 'year' as const } }),
+        },
+        quantity: 1,
+      }];
+    } else if (category === 'hotel') {
+      const count = Math.max(5, Math.min(500, unitCount || 20));
+      const calc = calculateDynamicPrice('hotel', count);
+      priceHT = calc.priceHT;
+      productName = `Upgrade — Hôtel (${count} chambres)`;
+      productDescription = calc.description;
+      planType = calc.planType;
+      mode = 'subscription';
+      lineItems = [{
+        price_data: {
+          currency: 'eur',
+          product_data: { name: productName, description: productDescription },
+          unit_amount: Math.round(priceHT * 100),
+          recurring: { interval: 'year' },
+        },
+        quantity: 1,
+      }];
+    } else if (category === 'camping') {
+      const count = Math.max(5, Math.min(300, unitCount || 20));
+      const calc = calculateDynamicPrice('camping', count);
+      priceHT = calc.priceHT + calc.setupFee;
+      productName = `Upgrade — Camping (${count} emplacements) — 1ère année`;
+      productDescription = calc.description;
+      planType = calc.planType;
+      mode = 'payment';
+      lineItems = [{
+        price_data: {
+          currency: 'eur',
+          product_data: { name: productName, description: productDescription },
+          unit_amount: Math.round(priceHT * 100),
+        },
+        quantity: 1,
+      }];
+    } else {
+      return res.status(400).json({ message: 'Catégorie invalide' });
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: `Upgrade vers ${targetPlan.name} - Livrets d'Accueil`,
-              description: `Upgrade de votre abonnement ${currentPlan} vers ${targetPlan.name}${credit > 0 ? ` (Crédit appliqué: ${credit.toFixed(2)}€)` : ''}`,
-            },
-            unit_amount: Math.round(finalPrice * 100),
-            ...(targetPlanId !== 'lifetime' && {
-              recurring: {
-                interval: targetPlanId === 'yearly' ? 'year' : 'month'
-              }
-            })
-          },
-          quantity: 1,
-        },
-      ],
-      mode: targetPlanId === 'lifetime' ? 'payment' : 'subscription',
+      line_items: lineItems,
+      mode,
       success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`,
+      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription`,
       metadata: {
         userId: req.userId,
-        planId: targetPlanId,
-        planType: targetPlan.planType,
+        planId,
+        planType,
+        category,
+        unitCount: String(unitCount || ''),
+        priceHT: String(priceHT),
+        durationDays: String(durationDays),
         isUpgrade: 'true',
-        previousPlan: currentPlan,
-        credit: credit.toString(),
+        previousPlan: currentSubscription.plan,
       },
     });
 
-    res.json({ 
-      sessionId: session.id, 
-      url: session.url,
-      credit: credit,
-      finalPrice: finalPrice
-    });
+    res.json({ sessionId: session.id, url: session.url });
   } catch (error: any) {
     console.error('Upgrade subscription error:', error);
     res.status(500).json({ 
@@ -327,8 +483,11 @@ router.post('/webhook', async (req: any, res) => {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.userId;
-        const planId = session.metadata?.planId;
         const planType = session.metadata?.planType;
+        const category = session.metadata?.category;
+        const durationDays = parseInt(session.metadata?.durationDays || '365', 10);
+        const metaPriceHT = parseFloat(session.metadata?.priceHT || '0');
+        const unitCount = session.metadata?.unitCount || '';
 
         if (!userId || !planType) {
           console.error('Metadata manquante dans la session Stripe');
@@ -346,6 +505,9 @@ router.post('/webhook', async (req: any, res) => {
           }
         });
 
+        // Calculer la date de fin en fonction de la durée du plan
+        const endDate = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000);
+
         // Créer le nouvel abonnement
         const subscription = await prisma.subscription.create({
           data: {
@@ -355,29 +517,28 @@ router.post('/webhook', async (req: any, res) => {
             stripeSessionId: session.id,
             stripeSubscriptionId: session.subscription as string || null,
             startDate: new Date(),
-            endDate: planType === 'LIFETIME' 
-              ? null 
-              : new Date(Date.now() + (planType === 'YEARLY' ? 365 : 30) * 24 * 60 * 60 * 1000),
+            endDate: endDate,
           }
         });
 
-            // Créer la facture avec numéro séquentiel
-            const invoiceNumber1 = await generateInvoiceNumber();
-            await prisma.invoice.create({
-              data: {
-                invoiceNumber: invoiceNumber1,
-                userId: userId,
-                subscriptionId: subscription.id,
-                amount: session.amount_total ? session.amount_total / 100 : 0,
-                currency: session.currency?.toUpperCase() || 'EUR',
-                status: 'PAID',
-                stripePaymentIntentId: session.payment_intent as string || null,
-                stripeInvoiceId: session.invoice as string || null,
-                paidAt: new Date(),
-              }
-            });
+        // Créer la facture avec numéro séquentiel
+        const invoiceAmount = session.amount_total ? session.amount_total / 100 : metaPriceHT;
+        const invoiceNumber1 = await generateInvoiceNumber();
+        await prisma.invoice.create({
+          data: {
+            invoiceNumber: invoiceNumber1,
+            userId: userId,
+            subscriptionId: subscription.id,
+            amount: invoiceAmount,
+            currency: session.currency?.toUpperCase() || 'EUR',
+            status: 'PAID',
+            stripePaymentIntentId: session.payment_intent as string || null,
+            stripeInvoiceId: session.invoice as string || null,
+            paidAt: new Date(),
+          }
+        });
 
-        console.log(`Abonnement créé pour l'utilisateur ${userId}`);
+        console.log(`Abonnement ${planType} créé pour l'utilisateur ${userId} (${category}, ${unitCount} unités, ${durationDays}j)`);
         break;
       }
 

@@ -104,9 +104,9 @@ export default function SubscriptionPage() {
     setPitchCount(value);
   };
 
-  const handleSelectPlan = async (planId: string) => {
+  const handleSelectPlan = async (planId: string, category: string, unitCount?: number) => {
     try {
-      const response = await subscriptionsApi.checkout({ planId });
+      const response = await subscriptionsApi.checkout({ planId, category, unitCount });
       if (response.data.url) {
         window.location.href = response.data.url;
       }
@@ -244,7 +244,7 @@ export default function SubscriptionPage() {
                     <Button
                       variant="primary"
                       className="w-full bg-yellow-400 text-yellow-900 hover:bg-yellow-500 border-0 shadow-lg font-bold text-base py-3"
-                      onClick={() => handleSelectPlan('yearly')}
+                      onClick={() => handleSelectPlan('hotes-annuel', 'hotes')}
                     >
                       Souscrire — 59€ HT/an
                     </Button>
@@ -279,7 +279,7 @@ export default function SubscriptionPage() {
                     <Button
                       variant="primary"
                       className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 border-0 shadow-lg text-base py-3"
-                      onClick={() => handleSelectPlan('seasonal-1')}
+                      onClick={() => handleSelectPlan('hotes-saison-1', 'hotes')}
                     >
                       Souscrire — 9,90€
                     </Button>
@@ -314,7 +314,7 @@ export default function SubscriptionPage() {
                     <Button
                       variant="primary"
                       className="w-full bg-yellow-400 text-yellow-900 hover:bg-yellow-500 border-0 shadow-lg font-bold text-base py-3"
-                      onClick={() => handleSelectPlan('seasonal-2')}
+                      onClick={() => handleSelectPlan('hotes-saison-2', 'hotes')}
                     >
                       Souscrire — 14,90€
                     </Button>
@@ -349,7 +349,7 @@ export default function SubscriptionPage() {
                     <Button
                       variant="primary"
                       className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 border-0 shadow-lg text-base py-3"
-                      onClick={() => handleSelectPlan('seasonal-3')}
+                      onClick={() => handleSelectPlan('hotes-saison-3', 'hotes')}
                     >
                       Souscrire — 19,90€
                     </Button>
@@ -459,7 +459,7 @@ export default function SubscriptionPage() {
                   <Button
                     variant="primary"
                     className="bg-gradient-to-r from-primary to-pink-500 text-white border-0 shadow-lg font-bold text-base py-3 px-10 rounded-full"
-                    onClick={() => handleSelectPlan('hotel')}
+                    onClick={() => handleSelectPlan('hotel', 'hotel', roomCount)}
                   >
                     Souscrire — {hotelTotalPrice}€ HT/an
                   </Button>
@@ -574,9 +574,9 @@ export default function SubscriptionPage() {
                   <Button
                     variant="primary"
                     className="bg-gradient-to-r from-primary to-pink-500 text-white border-0 shadow-lg font-bold text-base py-3 px-10 rounded-full"
-                    onClick={() => handleSelectPlan('camping')}
+                    onClick={() => handleSelectPlan('camping', 'camping', pitchCount)}
                   >
-                    Souscrire — {campingAnnualPrice}€ HT/an
+                    Souscrire — {campingFirstYear}€ HT (1ère année)
                   </Button>
                 </div>
               </div>
