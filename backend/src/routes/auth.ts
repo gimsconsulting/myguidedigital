@@ -263,6 +263,10 @@ router.post('/login', loginLimiter, [
         userType: user.userType,
         role: user.role,
         profilePhoto: user.profilePhoto,
+        companyName: user.companyName,
+        vatNumber: user.vatNumber,
+        address: user.address,
+        country: user.country,
         accommodationType: user.accommodationType ? JSON.parse(user.accommodationType) : [],
         subscription: user.subscriptions[0] || null,
       }
@@ -400,6 +404,10 @@ router.post('/google', async (req: express.Request, res: express.Response) => {
         userType: user!.userType,
         role: user!.role,
         profilePhoto: user!.profilePhoto,
+        companyName: user!.companyName,
+        vatNumber: user!.vatNumber,
+        address: user!.address,
+        country: user!.country,
         accommodationType: user!.accommodationType ? JSON.parse(user!.accommodationType) : [],
         subscription: (user as any).subscriptions?.[0] || null,
       }
@@ -470,6 +478,10 @@ router.get('/me', authenticateToken, async (req: any, res: express.Response) => 
         userType: user.userType,
         role: user.role,
         profilePhoto: user.profilePhoto,
+        companyName: user.companyName,
+        vatNumber: user.vatNumber,
+        address: user.address,
+        country: user.country,
         accommodationType: user.accommodationType ? JSON.parse(user.accommodationType) : [],
         subscription: subscription,
       }
@@ -488,6 +500,10 @@ router.put('/profile', authenticateToken, [
   body('phone').optional().trim(),
   body('userType').optional().isIn(['PARTICULIER', 'SOCIETE']),
   body('profilePhoto').optional().trim(),
+  body('companyName').optional().trim(),
+  body('vatNumber').optional().trim(),
+  body('address').optional().trim(),
+  body('country').optional().trim(),
   body('accommodationType').optional(),
 ], async (req: any, res: express.Response) => {
   try {
@@ -496,7 +512,7 @@ router.put('/profile', authenticateToken, [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, firstName, lastName, phone, userType, profilePhoto, accommodationType } = req.body;
+    const { email, firstName, lastName, phone, userType, profilePhoto, companyName, vatNumber, address, country, accommodationType } = req.body;
 
     const user = await prisma.user.update({
       where: { id: req.userId },
@@ -507,6 +523,10 @@ router.put('/profile', authenticateToken, [
         ...(phone !== undefined && { phone }),
         ...(userType && { userType }),
         ...(profilePhoto !== undefined && { profilePhoto }),
+        ...(companyName !== undefined && { companyName }),
+        ...(vatNumber !== undefined && { vatNumber }),
+        ...(address !== undefined && { address }),
+        ...(country !== undefined && { country }),
         ...(accommodationType !== undefined && { accommodationType: JSON.stringify(accommodationType) }),
       }
     });
@@ -520,6 +540,10 @@ router.put('/profile', authenticateToken, [
         phone: user.phone,
         userType: user.userType,
         profilePhoto: user.profilePhoto,
+        companyName: user.companyName,
+        vatNumber: user.vatNumber,
+        address: user.address,
+        country: user.country,
         accommodationType: user.accommodationType ? JSON.parse(user.accommodationType) : [],
       }
     });

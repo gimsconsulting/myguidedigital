@@ -16,6 +16,10 @@ export default function ProfilePage() {
     phone: '',
     userType: 'PARTICULIER',
     profilePhoto: '',
+    companyName: '',
+    vatNumber: '',
+    address: '',
+    country: '',
     accommodationType: [] as string[],
   });
   const [password, setPassword] = useState('');
@@ -41,6 +45,10 @@ export default function ProfilePage() {
       phone: user.phone || '',
       userType: user.userType || 'PARTICULIER',
       profilePhoto: user.profilePhoto || '',
+      companyName: user.companyName || '',
+      vatNumber: user.vatNumber || '',
+      address: user.address || '',
+      country: user.country || '',
       accommodationType: user.accommodationType || [],
     });
   }, [user]);
@@ -178,6 +186,84 @@ export default function ProfilePage() {
               <option value="SOCIETE">Une société</option>
             </select>
           </div>
+
+          {/* Champs conditionnels Société */}
+          {formData.userType === 'SOCIETE' && (
+            <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <span className="text-lg">🏢</span> Coordonnées de la société
+              </h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nom de la société</label>
+                <input
+                  type="text"
+                  value={formData.companyName}
+                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                  placeholder="Ma Société SARL"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de TVA</label>
+                <input
+                  type="text"
+                  value={formData.vatNumber}
+                  onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
+                  placeholder="BE0123456789"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse complète</label>
+                <textarea
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  placeholder="Rue, numéro, code postal, ville"
+                  rows={2}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                <input
+                  type="text"
+                  value={formData.country}
+                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  placeholder="Belgique"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Champs conditionnels Particulier */}
+          {formData.userType === 'PARTICULIER' && (
+            <div className="space-y-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <span className="text-lg">👤</span> Vos coordonnées
+              </h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse complète</label>
+                <textarea
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  placeholder="Rue, numéro, code postal, ville"
+                  rows={2}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                <input
+                  type="text"
+                  value={formData.country}
+                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  placeholder="Belgique"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Type d'hébergement */}
           <div>

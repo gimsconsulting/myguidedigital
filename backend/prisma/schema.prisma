@@ -18,6 +18,10 @@ model User {
   role          String                @default("USER") // USER ou ADMIN
   profilePhoto      String?
   googleId          String?           @unique
+  companyName       String?
+  vatNumber         String?
+  address           String?           @db.Text
+  country           String?
   accommodationType String?           @db.Text // JSON array of accommodation types
   createdAt         DateTime          @default(now())
   updatedAt     DateTime              @updatedAt
