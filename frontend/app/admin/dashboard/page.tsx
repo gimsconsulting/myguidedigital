@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/lib/store';
-import { adminApi, authApi } from '@/lib/api';
+import { adminApi, authApi, affiliatesApi } from '@/lib/api';
 import Link from 'next/link';
 
 interface OverviewData {
@@ -54,11 +54,55 @@ interface OverviewData {
   }>;
 }
 
+interface AffiliateOverview {
+  totalAffiliates: number;
+  approvedAffiliates: number;
+  pendingAffiliates: number;
+  totalReferrals: number;
+  totalSales: number;
+  totalCommissions: number;
+  totalPaidCommissions: number;
+  pendingCommissions: number;
+  currentMonth: {
+    sales: number;
+    commissions: number;
+    referrals: number;
+  };
+  topAffiliates: Array<{
+    id: string;
+    affiliateCode: string;
+    companyName: string;
+    totalEarnings: number;
+    totalPaid: number;
+    status: string;
+    user: { firstName: string; lastName: string; email: string };
+    _count: { referrals: number };
+  }>;
+}
+
+interface AffiliateListItem {
+  id: string;
+  affiliateCode: string;
+  companyName: string;
+  vatNumber: string;
+  contactName: string;
+  email: string;
+  status: string;
+  totalEarnings: number;
+  totalPaid: number;
+  commissionRate: number;
+  createdAt: string;
+  user: { firstName: string; lastName: string; email: string };
+  _count: { referrals: number };
+}
+
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuthStore();
   const [data, setData] = useState<OverviewData | null>(null);
+  const [affiliateData, setAffiliateData] = useState<AffiliateOverview | null>(null);
+  const [pendingAffiliates, setPendingAffiliates] = useState<AffiliateListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [mounted, setMounted] = useState(false);
@@ -97,14 +141,29 @@ export default function AdminDashboardPage() {
     try {
       setIsLoading(true);
       setError('');
-      const response = await adminApi.getOverview();
-      setData(response.data);
+      const [overviewRes, affOverviewRes, affListRes] = await Promise.allSettled([
+        adminApi.getOverview(),
+        affiliatesApi.adminOverview(),
+        affiliatesApi.adminList({ status: 'PENDING', limit: 10 }),
+      ]);
+      if (overviewRes.status === 'fulfilled') setData(overviewRes.value.data);
+      if (affOverviewRes.status === 'fulfilled') setAffiliateData(affOverviewRes.value.data);
+      if (affListRes.status === 'fulfilled') setPendingAffiliates(affListRes.value.data.affiliates || []);
       setError('');
     } catch (err: any) {
       if (err.response?.status === 401 || err.response?.status === 403) { useAuthStore.getState().logout(); router.push('/login'); return; }
       if (!data) setError(err.response?.data?.message || 'Erreur de chargement');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAffiliateAction = async (affiliateId: string, status: string) => {
+    try {
+      await affiliatesApi.adminUpdateStatus(affiliateId, status);
+      loadData();
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour du statut affilié:', err);
     }
   };
 
@@ -660,6 +719,185 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         )}
+
+        {/* ═══════════════════════════════════════ */}
+        {/* PROGRAMME D'AFFILIATION */}
+        {/* ═══════════════════════════════════════ */}
+        <div className="mb-8">
+          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-5 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full"></span>
+            Programme d&apos;affiliation
+          </h2>
+
+          {/* KPIs Affiliation */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {[
+              { emoji: '🤝', label: 'Affiliés approuvés', value: affiliateData?.approvedAffiliates || 0, gradient: 'from-amber-400 to-orange-500', shadow: 'shadow-amber-200', tagBg: 'bg-amber-50 text-amber-600' },
+              { emoji: '👥', label: 'Filleuls total', value: affiliateData?.totalReferrals || 0, gradient: 'from-primary to-purple-600', shadow: 'shadow-primary/20', tagBg: 'bg-primary/10 text-primary' },
+              { emoji: '💰', label: 'Commissions totales', value: `${(affiliateData?.totalCommissions || 0).toFixed(0)}€`, gradient: 'from-pink-500 to-rose-500', shadow: 'shadow-pink-200', tagBg: 'bg-pink-50 text-pink-600' },
+              { emoji: '⏳', label: 'À payer', value: `${(affiliateData?.pendingCommissions || 0).toFixed(0)}€`, gradient: 'from-emerald-400 to-teal-500', shadow: 'shadow-emerald-200', tagBg: 'bg-emerald-50 text-emerald-600' },
+            ].map((kpi, i) => (
+              <div key={i} className="relative group">
+                <div className={`absolute -inset-0.5 bg-gradient-to-r ${kpi.gradient} rounded-2xl blur opacity-15 group-hover:opacity-30 transition duration-300`}></div>
+                <div className="relative bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${kpi.gradient} flex items-center justify-center shadow-lg ${kpi.shadow}`}>
+                      <span className="text-white text-sm">{kpi.emoji}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase">{kpi.label}</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{kpi.value}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            {/* Mois en cours */}
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl blur opacity-10 group-hover:opacity-25 transition duration-300"></div>
+              <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 h-full">
+                <div className="h-1.5 bg-gradient-to-r from-amber-400 to-orange-500"></div>
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                        <span className="text-white text-sm">📅</span>
+                      </div>
+                      Ce mois-ci
+                    </h3>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">
+                      {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-amber-50 rounded-xl p-4 text-center border border-amber-100">
+                      <p className="text-2xl font-bold text-gray-900">{affiliateData?.currentMonth?.referrals || 0}</p>
+                      <p className="text-[10px] text-gray-500 font-medium mt-1">VENTES</p>
+                    </div>
+                    <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/10">
+                      <p className="text-2xl font-bold text-gray-900">{(affiliateData?.currentMonth?.sales || 0).toFixed(0)}€</p>
+                      <p className="text-[10px] text-gray-500 font-medium mt-1">CA GÉNÉRÉ</p>
+                    </div>
+                    <div className="bg-pink-50 rounded-xl p-4 text-center border border-pink-100">
+                      <p className="text-2xl font-bold text-gray-900">{(affiliateData?.currentMonth?.commissions || 0).toFixed(0)}€</p>
+                      <p className="text-[10px] text-gray-500 font-medium mt-1">COMMISSIONS</p>
+                    </div>
+                  </div>
+
+                  {/* Résumé paiements */}
+                  <div className="mt-4 p-4 bg-gradient-to-r from-slate-900 to-purple-900 rounded-xl text-white">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-white/50">Total payé aux affiliés</p>
+                        <p className="text-xl font-bold">{(affiliateData?.totalPaidCommissions || 0).toFixed(0)}€</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-white/50">Restant à payer</p>
+                        <p className="text-xl font-bold text-amber-400">{(affiliateData?.pendingCommissions || 0).toFixed(0)}€</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Top affiliés */}
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 h-full">
+              <div className="h-1.5 bg-gradient-to-r from-primary to-purple-600"></div>
+              <div className="p-6">
+                <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 mb-5">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
+                    <span className="text-white text-sm">🏆</span>
+                  </div>
+                  Top affiliés
+                </h3>
+
+                {affiliateData?.topAffiliates && affiliateData.topAffiliates.length > 0 ? (
+                  <div className="space-y-3">
+                    {affiliateData.topAffiliates.map((aff, i) => (
+                      <div key={aff.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-gray-50">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm ${
+                          i === 0 ? 'bg-gradient-to-br from-amber-400 to-orange-500' :
+                          i === 1 ? 'bg-gradient-to-br from-primary to-purple-600' :
+                          i === 2 ? 'bg-gradient-to-br from-pink-500 to-rose-500' :
+                          'bg-gradient-to-br from-gray-400 to-gray-500'
+                        }`}>
+                          {i + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{aff.companyName}</p>
+                          <p className="text-[10px] text-gray-400 truncate">
+                            {aff.user?.firstName} {aff.user?.lastName} • {aff._count?.referrals || 0} filleul{(aff._count?.referrals || 0) > 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-bold text-amber-600">{aff.totalEarnings.toFixed(0)}€</p>
+                          <p className="text-[10px] text-gray-400">gagnés</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <div className="w-12 h-12 mx-auto rounded-xl bg-gray-50 flex items-center justify-center mb-3">
+                      <span className="text-2xl">🤝</span>
+                    </div>
+                    <p className="text-gray-400 text-sm">Aucun affilié pour le moment</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Demandes en attente */}
+          {pendingAffiliates.length > 0 && (
+            <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-amber-50 to-orange-50">
+                <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                    <span className="text-white text-sm">⏳</span>
+                  </div>
+                  Demandes d&apos;affiliation en attente
+                  <span className="ml-2 px-2 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-bold animate-pulse">
+                    {pendingAffiliates.length}
+                  </span>
+                </h3>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {pendingAffiliates.map((aff) => (
+                  <div key={aff.id} className="px-6 py-4 flex flex-col md:flex-row md:items-center gap-4 hover:bg-gray-50/50 transition-colors">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                        {aff.companyName?.[0]?.toUpperCase() || '?'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{aff.companyName}</p>
+                        <p className="text-[10px] text-gray-400 truncate">{aff.contactName} • {aff.email}</p>
+                        <p className="text-[10px] text-gray-300">TVA: {aff.vatNumber} • {new Date(aff.createdAt).toLocaleDateString('fr-FR')}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => handleAffiliateAction(aff.id, 'APPROVED')}
+                        className="px-4 py-2 bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-lg text-xs font-bold hover:shadow-lg hover:shadow-emerald-200 transition-all"
+                      >
+                        ✅ Approuver
+                      </button>
+                      <button
+                        onClick={() => handleAffiliateAction(aff.id, 'REJECTED')}
+                        className="px-4 py-2 bg-white border border-red-200 text-red-500 rounded-lg text-xs font-bold hover:bg-red-50 transition-all"
+                      >
+                        ❌ Rejeter
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* ═══════════════════════════════════════ */}
         {/* RÉCAP COLORÉ */}
