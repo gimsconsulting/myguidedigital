@@ -21,7 +21,7 @@ const ERROR_STORAGE_KEY = 'login-error';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,10 +53,19 @@ export default function LoginPage() {
     }
   }, [router, setAuth, t]);
 
-  // Charger le script Google Identity Services
+  // Charger le script Google avec la bonne langue et rendre le bouton
   useEffect(() => {
+    const lang = i18n.language || 'fr';
+
+    // Supprimer l'ancien script Google si présent (pour forcer le rechargement avec la nouvelle langue)
+    const oldScript = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
+    if (oldScript) {
+      oldScript.remove();
+      delete (window as any).google;
+    }
+
     const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
+    script.src = `https://accounts.google.com/gsi/client?hl=${lang}`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
@@ -65,28 +74,26 @@ export default function LoginPage() {
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
           callback: handleGoogleSuccess,
         });
-        window.google.accounts.id.renderButton(
-          document.getElementById('google-signin-btn-login'),
-          {
+        const container = document.getElementById('google-signin-btn-login');
+        if (container) {
+          container.innerHTML = '';
+          window.google.accounts.id.renderButton(container, {
             theme: 'outline',
             size: 'large',
             width: '100%',
             text: 'signin_with',
             shape: 'pill',
             logo_alignment: 'center',
-          }
-        );
+          });
+        }
       }
     };
     document.head.appendChild(script);
 
     return () => {
-      const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
-      if (existingScript) {
-        existingScript.remove();
-      }
+      script.remove();
     };
-  }, [handleGoogleSuccess]);
+  }, [handleGoogleSuccess, i18n.language]);
 
   // Charger l'erreur depuis sessionStorage au montage et la garder
   useEffect(() => {

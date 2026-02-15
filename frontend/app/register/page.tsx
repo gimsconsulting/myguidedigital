@@ -20,7 +20,7 @@ declare global {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [formData, setFormData] = useState({
     email: '',
@@ -49,10 +49,20 @@ export default function RegisterPage() {
     }
   }, [router, setAuth, t]);
 
+  // Charger le script Google avec la bonne langue et rendre le bouton
   useEffect(() => {
-    // Charger le script Google Identity Services
+    const lang = i18n.language || 'fr';
+
+    // Supprimer l'ancien script Google si présent (pour forcer le rechargement avec la nouvelle langue)
+    const oldScript = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
+    if (oldScript) {
+      oldScript.remove();
+      // Réinitialiser l'objet google pour forcer un rechargement propre
+      delete (window as any).google;
+    }
+
     const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
+    script.src = `https://accounts.google.com/gsi/client?hl=${lang}`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
@@ -61,29 +71,26 @@ export default function RegisterPage() {
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
           callback: handleGoogleSuccess,
         });
-        window.google.accounts.id.renderButton(
-          document.getElementById('google-signin-btn-register'),
-          {
+        const container = document.getElementById('google-signin-btn-register');
+        if (container) {
+          container.innerHTML = '';
+          window.google.accounts.id.renderButton(container, {
             theme: 'outline',
             size: 'large',
             width: '100%',
             text: 'signup_with',
             shape: 'pill',
             logo_alignment: 'center',
-          }
-        );
+          });
+        }
       }
     };
     document.head.appendChild(script);
 
     return () => {
-      // Cleanup
-      const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
-      if (existingScript) {
-        existingScript.remove();
-      }
+      script.remove();
     };
-  }, [handleGoogleSuccess]);
+  }, [handleGoogleSuccess, i18n.language]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
