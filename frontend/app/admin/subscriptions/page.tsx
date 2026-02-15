@@ -10,13 +10,14 @@ import { adminApi } from '@/lib/api';
 export default function AdminSubscriptionsPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, hasHydrated } = useAuthStore();
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       router.push('/login');
       return;
@@ -28,7 +29,7 @@ export default function AdminSubscriptionsPage() {
     }
 
     loadSubscriptions();
-  }, [isAuthenticated, user, router, page]);
+  }, [hasHydrated, isAuthenticated, user, router, page]);
 
   const loadSubscriptions = async () => {
     try {
@@ -43,7 +44,7 @@ export default function AdminSubscriptionsPage() {
     }
   };
 
-  if (!isAuthenticated || user?.role !== 'ADMIN') {
+  if (!hasHydrated || !isAuthenticated || user?.role !== 'ADMIN') {
     return null;
   }
 

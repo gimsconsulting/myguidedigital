@@ -28,11 +28,12 @@ interface RevenueData {
 export default function AdminRevenuePage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, hasHydrated } = useAuthStore();
   const [data, setData] = useState<RevenueData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       router.push('/login');
       return;
@@ -44,7 +45,7 @@ export default function AdminRevenuePage() {
     }
 
     loadData();
-  }, [isAuthenticated, user, router]);
+  }, [hasHydrated, isAuthenticated, user, router]);
 
   const loadData = async () => {
     try {
@@ -58,7 +59,7 @@ export default function AdminRevenuePage() {
     }
   };
 
-  if (!isAuthenticated || user?.role !== 'ADMIN') {
+  if (!hasHydrated || !isAuthenticated || user?.role !== 'ADMIN') {
     return null;
   }
 

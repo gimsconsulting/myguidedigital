@@ -10,11 +10,12 @@ import { adminApi } from '@/lib/api';
 export default function AdminLivretsPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, hasHydrated } = useAuthStore();
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       router.push('/login');
       return;
@@ -26,7 +27,7 @@ export default function AdminLivretsPage() {
     }
 
     loadData();
-  }, [isAuthenticated, user, router]);
+  }, [hasHydrated, isAuthenticated, user, router]);
 
   const loadData = async () => {
     try {
@@ -40,7 +41,7 @@ export default function AdminLivretsPage() {
     }
   };
 
-  if (!isAuthenticated || user?.role !== 'ADMIN') {
+  if (!hasHydrated || !isAuthenticated || user?.role !== 'ADMIN') {
     return null;
   }
 

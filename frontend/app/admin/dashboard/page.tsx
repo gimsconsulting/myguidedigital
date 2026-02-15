@@ -99,7 +99,7 @@ interface AffiliateListItem {
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, hasHydrated } = useAuthStore();
   const [data, setData] = useState<OverviewData | null>(null);
   const [affiliateData, setAffiliateData] = useState<AffiliateOverview | null>(null);
   const [pendingAffiliates, setPendingAffiliates] = useState<AffiliateListItem[]>([]);
@@ -111,7 +111,7 @@ export default function AdminDashboardPage() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !hasHydrated) return;
     if (hasCheckedAuth && isAuthenticated && data) return;
     let isMounted = true;
     const checkAuth = async () => {
@@ -135,7 +135,7 @@ export default function AdminDashboardPage() {
     checkAuth();
     return () => { isMounted = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, isAuthenticated]);
+  }, [mounted, hasHydrated, isAuthenticated]);
 
   const loadData = async () => {
     try {
@@ -167,7 +167,8 @@ export default function AdminDashboardPage() {
     }
   };
 
-  if (!mounted || !isAuthenticated) return null;
+  if (!mounted || !hasHydrated) return null;
+  if (!isAuthenticated) return null;
   if (user?.role !== 'ADMIN') return null;
 
   if (isLoading) {

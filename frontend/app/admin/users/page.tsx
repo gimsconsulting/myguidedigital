@@ -25,7 +25,7 @@ interface User {
 export default function AdminUsersPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, hasHydrated } = useAuthStore();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -46,6 +46,7 @@ export default function AdminUsersPage() {
   });
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       router.push('/login');
       return;
@@ -57,7 +58,7 @@ export default function AdminUsersPage() {
     }
 
     loadUsers();
-  }, [isAuthenticated, user, router, page, search, planFilter, statusFilter]);
+  }, [hasHydrated, isAuthenticated, user, router, page, search, planFilter, statusFilter]);
 
   const loadUsers = async () => {
     try {
@@ -140,7 +141,7 @@ export default function AdminUsersPage() {
     }
   };
 
-  if (!isAuthenticated || user?.role !== 'ADMIN') {
+  if (!hasHydrated || !isAuthenticated || user?.role !== 'ADMIN') {
     return null;
   }
 
