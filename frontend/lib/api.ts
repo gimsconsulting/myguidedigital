@@ -409,4 +409,22 @@ export const chatApi = {
     api.post(`/chat/${livretId}`, data),
 };
 
+// Affiliates
+export const affiliatesApi = {
+  apply: (data: { companyName: string; vatNumber: string; contactName: string; email: string; address?: string; country?: string; iban?: string }) =>
+    api.post('/affiliates/apply', data),
+  getMe: () => api.get('/affiliates/me'),
+  getStats: () => api.get('/affiliates/stats'),
+  verifyCode: (code: string) => api.get(`/affiliates/verify/${code}`),
+  // Admin
+  adminList: (params?: { status?: string; page?: number; limit?: number }) =>
+    api.get('/affiliates/admin/list', { params }),
+  adminGetDetail: (affiliateId: string) => api.get(`/affiliates/admin/${affiliateId}`),
+  adminUpdateStatus: (affiliateId: string, status: string) =>
+    api.put(`/affiliates/admin/${affiliateId}/status`, { status }),
+  adminPayAffiliate: (affiliateId: string, month: number, year: number) =>
+    api.put(`/affiliates/admin/pay/${affiliateId}`, { month, year }),
+  adminOverview: () => api.get('/affiliates/admin/overview'),
+};
+
 export default api;

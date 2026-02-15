@@ -74,6 +74,7 @@ router.post('/register', registerLimiter, validateCsrfToken, [
   body('password').custom(passwordComplexity),
   body('firstName').optional().trim(),
   body('lastName').optional().trim(),
+  body('referralCode').optional().trim(),
 ], async (req: express.Request, res: express.Response) => {
   try {
     const errors = validationResult(req);
@@ -85,7 +86,7 @@ router.post('/register', registerLimiter, validateCsrfToken, [
       });
     }
 
-    const { email, password, firstName, lastName } = req.body;
+    const { email, password, firstName, lastName, referralCode } = req.body;
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -120,6 +121,33 @@ router.post('/register', registerLimiter, validateCsrfToken, [
         trialDaysLeft: 14, // 14 jours d'essai
       }
     });
+
+    // Enregistrer le lien d'affiliation si un code est fourni
+    if (referralCode) {
+      try {
+        const affiliate = await prisma.affiliate.findUnique({
+          where: { affiliateCode: referralCode }
+        });
+        if (affiliate && affiliate.status === 'APPROVED') {
+          const now = new Date();
+          await prisma.affiliateReferral.create({
+            data: {
+              affiliateId: affiliate.id,
+              referredUserId: user.id,
+              saleAmount: 0, // Sera mis à jour lors de la souscription
+              commissionAmount: 0,
+              status: 'PENDING',
+              periodMonth: now.getMonth() + 1,
+              periodYear: now.getFullYear(),
+            }
+          });
+          console.log(`✅ [AFFILIATE] Referral enregistré: ${referralCode} -> ${user.email}`);
+        }
+      } catch (err) {
+        console.error('Erreur lors de l\'enregistrement du referral:', err);
+        // Ne pas bloquer l'inscription si l'affiliation échoue
+      }
+    }
 
     // Generate JWT
     if (!process.env.JWT_SECRET) {

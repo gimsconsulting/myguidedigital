@@ -520,6 +520,49 @@ router.post('/webhook', async (req: any, res) => {
           }
         });
 
+        // Mettre à jour le referral d'affiliation si applicable
+        try {
+          const referral = await prisma.affiliateReferral.findFirst({
+            where: {
+              referredUserId: userId,
+              status: 'PENDING',
+            },
+            include: { affiliate: true }
+          });
+
+          if (referral && referral.affiliate.status === 'APPROVED') {
+            const commissionRate = referral.affiliate.commissionRate / 100; // 30% -> 0.30
+            const saleAmountHT = metaPriceHT || invoiceAmount;
+            const commissionAmount = Math.round(saleAmountHT * commissionRate * 100) / 100;
+            const now = new Date();
+
+            await prisma.affiliateReferral.update({
+              where: { id: referral.id },
+              data: {
+                subscriptionId: subscription.id,
+                saleAmount: saleAmountHT,
+                commissionAmount: commissionAmount,
+                status: 'VALIDATED',
+                periodMonth: now.getMonth() + 1,
+                periodYear: now.getFullYear(),
+              }
+            });
+
+            // Incrémenter le total des gains de l'affilié
+            await prisma.affiliate.update({
+              where: { id: referral.affiliate.id },
+              data: {
+                totalEarnings: { increment: commissionAmount }
+              }
+            });
+
+            console.log(`✅ [AFFILIATE] Commission de ${commissionAmount}€ enregistrée pour l'affilié ${referral.affiliate.affiliateCode}`);
+          }
+        } catch (affiliateErr) {
+          console.error('Erreur lors de la mise à jour du referral affilié:', affiliateErr);
+          // Ne pas bloquer le processus de souscription
+        }
+
         console.log(`Abonnement ${planType} créé pour l'utilisateur ${userId} (${category}, ${unitCount} unités, ${durationDays}j)`);
         break;
       }

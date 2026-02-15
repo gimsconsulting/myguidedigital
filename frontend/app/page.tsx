@@ -911,6 +911,7 @@ export default function Home() {
                 <li><a href="#" className="hover:text-white/70 transition-colors text-sm">{t('home.footer.documentation', 'Documentation')}</a></li>
                 <li><Link href="/contact" className="hover:text-white/70 transition-colors text-sm">{t('home.footer.contact', 'Contact')}</Link></li>
                 <li><Link href="#faq" className="hover:text-white/70 transition-colors text-sm">FAQ</Link></li>
+                <li><Link href="/affiliation" className="hover:text-white/70 transition-colors text-sm">Programme d&apos;affiliation</Link></li>
               </ul>
             </div>
           </div>

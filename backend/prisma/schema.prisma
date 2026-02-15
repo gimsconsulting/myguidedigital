@@ -29,6 +29,8 @@ model User {
   livrets       Livret[]
   subscriptions Subscription[]
   passwordResetTokens PasswordResetToken[]
+  affiliate     Affiliate?
+  referredBy    AffiliateReferral[]   @relation("ReferredUser")
 
   @@map("users")
 }
@@ -152,4 +154,46 @@ model PasswordResetToken {
   @@index([userId])
   @@index([expiresAt])
   @@map("password_reset_tokens")
+}
+
+model Affiliate {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  affiliateCode   String    @unique      // Code unique pour le lien d'affiliation
+  companyName     String                 // Nom de la société de l'affilié
+  vatNumber       String                 // Numéro de TVA obligatoire
+  contactName     String                 // Nom + prénom du responsable
+  email           String                 // Email de facturation
+  address         String?   @db.Text     // Adresse complète
+  country         String?                // Pays
+  iban            String?                // IBAN pour les paiements
+  commissionRate  Float     @default(30) // Taux de commission en %
+  status          String    @default("PENDING") // PENDING, APPROVED, REJECTED, SUSPENDED
+  totalEarnings   Float     @default(0)  // Total des gains cumulés
+  totalPaid       Float     @default(0)  // Total déjà payé
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referrals       AffiliateReferral[]
+
+  @@map("affiliates")
+}
+
+model AffiliateReferral {
+  id               String    @id @default(uuid())
+  affiliateId      String
+  referredUserId   String?                   // User inscrit via le lien d'affiliation
+  subscriptionId   String?                   // Abonnement souscrit
+  saleAmount       Float     @default(0)     // Montant HT de la vente
+  commissionAmount Float     @default(0)     // Montant de la commission (30%)
+  status           String    @default("PENDING") // PENDING, VALIDATED, PAID, CANCELLED
+  periodMonth      Int?                      // Mois de la clôture (1-12)
+  periodYear       Int?                      // Année de la clôture
+  paidAt           DateTime?                 // Date de paiement
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  affiliate        Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  referredUser     User?     @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: SetNull)
+
+  @@map("affiliate_referrals")
 }

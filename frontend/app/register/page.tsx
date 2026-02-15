@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { authApi, getCsrfToken, resetCsrfToken } from '@/lib/api';
@@ -20,6 +20,8 @@ declare global {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const referralCode = searchParams?.get('ref') || '';
   const { t, i18n } = useTranslation();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [formData, setFormData] = useState({
@@ -108,8 +110,8 @@ export default function RegisterPage() {
         return;
       }
       
-      console.log('Tentative d\'inscription avec:', { email: formData.email, firstName: formData.firstName });
-      const response = await authApi.register(formData);
+      console.log('Tentative d\'inscription avec:', { email: formData.email, firstName: formData.firstName, referralCode });
+      const response = await authApi.register({ ...formData, referralCode: referralCode || undefined } as any);
       console.log('Réponse reçue:', response);
       const { token, user } = response.data;
       

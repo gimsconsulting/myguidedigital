@@ -1,0 +1,582 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '@/lib/store';
+import { affiliatesApi } from '@/lib/api';
+import { toast } from '@/components/ui/Toast';
+
+export default function AffiliationPage() {
+  const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuthStore();
+  const [showForm, setShowForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({
+    companyName: '',
+    vatNumber: '',
+    contactName: '',
+    email: '',
+    address: '',
+    country: 'Belgique',
+    iban: '',
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.companyName || !formData.vatNumber || !formData.contactName || !formData.email) {
+      toast.error('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await affiliatesApi.apply(formData);
+      setSubmitted(true);
+      toast.success('Votre demande a été soumise avec succès !');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Erreur lors de la soumission');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const countries = ['Belgique', 'France', 'Luxembourg', 'Pays-Bas', 'Espagne', 'Portugal', 'Allemagne', 'Suisse'];
+
+  const steps = [
+    { emoji: '📝', title: 'Inscrivez-vous', desc: 'Remplissez le formulaire de candidature avec vos informations de société et votre numéro de TVA.' },
+    { emoji: '✅', title: 'Validation', desc: 'Notre équipe examine votre candidature et vous envoie votre lien d\'affiliation unique sous 48h.' },
+    { emoji: '🔗', title: 'Partagez votre lien', desc: 'Diffusez votre lien d\'affiliation personnalisé auprès de votre réseau de professionnels du tourisme.' },
+    { emoji: '💰', title: 'Gagnez des commissions', desc: 'Recevez 30% de commission sur chaque vente réalisée via votre lien. Clôture mensuelle, paiement sous 7 jours.' },
+  ];
+
+  const advantages = [
+    { emoji: '🏆', title: 'Commission attractive', desc: '30% sur chaque vente, l\'un des taux les plus élevés du marché.', gradient: 'from-amber-400 to-orange-500' },
+    { emoji: '🔄', title: 'Revenus récurrents', desc: 'Gagnez sur les renouvellements d\'abonnement annuels de vos filleuls.', gradient: 'from-primary to-purple-600' },
+    { emoji: '📊', title: 'Dashboard dédié', desc: 'Suivez vos performances, vos ventes et vos commissions en temps réel.', gradient: 'from-emerald-400 to-teal-500' },
+    { emoji: '⚡', title: 'Paiement rapide', desc: 'Clôture mensuelle et paiement dans les 7 jours ouvrables après réception de votre facture.', gradient: 'from-pink-500 to-rose-500' },
+    { emoji: '🎯', title: 'Lien unique', desc: 'Un lien d\'affiliation personnalisé pour traquer toutes vos recommandations.', gradient: 'from-violet-500 to-indigo-500' },
+    { emoji: '🤝', title: 'Support dédié', desc: 'Un interlocuteur dédié pour répondre à toutes vos questions.', gradient: 'from-cyan-400 to-blue-500' },
+  ];
+
+  const faqs = [
+    { q: 'Qui peut devenir affilié ?', a: 'Le programme d\'affiliation est réservé aux professionnels disposant d\'un numéro de TVA valide et capables d\'émettre des factures. Cela inclut les sociétés, consultants, agences web, professionnels du tourisme, etc.' },
+    { q: 'Comment est calculée ma commission ?', a: 'Vous recevez 30% du montant HT de chaque vente réalisée via votre lien d\'affiliation unique. Par exemple, pour un abonnement Hôtes Annuel à 59€ HT, vous recevez 17,70€ de commission.' },
+    { q: 'Quand et comment suis-je payé ?', a: 'Les commissions sont clôturées à chaque fin de mois. Vous envoyez votre facture à info@gims-consulting.be et le paiement est effectué dans les 7 jours ouvrables maximum après réception.' },
+    { q: 'Est-ce que je gagne aussi sur les renouvellements ?', a: 'Oui ! Vous continuez à percevoir votre commission de 30% sur chaque renouvellement d\'abonnement de vos filleuls, tant qu\'ils restent clients.' },
+    { q: 'Y a-t-il un minimum de paiement ?', a: 'Non, il n\'y a aucun minimum. Chaque euro de commission gagné vous sera versé lors de la clôture mensuelle.' },
+    { q: 'Comment puis-je suivre mes performances ?', a: 'Dès votre approbation, vous avez accès à un tableau de bord dédié qui affiche en temps réel vos clics, inscriptions, ventes et commissions.' },
+  ];
+
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#0c0a1d] to-slate-950 text-white">
+
+      {/* ══════════════════════════════════════ */}
+      {/* NAVIGATION */}
+      {/* ══════════════════════════════════════ */}
+      <nav className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link href="/" className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
+            My Guide Digital
+          </Link>
+          <div className="hidden md:flex items-center gap-8">
+            <Link href="/" className="text-white/50 hover:text-white/80 text-sm transition-colors">Accueil</Link>
+            <Link href="/hote-airbnb" className="text-white/50 hover:text-white/80 text-sm transition-colors">Nos services</Link>
+            <Link href="/tarifs" className="text-white/50 hover:text-white/80 text-sm transition-colors">Nos tarifs</Link>
+            <Link href="/contact" className="text-white/50 hover:text-white/80 text-sm transition-colors">Contact</Link>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/login" className="text-white/50 hover:text-white/80 text-sm transition-colors">Connexion</Link>
+            <Link href="/register">
+              <button className="relative group px-4 py-2 rounded-lg font-semibold text-sm text-white overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500"></div>
+                <span className="relative">Essai gratuit</span>
+              </button>
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* ══════════════════════════════════════ */}
+      {/* HERO SECTION */}
+      {/* ══════════════════════════════════════ */}
+      <section className="relative overflow-hidden pt-20 pb-24">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-pink-500/8 rounded-full blur-[120px]"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-violet-500/5 rounded-full blur-[150px]"></div>
+
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 mb-8">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span className="text-white/60 text-sm font-medium">Programme d&apos;Affiliation</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            Gagnez <span className="bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">30% de commission</span><br />
+            sur chaque vente
+          </h1>
+          <p className="text-lg sm:text-xl text-white/40 mb-10 max-w-3xl mx-auto leading-relaxed">
+            Rejoignez le programme d&apos;affiliation My Guide Digital et transformez votre réseau en revenus récurrents.
+            Recommandez notre solution de livrets d&apos;accueil digitaux et recevez une commission attractive sur chaque abonnement souscrit.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => {
+                if (isAuthenticated) {
+                  setShowForm(true);
+                  document.getElementById('form-section')?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  document.getElementById('form-section')?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="relative group px-8 py-4 rounded-full font-semibold text-lg text-white overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/20"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 blur-xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+              <span className="relative">Devenir affilié →</span>
+            </button>
+            <a href="#how-it-works" className="px-8 py-4 rounded-full font-semibold text-lg text-white bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-sm">
+              Comment ça marche ?
+            </a>
+          </div>
+
+          {/* Stats rapides */}
+          <div className="mt-16 grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+            {[
+              { value: '30%', label: 'Commission' },
+              { value: '7j', label: 'Délai de paiement' },
+              { value: '∞', label: 'Revenus récurrents' },
+            ].map((stat, idx) => (
+              <div key={idx} className="text-center">
+                <p className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">{stat.value}</p>
+                <p className="text-white/40 text-sm mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* COMMENT ÇA MARCHE */}
+      {/* ══════════════════════════════════════ */}
+      <section id="how-it-works" className="relative py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 mb-4">
+              <span className="text-white/60 text-sm font-medium">4 étapes simples</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold">Comment ça <span className="bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">marche</span> ?</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {steps.map((step, idx) => (
+              <div key={idx} className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-pink-500 rounded-2xl blur opacity-0 group-hover:opacity-25 transition duration-500"></div>
+                <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 hover:bg-white/[0.06] transition-all duration-300 h-full">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-pink-500/20 flex items-center justify-center text-2xl">
+                      {step.emoji}
+                    </div>
+                    <span className="text-xs font-semibold text-white/30 uppercase tracking-wider">Étape {idx + 1}</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
+                  <p className="text-white/40 text-sm leading-relaxed">{step.desc}</p>
+                </div>
+                {idx < 3 && (
+                  <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10 text-white/20 text-2xl">→</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* AVANTAGES */}
+      {/* ══════════════════════════════════════ */}
+      <section className="relative py-24">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent"></div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 mb-4">
+              <span className="text-white/60 text-sm font-medium">Pourquoi nous rejoindre</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold">Les avantages du <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">programme</span></h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {advantages.map((adv, idx) => (
+              <div key={idx} className="relative group">
+                <div className={`absolute -inset-0.5 bg-gradient-to-r ${adv.gradient} rounded-2xl blur opacity-0 group-hover:opacity-25 transition duration-500`}></div>
+                <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 hover:bg-white/[0.06] transition-all duration-300 h-full">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${adv.gradient} flex items-center justify-center text-2xl mb-4 shadow-lg`}>
+                    {adv.emoji}
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-2">{adv.title}</h3>
+                  <p className="text-white/40 text-sm leading-relaxed">{adv.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* SIMULATION DE GAINS */}
+      {/* ══════════════════════════════════════ */}
+      <section className="relative py-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 mb-4">
+              <span className="text-white/60 text-sm font-medium">💰 Simulez vos gains</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold">Combien pouvez-vous <span className="bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">gagner</span> ?</h2>
+          </div>
+
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+            <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-8 backdrop-blur-sm">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Hôtes */}
+                <div className="text-center">
+                  <div className="w-14 h-14 mx-auto rounded-xl bg-gradient-to-br from-primary/20 to-pink-500/20 flex items-center justify-center text-3xl mb-3">🏡</div>
+                  <h4 className="font-bold text-white mb-1">Hôtes & Locations</h4>
+                  <p className="text-white/40 text-sm mb-3">Abonnement à 59€ HT/an</p>
+                  <div className="bg-white/[0.05] rounded-xl p-4 border border-white/10">
+                    <p className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">17,70€</p>
+                    <p className="text-white/40 text-xs mt-1">par vente</p>
+                  </div>
+                  <p className="text-white/30 text-xs mt-2">10 ventes = 177€ / mois</p>
+                </div>
+
+                {/* Hôtels */}
+                <div className="text-center">
+                  <div className="w-14 h-14 mx-auto rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-600/20 flex items-center justify-center text-3xl mb-3">🏨</div>
+                  <h4 className="font-bold text-white mb-1">Hôtels</h4>
+                  <p className="text-white/40 text-sm mb-3">Ex: 50 chambres = 550€ HT/an</p>
+                  <div className="bg-white/[0.05] rounded-xl p-4 border border-white/10">
+                    <p className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">165€</p>
+                    <p className="text-white/40 text-xs mt-1">par vente</p>
+                  </div>
+                  <p className="text-white/30 text-xs mt-2">5 hôtels = 825€ / mois</p>
+                </div>
+
+                {/* Campings */}
+                <div className="text-center">
+                  <div className="w-14 h-14 mx-auto rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 flex items-center justify-center text-3xl mb-3">⛺</div>
+                  <h4 className="font-bold text-white mb-1">Campings</h4>
+                  <p className="text-white/40 text-sm mb-3">Ex: 100 emplacements = 1 490€ HT</p>
+                  <div className="bg-white/[0.05] rounded-xl p-4 border border-white/10">
+                    <p className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">447€</p>
+                    <p className="text-white/40 text-xs mt-1">par vente</p>
+                  </div>
+                  <p className="text-white/30 text-xs mt-2">3 campings = 1 341€ / mois</p>
+                </div>
+              </div>
+
+              <div className="mt-8 text-center border-t border-white/10 pt-6">
+                <p className="text-white/30 text-sm mb-2">Potentiel mensuel avec un réseau actif</p>
+                <p className="text-4xl font-bold bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">
+                  jusqu&apos;à 2 000€+ / mois
+                </p>
+                <p className="text-white/30 text-xs mt-1">en revenus récurrents</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* CONDITIONS */}
+      {/* ══════════════════════════════════════ */}
+      <section className="relative py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl blur opacity-10 group-hover:opacity-25 transition duration-500"></div>
+            <div className="relative bg-gradient-to-r from-slate-900 via-purple-900/50 to-slate-900 rounded-2xl p-8 border border-white/[0.06]">
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                <span className="text-2xl">📋</span>
+                Conditions du programme
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { icon: '🏢', text: 'Disposer d\'un numéro de TVA valide' },
+                  { icon: '🧾', text: 'Être en mesure d\'émettre des factures' },
+                  { icon: '💼', text: 'Être un professionnel (société, consultant, freelance...)' },
+                  { icon: '🌐', text: 'Avoir un réseau dans le secteur du tourisme ou de l\'hébergement' },
+                  { icon: '📧', text: 'Envoyer la facture mensuelle à info@gims-consulting.be' },
+                  { icon: '📅', text: 'Clôture fin de mois, paiement sous 7 jours ouvrables max.' },
+                ].map((cond, idx) => (
+                  <div key={idx} className="flex items-start gap-3 bg-white/[0.03] rounded-xl p-3 border border-white/[0.05]">
+                    <span className="text-lg flex-shrink-0">{cond.icon}</span>
+                    <p className="text-white/60 text-sm">{cond.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* FORMULAIRE DE CANDIDATURE */}
+      {/* ══════════════════════════════════════ */}
+      <section id="form-section" className="relative py-24">
+        <div className="absolute top-0 left-1/3 w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-[100px]"></div>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 mb-4">
+              <span className="text-white/60 text-sm font-medium">Candidature</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold">Rejoignez le <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">programme</span></h2>
+            <p className="text-white/40 mt-3 max-w-xl mx-auto">
+              Remplissez le formulaire ci-dessous et notre équipe examinera votre candidature sous 48 heures.
+            </p>
+          </div>
+
+          {submitted ? (
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-2xl blur opacity-30"></div>
+              <div className="relative bg-white/[0.03] border border-emerald-500/30 rounded-2xl p-10 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-4xl">
+                  ✅
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">Candidature soumise !</h3>
+                <p className="text-white/50 mb-6 max-w-md mx-auto">
+                  Merci pour votre intérêt ! Notre équipe examinera votre demande et vous contactera sous 48h avec votre lien d&apos;affiliation unique.
+                </p>
+                <Link href="/">
+                  <button className="px-6 py-3 rounded-xl font-semibold text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+                    Retour à l&apos;accueil
+                  </button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-pink-500 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-500"></div>
+              <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-8">
+                {!isAuthenticated && (
+                  <div className="mb-6 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-center">
+                    <p className="text-amber-300 text-sm">
+                      ⚠️ Vous devez être connecté pour soumettre votre candidature.{' '}
+                      <Link href="/register" className="underline font-semibold hover:text-amber-200">Créez un compte</Link>{' '}
+                      ou{' '}
+                      <Link href="/login" className="underline font-semibold hover:text-amber-200">connectez-vous</Link>.
+                    </p>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-white/60 text-sm font-medium mb-1.5">
+                        Nom de la société <span className="text-pink-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.companyName}
+                        onChange={(e) => setFormData(p => ({ ...p, companyName: e.target.value }))}
+                        placeholder="Votre société"
+                        className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white/60 text-sm font-medium mb-1.5">
+                        Numéro de TVA <span className="text-pink-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.vatNumber}
+                        onChange={(e) => setFormData(p => ({ ...p, vatNumber: e.target.value }))}
+                        placeholder="BE0123456789"
+                        className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-white/60 text-sm font-medium mb-1.5">
+                        Nom + Prénom du responsable <span className="text-pink-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.contactName}
+                        onChange={(e) => setFormData(p => ({ ...p, contactName: e.target.value }))}
+                        placeholder="Jean Dupont"
+                        className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white/60 text-sm font-medium mb-1.5">
+                        Email de facturation <span className="text-pink-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))}
+                        placeholder="facturation@societe.be"
+                        className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-white/60 text-sm font-medium mb-1.5">Adresse complète</label>
+                    <input
+                      type="text"
+                      value={formData.address}
+                      onChange={(e) => setFormData(p => ({ ...p, address: e.target.value }))}
+                      placeholder="Rue, numéro, code postal, ville"
+                      className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-white/60 text-sm font-medium mb-1.5">Pays</label>
+                      <select
+                        value={formData.country}
+                        onChange={(e) => setFormData(p => ({ ...p, country: e.target.value }))}
+                        className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                      >
+                        {countries.map(c => (
+                          <option key={c} value={c} className="bg-slate-900 text-white">{c}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white/60 text-sm font-medium mb-1.5">IBAN (pour les paiements)</label>
+                      <input
+                        type="text"
+                        value={formData.iban}
+                        onChange={(e) => setFormData(p => ({ ...p, iban: e.target.value }))}
+                        placeholder="BE00 0000 0000 0000"
+                        className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4">
+                    <button
+                      type="submit"
+                      disabled={!isAuthenticated || isSubmitting}
+                      className={`w-full relative group/btn py-4 rounded-xl font-semibold text-lg text-white overflow-hidden transition-all duration-300 ${
+                        !isAuthenticated ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:shadow-amber-500/20 hover:scale-[1.01]'
+                      }`}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 blur-lg opacity-30 group-hover/btn:opacity-60 transition-opacity"></div>
+                      <span className="relative flex items-center justify-center gap-2">
+                        {isSubmitting ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
+                            Envoi en cours...
+                          </>
+                        ) : (
+                          <>Soumettre ma candidature 🚀</>
+                        )}
+                      </span>
+                    </button>
+                  </div>
+
+                  <p className="text-white/20 text-xs text-center">
+                    En soumettant ce formulaire, vous acceptez les conditions du programme d&apos;affiliation My Guide Digital.
+                    Votre candidature sera examinée dans un délai de 48h.
+                  </p>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* FAQ */}
+      {/* ══════════════════════════════════════ */}
+      <section className="relative py-24">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 mb-4">
+              <span className="text-white/60 text-sm font-medium">Questions fréquentes</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold">FAQ</h2>
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, idx) => (
+              <div key={idx} className="relative group">
+                <div className={`absolute -inset-0.5 bg-gradient-to-r from-primary to-pink-500 rounded-2xl blur transition duration-500 ${openFaq === idx ? 'opacity-15' : 'opacity-0 group-hover:opacity-10'}`}></div>
+                <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden transition-all duration-300">
+                  <button
+                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                    className="w-full text-left px-6 py-5 flex items-center justify-between gap-4"
+                  >
+                    <span className="font-semibold text-white text-sm">{faq.q}</span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                      openFaq === idx ? 'bg-gradient-to-r from-primary to-pink-500 rotate-180' : 'bg-white/5'
+                    }`}>
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </button>
+                  {openFaq === idx && (
+                    <div className="px-6 pb-5">
+                      <p className="text-white/40 text-sm leading-relaxed">{faq.a}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* CTA FINAL */}
+      {/* ══════════════════════════════════════ */}
+      <section className="relative py-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition duration-500"></div>
+            <div className="relative bg-gradient-to-r from-slate-900 via-purple-900/50 to-slate-900 rounded-3xl p-12 border border-white/[0.06]">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                Prêt à <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">monétiser</span> votre réseau ?
+              </h2>
+              <p className="text-white/40 text-lg mb-8 max-w-xl mx-auto">
+                Rejoignez le programme d&apos;affiliation My Guide Digital et commencez à générer des revenus dès aujourd&apos;hui.
+              </p>
+              <button
+                onClick={() => document.getElementById('form-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="relative group/btn px-8 py-4 rounded-full font-semibold text-lg text-white overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/20"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 blur-xl opacity-50 group-hover/btn:opacity-80 transition-opacity"></div>
+                <span className="relative">Devenir affilié maintenant →</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* FOOTER */}
+      {/* ══════════════════════════════════════ */}
+      <footer className="relative bg-slate-950 border-t border-white/5 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-white/20 text-sm">
+            © 2026 My Guide Digital — Gims Consulting SRL — Avenue Louise 143/4, 1050 Bruxelles — TVA BE0848903319
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}

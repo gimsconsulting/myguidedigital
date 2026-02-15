@@ -23,7 +23,7 @@ export default function Layout({ children }: LayoutProps) {
   const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/forgot-password';
   const isPublicRoute = pathname?.startsWith('/guide') || pathname?.startsWith('/business-card');
   const isHomePage = pathname === '/';
-  const isPublicPage = pathname === '/hote-airbnb' || pathname === '/blog' || pathname === '/contact' || pathname === '/tarifs' || pathname?.startsWith('/tarifs/');
+  const isPublicPage = pathname === '/hote-airbnb' || pathname === '/blog' || pathname === '/contact' || pathname === '/tarifs' || pathname?.startsWith('/tarifs/') || pathname === '/affiliation';
   
   // Pour les pages publiques et d'authentification, utiliser un Layout simplifié SANS i18n
   if (isAuthPage || isPublicRoute || isHomePage || isPublicPage) {
@@ -188,6 +188,14 @@ function AuthenticatedLayout({
               >
                 {t('invoices.title', 'Factures')}
               </Link>
+              <Link
+                href="/dashboard/affiliation"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  pathname === '/dashboard/affiliation' ? 'bg-amber-500 text-white' : 'text-amber-600 hover:bg-amber-50'
+                }`}
+              >
+                {t('nav.affiliation', 'Affiliation')}
+              </Link>
               {user?.role === 'ADMIN' && (
                 <Link
                   href="/admin/dashboard"
@@ -284,6 +292,15 @@ function AuthenticatedLayout({
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t('invoices.title', 'Factures')}
+                </Link>
+                <Link
+                  href="/dashboard/affiliation"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    pathname === '/dashboard/affiliation' ? 'bg-amber-500 text-white' : 'text-amber-600 hover:bg-amber-50'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {t('nav.affiliation', 'Affiliation')}
                 </Link>
                 {user?.role === 'ADMIN' && (
                   <Link
