@@ -6,11 +6,6 @@ import Link from 'next/link';
 export default function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [preferences, setPreferences] = useState({
-    necessary: true,     // Toujours actif
-    analytics: false,
-    marketing: false,
-  });
 
   useEffect(() => {
     // Vérifier si l'utilisateur a déjà fait son choix
@@ -25,28 +20,14 @@ export default function CookieConsent() {
   const handleAcceptAll = () => {
     const consent = {
       necessary: true,
-      analytics: true,
-      marketing: true,
       timestamp: new Date().toISOString(),
     };
     localStorage.setItem('cookie-consent', JSON.stringify(consent));
     setIsVisible(false);
   };
 
-  const handleRejectAll = () => {
+  const handleAcceptNecessaryOnly = () => {
     const consent = {
-      necessary: true,
-      analytics: false,
-      marketing: false,
-      timestamp: new Date().toISOString(),
-    };
-    localStorage.setItem('cookie-consent', JSON.stringify(consent));
-    setIsVisible(false);
-  };
-
-  const handleSavePreferences = () => {
-    const consent = {
-      ...preferences,
       necessary: true,
       timestamp: new Date().toISOString(),
     };
@@ -77,11 +58,11 @@ export default function CookieConsent() {
                   Nous respectons votre vie privée
                 </h3>
                 <p className="text-white/60 text-sm mt-1 leading-relaxed">
-                  Nous utilisons des cookies pour améliorer votre expérience de navigation, 
-                  analyser le trafic du site et personnaliser le contenu. 
-                  Vous pouvez choisir les cookies que vous acceptez.{' '}
+                  Ce site utilise uniquement des <strong className="text-white/80">cookies strictement nécessaires</strong> au 
+                  fonctionnement du service (authentification, session, sécurité, préférences de langue). 
+                  Aucun cookie analytics ou marketing n&apos;est déposé.{' '}
                   <Link href="/cookies" className="text-pink-400 hover:text-pink-300 underline underline-offset-2 transition-colors">
-                    Politique de cookies
+                    En savoir plus
                   </Link>
                 </p>
               </div>
@@ -92,104 +73,104 @@ export default function CookieConsent() {
               <div className="mb-5 space-y-3 animate-fade-in">
                 {/* Cookie nécessaire */}
                 <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                         <span className="text-sm">🔒</span>
                       </div>
                       <div>
-                        <p className="text-white/90 text-sm font-semibold">Cookies nécessaires</p>
-                        <p className="text-white/40 text-xs mt-0.5">Essentiels au fonctionnement du site (authentification, sécurité, préférences)</p>
+                        <p className="text-white/90 text-sm font-semibold">Cookies strictement nécessaires</p>
+                        <p className="text-white/40 text-xs mt-0.5">Indispensables au fonctionnement du site</p>
                       </div>
                     </div>
                     <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
                       Toujours actif
                     </span>
                   </div>
-                </div>
-
-                {/* Cookie analytique */}
-                <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                        <span className="text-sm">📊</span>
-                      </div>
-                      <div>
-                        <p className="text-white/90 text-sm font-semibold">Cookies analytiques</p>
-                        <p className="text-white/40 text-xs mt-0.5">Nous aident à comprendre comment vous utilisez le site (Google Analytics)</p>
-                      </div>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={preferences.analytics}
-                        onChange={(e) => setPreferences({ ...preferences, analytics: e.target.checked })}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/70 after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-primary peer-checked:to-pink-500"></div>
-                    </label>
+                  <div className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-3">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="text-white/40 uppercase tracking-wider">
+                          <th className="text-left py-1.5 pr-3">Cookie</th>
+                          <th className="text-left py-1.5 pr-3">Finalité</th>
+                          <th className="text-left py-1.5">Durée</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-white/50">
+                        <tr className="border-t border-white/5">
+                          <td className="py-1.5 pr-3 font-mono text-primary/70 text-[11px]">cookie-consent</td>
+                          <td className="py-1.5 pr-3">Choix cookies</td>
+                          <td className="py-1.5">12 mois</td>
+                        </tr>
+                        <tr className="border-t border-white/5">
+                          <td className="py-1.5 pr-3 font-mono text-primary/70 text-[11px]">auth-token</td>
+                          <td className="py-1.5 pr-3">Authentification</td>
+                          <td className="py-1.5">Session</td>
+                        </tr>
+                        <tr className="border-t border-white/5">
+                          <td className="py-1.5 pr-3 font-mono text-primary/70 text-[11px]">i18nextLng</td>
+                          <td className="py-1.5 pr-3">Langue</td>
+                          <td className="py-1.5">12 mois</td>
+                        </tr>
+                        <tr className="border-t border-white/5">
+                          <td className="py-1.5 pr-3 font-mono text-primary/70 text-[11px]">csrf-token</td>
+                          <td className="py-1.5 pr-3">Sécurité CSRF</td>
+                          <td className="py-1.5">Session</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
 
-                {/* Cookie marketing */}
+                {/* Info analytics & marketing */}
                 <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                        <span className="text-sm">📢</span>
-                      </div>
-                      <div>
-                        <p className="text-white/90 text-sm font-semibold">Cookies marketing</p>
-                        <p className="text-white/40 text-xs mt-0.5">Utilisés pour diffuser des publicités pertinentes et mesurer leur efficacité</p>
-                      </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                      <span className="text-sm">ℹ️</span>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={preferences.marketing}
-                        onChange={(e) => setPreferences({ ...preferences, marketing: e.target.checked })}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-white/10 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white/70 after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-primary peer-checked:to-pink-500"></div>
-                    </label>
+                    <div>
+                      <p className="text-white/90 text-sm font-semibold">Pas de cookies analytics ni marketing</p>
+                      <p className="text-white/40 text-xs mt-0.5">
+                        My Guide Digital n&apos;utilise pas de cookies de mesure d&apos;audience ni de cookies marketing. 
+                        Seuls des logs serveurs sont utilisés à des fins de sécurité et maintenance.
+                      </p>
+                    </div>
                   </div>
+                </div>
+
+                {/* Liens légaux */}
+                <div className="flex flex-wrap gap-3 mt-2">
+                  <Link href="/mentions-legales" className="text-white/40 hover:text-white/70 text-xs transition-colors underline underline-offset-2">
+                    Mentions légales
+                  </Link>
+                  <Link href="/confidentialite" className="text-white/40 hover:text-white/70 text-xs transition-colors underline underline-offset-2">
+                    Politique de confidentialité
+                  </Link>
+                  <Link href="/cookies" className="text-white/40 hover:text-white/70 text-xs transition-colors underline underline-offset-2">
+                    Politique de cookies
+                  </Link>
                 </div>
               </div>
             )}
 
             {/* Boutons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              {/* Bouton personnaliser */}
+              {/* Bouton en savoir plus */}
               <button
-                onClick={() => {
-                  if (showDetails) {
-                    handleSavePreferences();
-                  } else {
-                    setShowDetails(true);
-                  }
-                }}
-                className="order-3 sm:order-1 px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 text-white/60 hover:text-white/90 hover:border-white/20 hover:bg-white/5 transition-all duration-300"
+                onClick={() => setShowDetails(!showDetails)}
+                className="order-2 sm:order-1 px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 text-white/60 hover:text-white/90 hover:border-white/20 hover:bg-white/5 transition-all duration-300"
               >
-                {showDetails ? '✓ Enregistrer mes préférences' : '⚙️ Personnaliser'}
-              </button>
-
-              {/* Bouton refuser */}
-              <button
-                onClick={handleRejectAll}
-                className="order-2 px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 text-white/60 hover:text-white/90 hover:border-white/20 hover:bg-white/5 transition-all duration-300"
-              >
-                Refuser tout
+                {showDetails ? '↑ Masquer les détails' : '⚙️ En savoir plus'}
               </button>
 
               {/* Bouton accepter */}
               <button
                 onClick={handleAcceptAll}
-                className="order-1 sm:order-3 sm:ml-auto relative group px-6 py-2.5 rounded-xl text-sm font-semibold text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
+                className="order-1 sm:order-2 sm:ml-auto relative group px-6 py-2.5 rounded-xl text-sm font-semibold text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500 blur-lg opacity-0 group-hover:opacity-40 transition-opacity"></div>
-                <span className="relative">✓ Accepter tout</span>
+                <span className="relative">✓ J&apos;ai compris</span>
               </button>
             </div>
           </div>
