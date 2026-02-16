@@ -24,7 +24,7 @@ router.post(
     body('name').trim().notEmpty().withMessage('Le nom est requis').isLength({ max: 100 }),
     body('email').trim().isEmail().withMessage('Email invalide').normalizeEmail(),
     body('subject').trim().notEmpty().withMessage('Le sujet est requis').isLength({ max: 200 }),
-    body('message').trim().notEmpty().withMessage('Le message est requis').isLength({ min: 10, max: 5000 }).withMessage('Le message doit contenir entre 10 et 5000 caractères'),
+    body('message').trim().notEmpty().withMessage('Le message est requis').isLength({ min: 3, max: 5000 }).withMessage('Le message doit contenir entre 3 et 5000 caractères'),
   ],
   async (req: express.Request, res: express.Response) => {
     try {
