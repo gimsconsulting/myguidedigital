@@ -6,128 +6,128 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import LanguageSelector from '@/components/LanguageSelector';
 
-const whyBlocks = [
-  {
-    icon: '📱',
-    title: 'Accessible partout, à tout moment',
-    desc: 'Votre livret d\'accueil est 100% digital et consultable sur smartphone, tablette ou ordinateur. Vos voyageurs accèdent à toutes les informations essentielles d\'un simple scan de QR code, sans rien télécharger.',
-  },
-  {
-    icon: '🎨',
-    title: 'Personnalisation complète à votre image',
-    desc: 'Intégrez votre logo, vos couleurs et votre identité visuelle pour offrir un accueil professionnel et cohérent avec votre marque. Chaque détail reflète votre établissement.',
-  },
-  {
-    icon: '🌿',
-    title: 'Une démarche éco-responsable',
-    desc: 'Fini les impressions papier répétitives. Avec My Guide Digital, seul le QR code est imprimé. Réduisez votre empreinte écologique tout en modernisant votre accueil.',
-  },
-  {
-    icon: '🚀',
-    title: 'Des outils innovants intégrés',
-    desc: 'Chatbot IA disponible 24h/24, traduction multilingue automatique, statistiques d\'utilisation et check-in digitalisé : tout est pensé pour enrichir l\'expérience de vos voyageurs.',
-  },
-];
-
-const features = [
-  {
-    icon: '🌍',
-    title: 'Traduction multilingue automatique',
-    desc: 'Accueillez des voyageurs du monde entier grâce à la traduction automatique de votre livret en plusieurs langues. Le contenu s\'adapte automatiquement à la langue de chaque visiteur pour une expérience fluide et naturelle.',
-    gradient: 'from-blue-500 to-cyan-400',
-  },
-  {
-    icon: '📊',
-    title: 'Statistiques et suivi d\'engagement',
-    desc: 'Mesurez l\'impact de votre livret grâce à des données de consultation détaillées. Identifiez les sections les plus consultées, les moments de pic d\'utilisation et optimisez votre contenu en conséquence.',
-    gradient: 'from-emerald-500 to-teal-400',
-  },
-  {
-    icon: '🔄',
-    title: 'Mises à jour instantanées et duplication',
-    desc: 'Modifiez vos informations en temps réel depuis votre tableau de bord. Dupliquez facilement vos livrets pour gérer plusieurs hébergements sans repartir de zéro. Un gain de temps considérable.',
-    gradient: 'from-amber-500 to-orange-400',
-  },
-  {
-    icon: '📍',
-    title: 'Recommandations et points d\'intérêt locaux',
-    desc: 'Partagez vos meilleures adresses, restaurants, activités et sites touristiques à proximité. Enrichissez le séjour de vos voyageurs en leur offrant des conseils personnalisés et authentiques.',
-    gradient: 'from-rose-500 to-pink-400',
-  },
-  {
-    icon: '🔗',
-    title: 'Liens utiles et ventes additionnelles',
-    desc: 'Ajoutez des liens cliquables vers vos partenaires, réservations d\'activités ou boutique en ligne. Créez de nouvelles opportunités de revenus tout en améliorant l\'expérience de vos hôtes.',
-    gradient: 'from-violet-500 to-purple-400',
-  },
-  {
-    icon: '🎨',
-    title: 'Personnalisation avancée et marque blanche',
-    desc: 'Adaptez chaque module de votre livret : couleurs, polices, logo, catégories personnalisées et conseils sur mesure. Offrez un accueil digital qui vous ressemble vraiment.',
-    gradient: 'from-fuchsia-500 to-pink-400',
-  },
-  {
-    icon: '📲',
-    title: 'Accès simplifié par QR code',
-    desc: 'Un simple scan depuis le smartphone suffit pour accéder à l\'intégralité de votre livret. Placez le QR code à l\'entrée, sur la table de nuit ou dans votre email de bienvenue. Aucune application requise.',
-    gradient: 'from-indigo-500 to-blue-400',
-  },
-  {
-    icon: '🤖',
-    title: 'Chatbot IA intégré 24h/24',
-    desc: 'Votre assistant intelligent répond instantanément aux questions de vos voyageurs, jour et nuit. Code Wi-Fi, horaires, consignes, recommandations : tout est traité automatiquement à partir de votre contenu.',
-    gradient: 'from-primary to-pink-400',
-  },
-  {
-    icon: '📝',
-    title: 'Gestion de contenu intuitive',
-    desc: 'Ajoutez facilement des photos, vidéos, documents PDF et textes. Réorganisez vos modules en quelques clics pour créer un livret complet et attractif, sans aucune compétence technique.',
-    gradient: 'from-teal-500 to-emerald-400',
-  },
-];
-
-const testimonials = [
-  {
-    name: 'Aurélien B.',
-    role: 'Propriétaire de gîte',
-    text: 'Super service pour la gestion de notre gîte. L\'outil est tellement agréable et intuitif que nous avons décidé de l\'adopter définitivement. Nos voyageurs adorent et nous le font savoir !',
-    rating: 5,
-  },
-  {
-    name: 'Caroline M.',
-    role: 'Hôte Airbnb',
-    text: 'Application au top ! Depuis plus d\'un an en location saisonnière, mes clients la trouvent super pratique. La traduction dans plusieurs langues, même les plus rares, est un vrai atout. Je recommande fortement.',
-    rating: 5,
-  },
-  {
-    name: 'Jan F.',
-    role: 'Multi-propriétaire',
-    text: 'Depuis 2 ans nous utilisons My Guide Digital pour nos deux gîtes. Le grand avantage c\'est de pouvoir modifier un seul module quand on change un équipement. Les locataires ont toutes les infos sur leur téléphone.',
-    rating: 5,
-  },
-  {
-    name: 'Élodie S.',
-    role: 'Conciergerie',
-    text: 'Application très facile d\'utilisation, simple, efficace et complète. Le service d\'assistance est au petit soin et réactif. Une aide précieuse pour notre conciergerie en développement !',
-    rating: 5,
-  },
-  {
-    name: 'Tiffany C.',
-    role: 'Gestionnaire de locations',
-    text: 'Je gère plusieurs locations de vacances et les livrets me font gagner énormément de temps dans les échanges avec les voyageurs. La traduction est excellente et les retours toujours positifs.',
-    rating: 5,
-  },
-  {
-    name: 'Christophe R.',
-    role: 'Location saisonnière',
-    text: 'Nous avons plusieurs appartements en location saisonnière. La création d\'un livret est rapide et intuitive avec de nombreuses options de personnalisation. Modifiable à tout moment. On recommande vivement !',
-    rating: 5,
-  },
-];
-
 export default function NosServicesPage() {
   const { t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const whyBlocks = [
+    {
+      icon: '📱',
+      title: t('services.why.block1Title', 'Accessible partout, à tout moment'),
+      desc: t('services.why.block1Desc', 'Votre livret d\'accueil est 100% digital et consultable sur smartphone, tablette ou ordinateur. Vos voyageurs accèdent à toutes les informations essentielles d\'un simple scan de QR code, sans rien télécharger.'),
+    },
+    {
+      icon: '🎨',
+      title: t('services.why.block2Title', 'Personnalisation complète à votre image'),
+      desc: t('services.why.block2Desc', 'Intégrez votre logo, vos couleurs et votre identité visuelle pour offrir un accueil professionnel et cohérent avec votre marque. Chaque détail reflète votre établissement.'),
+    },
+    {
+      icon: '🌿',
+      title: t('services.why.block3Title', 'Une démarche éco-responsable'),
+      desc: t('services.why.block3Desc', 'Fini les impressions papier répétitives. Avec My Guide Digital, seul le QR code est imprimé. Réduisez votre empreinte écologique tout en modernisant votre accueil.'),
+    },
+    {
+      icon: '🚀',
+      title: t('services.why.block4Title', 'Des outils innovants intégrés'),
+      desc: t('services.why.block4Desc', 'Chatbot IA disponible 24h/24, traduction multilingue automatique, statistiques d\'utilisation et check-in digitalisé : tout est pensé pour enrichir l\'expérience de vos voyageurs.'),
+    },
+  ];
+
+  const features = [
+    {
+      icon: '🌍',
+      title: t('services.features.f1Title', 'Traduction multilingue automatique'),
+      desc: t('services.features.f1Desc', 'Accueillez des voyageurs du monde entier grâce à la traduction automatique de votre livret en plusieurs langues.'),
+      gradient: 'from-blue-500 to-cyan-400',
+    },
+    {
+      icon: '📊',
+      title: t('services.features.f2Title', 'Statistiques et suivi d\'engagement'),
+      desc: t('services.features.f2Desc', 'Mesurez l\'impact de votre livret grâce à des données de consultation détaillées.'),
+      gradient: 'from-emerald-500 to-teal-400',
+    },
+    {
+      icon: '🔄',
+      title: t('services.features.f3Title', 'Mises à jour instantanées et duplication'),
+      desc: t('services.features.f3Desc', 'Modifiez vos informations en temps réel depuis votre tableau de bord.'),
+      gradient: 'from-amber-500 to-orange-400',
+    },
+    {
+      icon: '📍',
+      title: t('services.features.f4Title', 'Recommandations et points d\'intérêt locaux'),
+      desc: t('services.features.f4Desc', 'Partagez vos meilleures adresses, restaurants, activités et sites touristiques à proximité.'),
+      gradient: 'from-rose-500 to-pink-400',
+    },
+    {
+      icon: '🔗',
+      title: t('services.features.f5Title', 'Liens utiles et ventes additionnelles'),
+      desc: t('services.features.f5Desc', 'Ajoutez des liens cliquables vers vos partenaires, réservations d\'activités ou boutique en ligne.'),
+      gradient: 'from-violet-500 to-purple-400',
+    },
+    {
+      icon: '🎨',
+      title: t('services.features.f6Title', 'Personnalisation avancée et marque blanche'),
+      desc: t('services.features.f6Desc', 'Adaptez chaque module de votre livret : couleurs, polices, logo, catégories personnalisées et conseils sur mesure.'),
+      gradient: 'from-fuchsia-500 to-pink-400',
+    },
+    {
+      icon: '📲',
+      title: t('services.features.f7Title', 'Accès simplifié par QR code'),
+      desc: t('services.features.f7Desc', 'Un simple scan depuis le smartphone suffit pour accéder à l\'intégralité de votre livret.'),
+      gradient: 'from-indigo-500 to-blue-400',
+    },
+    {
+      icon: '🤖',
+      title: t('services.features.f8Title', 'Chatbot IA intégré 24h/24'),
+      desc: t('services.features.f8Desc', 'Votre assistant intelligent répond instantanément aux questions de vos voyageurs, jour et nuit.'),
+      gradient: 'from-primary to-pink-400',
+    },
+    {
+      icon: '📝',
+      title: t('services.features.f9Title', 'Gestion de contenu intuitive'),
+      desc: t('services.features.f9Desc', 'Ajoutez facilement des photos, vidéos, documents PDF et textes. Réorganisez vos modules en quelques clics.'),
+      gradient: 'from-teal-500 to-emerald-400',
+    },
+  ];
+
+  const testimonials = [
+    {
+      name: t('services.testimonials.t1Name', 'Aurélien B.'),
+      role: t('services.testimonials.t1Role', 'Propriétaire de gîte'),
+      text: t('services.testimonials.t1Text', 'Super service pour la gestion de notre gîte. L\'outil est tellement agréable et intuitif que nous avons décidé de l\'adopter définitivement.'),
+      rating: 5,
+    },
+    {
+      name: t('services.testimonials.t2Name', 'Caroline M.'),
+      role: t('services.testimonials.t2Role', 'Hôte Airbnb'),
+      text: t('services.testimonials.t2Text', 'Application au top ! Depuis plus d\'un an en location saisonnière, mes clients la trouvent super pratique.'),
+      rating: 5,
+    },
+    {
+      name: t('services.testimonials.t3Name', 'Jan F.'),
+      role: t('services.testimonials.t3Role', 'Multi-propriétaire'),
+      text: t('services.testimonials.t3Text', 'Depuis 2 ans nous utilisons My Guide Digital pour nos deux gîtes.'),
+      rating: 5,
+    },
+    {
+      name: t('services.testimonials.t4Name', 'Élodie S.'),
+      role: t('services.testimonials.t4Role', 'Conciergerie'),
+      text: t('services.testimonials.t4Text', 'Application très facile d\'utilisation, simple, efficace et complète.'),
+      rating: 5,
+    },
+    {
+      name: t('services.testimonials.t5Name', 'Tiffany C.'),
+      role: t('services.testimonials.t5Role', 'Gestionnaire de locations'),
+      text: t('services.testimonials.t5Text', 'Je gère plusieurs locations de vacances et les livrets me font gagner énormément de temps.'),
+      rating: 5,
+    },
+    {
+      name: t('services.testimonials.t6Name', 'Christophe R.'),
+      role: t('services.testimonials.t6Role', 'Location saisonnière'),
+      text: t('services.testimonials.t6Text', 'Nous avons plusieurs appartements en location saisonnière. La création d\'un livret est rapide et intuitive.'),
+      rating: 5,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#0c0a1d] to-slate-950">
@@ -230,32 +230,32 @@ export default function NosServicesPage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-white/70 text-sm font-medium">Solution tout-en-un pour l&apos;accueil digital</span>
+              <span className="text-white/70 text-sm font-medium">{t('services.badge', 'Solution tout-en-un pour l\'accueil digital')}</span>
             </div>
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight">
-              Réinventez l&apos;accueil<br />
+              {t('services.hero.title1', 'Réinventez l\'accueil')}<br />
               <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                de vos voyageurs
+                {t('services.hero.title2', 'de vos voyageurs')}
               </span>
             </h1>
             <h2 className="text-xl sm:text-2xl text-white/60 max-w-3xl mx-auto mb-4 font-medium">
-              Transformez chaque séjour en une expérience unique
+              {t('services.hero.subtitle', 'Transformez chaque séjour en une expérience unique')}
             </h2>
             <p className="text-lg text-white/40 max-w-3xl mx-auto mb-10 leading-relaxed">
-              Facilitez l&apos;accès aux informations essentielles, personnalisez l&apos;accueil de vos visiteurs et répondez aux attentes des voyageurs d&apos;aujourd&apos;hui. My Guide Digital accompagne les hôteliers, gestionnaires de campings et propriétaires de locations saisonnières.
+              {t('services.hero.description', 'Facilitez l\'accès aux informations essentielles, personnalisez l\'accueil de vos visiteurs et répondez aux attentes des voyageurs d\'aujourd\'hui.')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
                 <button className="relative group px-8 py-4 rounded-full font-semibold text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 text-lg">
                   <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500 transition-all duration-300"></div>
                   <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500 blur-xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                  <span className="relative">Créer votre livret d&apos;accueil digital</span>
+                  <span className="relative">{t('services.hero.cta', 'Créer votre livret d\'accueil digital')}</span>
                 </button>
               </Link>
               <Link href="/tarifs">
                 <button className="px-8 py-4 rounded-full font-semibold text-white/80 hover:text-white border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 text-lg">
-                  Découvrir nos tarifs
+                  {t('services.hero.pricing', 'Découvrir nos tarifs')}
                 </button>
               </Link>
             </div>
@@ -271,16 +271,16 @@ export default function NosServicesPage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
-              <span className="text-white/70 text-sm font-medium">💡 Pourquoi nous choisir</span>
+              <span className="text-white/70 text-sm font-medium">{t('services.why.badge', '💡 Pourquoi nous choisir')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Pourquoi My Guide Digital est{' '}
+              {t('services.why.title1', 'Pourquoi My Guide Digital est')}{' '}
               <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                la solution idéale
+                {t('services.why.title2', 'la solution idéale')}
               </span>{' '}?
             </h2>
             <p className="text-xl text-white/40 max-w-2xl mx-auto">
-              Un livret d&apos;accueil digital pensé pour répondre aux attentes des voyageurs et simplifier votre quotidien.
+              {t('services.why.subtitle', 'Un livret d\'accueil digital pensé pour répondre aux attentes des voyageurs et simplifier votre quotidien.')}
             </p>
           </div>
 
@@ -305,7 +305,7 @@ export default function NosServicesPage() {
               <button className="relative group px-8 py-4 rounded-full font-semibold text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 text-lg">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500 transition-all duration-300"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500 blur-xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                <span className="relative">Créer votre livret d&apos;accueil digital</span>
+                <span className="relative">{t('services.hero.cta', 'Créer votre livret d\'accueil digital')}</span>
               </button>
             </Link>
           </div>
@@ -320,16 +320,16 @@ export default function NosServicesPage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
-              <span className="text-white/70 text-sm font-medium">⚡ Fonctionnalités</span>
+              <span className="text-white/70 text-sm font-medium">{t('services.features.badge', '⚡ Fonctionnalités')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Découvrez nos solutions<br />
+              {t('services.features.title1', 'Découvrez nos solutions')}<br />
               <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                pour un accueil parfait
+                {t('services.features.title2', 'pour un accueil parfait')}
               </span>
             </h2>
             <p className="text-xl text-white/40 max-w-2xl mx-auto">
-              Chaque fonctionnalité est conçue pour améliorer l&apos;accueil de vos voyageurs.
+              {t('services.features.subtitle', 'Chaque fonctionnalité est conçue pour améliorer l\'accueil de vos voyageurs.')}
             </p>
           </div>
 
@@ -348,7 +348,7 @@ export default function NosServicesPage() {
                   <p className="text-sm text-white/40 leading-relaxed flex-grow">{feature.desc}</p>
                   <div className="mt-5">
                     <Link href="/register" className="inline-flex items-center text-primary hover:text-pink-400 transition-colors text-sm font-semibold group/link">
-                      En savoir plus
+                      {t('services.features.learnMore', 'En savoir plus')}
                       <svg className="w-4 h-4 ml-1 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
@@ -364,7 +364,7 @@ export default function NosServicesPage() {
               <button className="relative group px-10 py-4 rounded-full font-bold text-slate-900 overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-yellow-400/30 text-lg">
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-amber-500 transition-all duration-300"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-amber-500 blur-xl opacity-40 group-hover:opacity-70 transition-opacity"></div>
-                <span className="relative">🚀 Tester gratuitement My Guide Digital</span>
+                <span className="relative">{t('services.features.ctaTest', '🚀 Tester gratuitement My Guide Digital')}</span>
               </button>
             </Link>
           </div>
@@ -379,12 +379,12 @@ export default function NosServicesPage() {
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
-              <span className="text-white/70 text-sm font-medium">⭐ Témoignages</span>
+              <span className="text-white/70 text-sm font-medium">{t('services.testimonials.badge', '⭐ Témoignages')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Ils ont adopté My Guide Digital,<br />
+              {t('services.testimonials.title1', 'Ils ont adopté My Guide Digital,')}<br />
               <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                découvrez leurs témoignages !
+                {t('services.testimonials.title2', 'découvrez leurs témoignages !')}
               </span>
             </h2>
           </div>
@@ -428,9 +428,9 @@ export default function NosServicesPage() {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Vous souhaitez{' '}
+              {t('services.demo.title', 'Vous souhaitez')}{' '}
               <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                découvrir le livret
+                {t('services.demo.titleHighlight', 'découvrir le livret')}
               </span>{' '}?
             </h2>
           </div>
@@ -444,15 +444,15 @@ export default function NosServicesPage() {
                 <div className="relative text-center">
                   <div className="text-4xl mb-4">🎥</div>
                   <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-                    Vous souhaitez une démonstration ?
+                    {t('services.demo.demoTitle', 'Vous souhaitez une démonstration ?')}
                   </h3>
                   <p className="text-white/60 mb-6 leading-relaxed">
-                    En moins de 30 minutes, découvrez l&apos;outil et permettez à vos équipes une prise en main immédiate. Idéal pour optimiser votre accueil !
+                    {t('services.demo.demoDesc', 'En moins de 30 minutes, découvrez l\'outil et permettez à vos équipes une prise en main immédiate.')}
                   </p>
                   <Link href="/contact">
                     <button className="relative group/btn px-8 py-3 rounded-full font-bold text-slate-900 overflow-hidden transition-all duration-300">
                       <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-amber-500"></div>
-                      <span className="relative">Réserver une démo</span>
+                      <span className="relative">{t('services.demo.demoCta', 'Réserver une démo')}</span>
                     </button>
                   </Link>
                 </div>
@@ -467,15 +467,15 @@ export default function NosServicesPage() {
                 <div className="relative text-center">
                   <div className="text-4xl mb-4">📋</div>
                   <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-                    On s&apos;occupe de tout
+                    {t('services.demo.migrationTitle', 'On s\'occupe de tout')}
                   </h3>
                   <p className="text-white/40 mb-6 leading-relaxed">
-                    Vous avez un livret papier ou un document existant ? Envoyez-le nous et nous le transformons en livret digital complet, traduit et enrichi de recommandations locales.
+                    {t('services.demo.migrationDesc', 'Vous avez un livret papier ou un document existant ? Envoyez-le nous et nous le transformons en livret digital complet.')}
                   </p>
                   <Link href="/contact">
                     <button className="relative group/btn px-8 py-3 rounded-full font-bold text-white overflow-hidden transition-all duration-300">
                       <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-rose-500"></div>
-                      <span className="relative">Nous contacter</span>
+                      <span className="relative">{t('services.demo.migrationCta', 'Nous contacter')}</span>
                     </button>
                   </Link>
                 </div>
@@ -494,23 +494,23 @@ export default function NosServicesPage() {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl"></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">
-            Il est temps de créer votre livret !
+            {t('services.cta.title', 'Il est temps de créer votre livret !')}
           </h2>
           <p className="text-xl sm:text-2xl mb-8 text-white/60">
-            Testez gratuitement et offrez une expérience mémorable à vos voyageurs.<br />
-            <strong className="text-white">Lancez-vous !</strong>
+            {t('services.cta.desc', 'Testez gratuitement et offrez une expérience mémorable à vos voyageurs.')}<br />
+            <strong className="text-white">{t('services.cta.launch', 'Lancez-vous !')}</strong>
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
               <button className="relative group px-8 py-4 rounded-full font-semibold text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 text-lg">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500 transition-all duration-300"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500 blur-xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                <span className="relative">Créer mon livret d&apos;accueil</span>
+                <span className="relative">{t('services.cta.createCta', 'Créer mon livret d\'accueil')}</span>
               </button>
             </Link>
             <Link href="/tarifs">
               <button className="px-8 py-4 rounded-full font-semibold text-white/80 hover:text-white border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 text-lg">
-                Voir nos tarifs
+                {t('services.cta.pricingCta', 'Voir nos tarifs')}
               </button>
             </Link>
           </div>
@@ -528,7 +528,7 @@ export default function NosServicesPage() {
                 My Guide Digital
               </h3>
               <p className="bg-gradient-to-r from-purple-300/60 via-violet-300/50 to-purple-400/60 bg-clip-text text-transparent mb-6 leading-relaxed max-w-md">
-                La solution moderne pour créer et partager vos livrets d&apos;accueil digitaux. Simplifiez l&apos;expérience de vos voyageurs.
+                {t('home.footer.description', 'La solution moderne pour créer et partager vos livrets d\'accueil digitaux.')}
               </p>
               <div className="flex gap-3">
                 {['facebook', 'instagram', 'linkedin'].map((social) => (
@@ -539,27 +539,27 @@ export default function NosServicesPage() {
               </div>
             </div>
             <div>
-              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">Navigation</h4>
+              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">{t('home.footer.navigation', 'Navigation')}</h4>
               <ul className="space-y-3">
-                <li><Link href="/" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Accueil</Link></li>
-                <li><Link href="/hote-airbnb" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Nos services</Link></li>
-                <li><Link href="/tarifs" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Nos tarifs</Link></li>
-                <li><Link href="/blog" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Blog</Link></li>
-                <li><Link href="/login" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Connexion</Link></li>
+                <li><Link href="/" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.home', 'Accueil')}</Link></li>
+                <li><Link href="/hote-airbnb" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.services', 'Nos services')}</Link></li>
+                <li><Link href="/tarifs" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.pricing', 'Nos tarifs')}</Link></li>
+                <li><Link href="/blog" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.blog', 'Blog')}</Link></li>
+                <li><Link href="/login" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.login', 'Connexion')}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">Support</h4>
+              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">{t('home.footer.support', 'Support')}</h4>
               <ul className="space-y-3">
-                <li><Link href="/contact" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Contact</Link></li>
+                <li><Link href="/contact" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('home.footer.contact', 'Contact')}</Link></li>
                 <li><Link href="/#faq" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">FAQ</Link></li>
-                <li><Link href="/affiliation" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Programme d&apos;affiliation</Link></li>
+                <li><Link href="/affiliation" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('home.footer.affiliation', 'Programme d\'affiliation')}</Link></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-white/5 mt-12 pt-8 text-center">
             <p className="bg-gradient-to-r from-purple-400/30 via-violet-300/30 to-purple-400/30 bg-clip-text text-transparent text-sm">
-              © {new Date().getFullYear()} My Guide Digital. Tous droits réservés.
+              {t('home.footer.copyright', '© 2026 My Guide Digital. Tous droits réservés.')}
             </p>
           </div>
         </div>
