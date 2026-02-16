@@ -4,6 +4,7 @@ import './globals.css'
 import Layout from '@/components/Layout'
 import { ToastContainer } from '@/components/ui/Toast'
 import { I18nProvider } from '@/i18n/client'
+import ScrollToTop from '@/components/ScrollToTop'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <I18nProvider>
           <Layout>{children}</Layout>
+          <ScrollToTop />
           <ToastContainer />
         </I18nProvider>
       </body>
