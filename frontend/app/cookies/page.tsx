@@ -2,8 +2,31 @@
 
 import Link from 'next/link';
 import LanguageSelector from '@/components/LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 export default function CookiesPage() {
+  const { t } = useTranslation();
+
+  const cookieTable = [
+    { cookieKey: 's2aCookie1', purposeKey: 's2aPurpose1', durationKey: 's2aDuration1' },
+    { cookieKey: 's2aCookie2', purposeKey: 's2aPurpose2', durationKey: 's2aDuration2' },
+    { cookieKey: 's2aCookie3', purposeKey: 's2aPurpose3', durationKey: 's2aDuration3' },
+    { cookieKey: 's2aCookie4', purposeKey: 's2aPurpose4', durationKey: 's2aDuration4' },
+  ];
+
+  const browsers = [
+    { nameKey: 's3Chrome', pathKey: 's3ChromePath', icon: '🌐' },
+    { nameKey: 's3Firefox', pathKey: 's3FirefoxPath', icon: '🦊' },
+    { nameKey: 's3Safari', pathKey: 's3SafariPath', icon: '🧭' },
+    { nameKey: 's3Edge', pathKey: 's3EdgePath', icon: '🔷' },
+  ];
+
+  const handleResetCookieConsent = () => {
+    localStorage.removeItem('cookie-consent');
+    localStorage.removeItem('cookie-preferences');
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       {/* Navigation */}
@@ -15,7 +38,7 @@ export default function CookiesPage() {
           <div className="flex items-center gap-4">
             <LanguageSelector />
             <Link href="/" className="text-white/60 hover:text-white transition text-sm">
-              ← Retour à l&apos;accueil
+              {t('legalPage.backHome')}
             </Link>
           </div>
         </div>
@@ -29,19 +52,17 @@ export default function CookiesPage() {
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] mb-6">
             <span>🍪</span>
-            <span className="text-white/60 text-sm font-medium">Gestion des cookies</span>
+            <span className="text-white/60 text-sm font-medium">{t('cookiePage.badge')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
-            Politique{' '}
+            {t('cookiePage.title1')}{' '}
             <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-              Cookies
+              {t('cookiePage.title2')}
             </span>
           </h1>
-          <p className="text-white/50 text-base sm:text-lg max-w-2xl mx-auto">
-            My Guide Digital
-          </p>
+          <p className="text-white/50 text-base sm:text-lg max-w-2xl mx-auto">My Guide Digital</p>
           <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06]">
-            <span className="text-white/40 text-xs">Version : v1.4 — Dernière mise à jour : 16/02/2026</span>
+            <span className="text-white/40 text-xs">{t('cookiePage.version')}</span>
           </div>
         </div>
       </section>
@@ -57,162 +78,138 @@ export default function CookiesPage() {
               <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-pink-500/20 border border-white/10 flex items-center justify-center">
-                    <span className="text-lg">📌</span>
+                    <span className="text-lg">1️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    1. Définition
+                    {t('cookiePage.s1Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
-                  <p>
-                    Un cookie est un fichier texte enregistré sur ton terminal lors de la consultation d&apos;un site ou de 
-                    l&apos;utilisation d&apos;une application web. Il peut servir à mémoriser une session ou des préférences.
-                  </p>
+                  <p>{t('cookiePage.s1Text')}</p>
                 </div>
               </div>
             </div>
 
             {/* 2. Cookies utilisés */}
             <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
               <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/10 flex items-center justify-center">
-                    <span className="text-lg">🔍</span>
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-white/10 flex items-center justify-center">
+                    <span className="text-lg">2️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    2. Cookies utilisés par My Guide Digital
+                    {t('cookiePage.s2Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-6">
 
-                  {/* A) Cookies strictement nécessaires */}
-                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/20 flex items-center justify-center">
-                        <span className="text-xs">🔒</span>
-                      </div>
-                      <h3 className="text-white/80 font-semibold text-sm">A) Cookies strictement nécessaires (obligatoires)</h3>
-                    </div>
-                    <p className="mb-3">
-                      Ils sont indispensables au fonctionnement du Service : authentification, gestion de session, 
-                      sécurité, préférences essentielles.
-                    </p>
-                    <div className="flex items-start gap-2 bg-emerald-500/5 border border-emerald-500/10 rounded-lg p-3">
-                      <span className="text-emerald-400 text-xs mt-0.5">➡️</span>
-                      <span className="text-emerald-300/80 text-xs">Ces cookies sont déposés sans consentement car ils sont nécessaires.</span>
-                    </div>
-                    <div className="mt-4">
+                  {/* A - Cookies nécessaires */}
+                  <div>
+                    <h3 className="text-white/80 font-semibold mb-2 flex items-center gap-2">
+                      <span className="text-emerald-400">✓</span>
+                      {t('cookiePage.s2aTitle')}
+                    </h3>
+                    <p className="mb-3">{t('cookiePage.s2aText')}</p>
+                    <div className="overflow-x-auto">
                       <table className="w-full text-xs">
                         <thead>
-                          <tr className="text-white/40 uppercase tracking-wider">
-                            <th className="text-left py-2 pr-4">Cookie</th>
-                            <th className="text-left py-2 pr-4">Finalité</th>
-                            <th className="text-left py-2">Durée</th>
+                          <tr className="border-b border-white/10">
+                            <th className="text-left text-white/50 pb-2 pr-4">{t('cookiePage.s2aThCookie')}</th>
+                            <th className="text-left text-white/50 pb-2 pr-4">{t('cookiePage.s2aThPurpose')}</th>
+                            <th className="text-right text-white/50 pb-2">{t('cookiePage.s2aThDuration')}</th>
                           </tr>
                         </thead>
-                        <tbody className="text-white/60">
-                          <tr className="border-t border-white/5">
-                            <td className="py-2.5 pr-4 font-mono text-primary/80">cookie-consent</td>
-                            <td className="py-2.5 pr-4">Mémorise ton choix de cookies</td>
-                            <td className="py-2.5">12 mois</td>
-                          </tr>
-                          <tr className="border-t border-white/5">
-                            <td className="py-2.5 pr-4 font-mono text-primary/80">auth-token</td>
-                            <td className="py-2.5 pr-4">Authentification et session utilisateur</td>
-                            <td className="py-2.5">Session</td>
-                          </tr>
-                          <tr className="border-t border-white/5">
-                            <td className="py-2.5 pr-4 font-mono text-primary/80">i18nextLng</td>
-                            <td className="py-2.5 pr-4">Préférence de langue de l&apos;interface</td>
-                            <td className="py-2.5">12 mois</td>
-                          </tr>
-                          <tr className="border-t border-white/5">
-                            <td className="py-2.5 pr-4 font-mono text-primary/80">csrf-token</td>
-                            <td className="py-2.5 pr-4">Protection contre les attaques CSRF</td>
-                            <td className="py-2.5">Session</td>
-                          </tr>
+                        <tbody>
+                          {cookieTable.map((row, idx) => (
+                            <tr key={idx} className="border-b border-white/[0.04]">
+                              <td className="py-2 pr-4">
+                                <code className="bg-white/[0.05] border border-white/[0.08] rounded px-1.5 py-0.5 text-pink-400 text-[10px]">
+                                  {t(`cookiePage.${row.cookieKey}`)}
+                                </code>
+                              </td>
+                              <td className="py-2 pr-4 text-white/60">{t(`cookiePage.${row.purposeKey}`)}</td>
+                              <td className="py-2 text-right text-white/80 font-medium">{t(`cookiePage.${row.durationKey}`)}</td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>
+                    <p className="text-white/40 text-xs italic mt-3">{t('cookiePage.s2aNote')}</p>
                   </div>
 
-                  {/* B) Mesure d'audience */}
-                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/20 flex items-center justify-center">
-                        <span className="text-xs">📊</span>
-                      </div>
-                      <h3 className="text-white/80 font-semibold text-sm">B) Mesure d&apos;audience / analytics</h3>
-                    </div>
-                    <p className="mb-2">
-                      My Guide Digital <strong className="text-white/80">ne dépose pas de cookies analytics</strong>.
-                    </p>
+                  {/* B - Analytics */}
+                  <div className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-4">
+                    <h3 className="text-white/80 font-semibold mb-2 flex items-center gap-2">
+                      <span className="text-blue-400">📊</span>
+                      {t('cookiePage.s2bTitle')}
+                    </h3>
                     <p>
-                      Nous utilisons uniquement des logs serveurs (journaux techniques) à des fins de sécurité, 
-                      maintenance et amélioration du Service.
+                      {t('cookiePage.s2bText1')}{' '}
+                      <strong className="text-emerald-400">{t('cookiePage.s2bText1b')}</strong>.
                     </p>
+                    <p className="mt-2">{t('cookiePage.s2bText2')}</p>
                   </div>
 
-                  {/* C) Cookies marketing */}
-                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/20 flex items-center justify-center">
-                        <span className="text-xs">📢</span>
-                      </div>
-                      <h3 className="text-white/80 font-semibold text-sm">C) Cookies marketing</h3>
-                    </div>
+                  {/* C - Marketing */}
+                  <div className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-4">
+                    <h3 className="text-white/80 font-semibold mb-2 flex items-center gap-2">
+                      <span className="text-amber-400">📢</span>
+                      {t('cookiePage.s2cTitle')}
+                    </h3>
                     <p>
-                      À ce jour, My Guide Digital <strong className="text-white/80">ne dépose pas de cookies marketing</strong>. 
-                      Si cela devait changer, une information et, le cas échéant, un recueil de consentement seraient 
-                      mis en place avant activation.
+                      {t('cookiePage.s2cText1')}{' '}
+                      <strong className="text-emerald-400">{t('cookiePage.s2cText1b')}</strong>.
                     </p>
+                    <p className="mt-2">{t('cookiePage.s2cText2')}</p>
                   </div>
-
                 </div>
               </div>
             </div>
 
             {/* 3. Gestion des cookies */}
             <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
               <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-white/10 flex items-center justify-center">
-                    <span className="text-lg">⚙️</span>
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-white/10 flex items-center justify-center">
+                    <span className="text-lg">3️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    3. Gestion des cookies
+                    {t('cookiePage.s3Title')}
                   </h2>
                 </div>
-                <div className="text-white/60 text-sm leading-relaxed space-y-3">
-                  <p>
-                    Tu peux gérer les cookies via les paramètres de ton navigateur (suppression/blocage).
-                  </p>
-                  <div className="flex items-start gap-2 bg-amber-500/5 border border-amber-500/10 rounded-lg p-3">
-                    <span className="text-amber-400 text-xs mt-0.5">⚠️</span>
-                    <span className="text-amber-300/80 text-xs">
-                      Attention : bloquer certains cookies nécessaires peut empêcher le bon fonctionnement de l&apos;application.
-                    </span>
+                <div className="text-white/60 text-sm leading-relaxed space-y-4">
+                  <p>{t('cookiePage.s3Text')}</p>
+
+                  <div className="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4">
+                    <p className="flex items-start gap-2">
+                      <span className="text-amber-400 mt-0.5">⚠️</span>
+                      <span>{t('cookiePage.s3Warning')}</span>
+                    </p>
                   </div>
+
                   <button
-                    onClick={() => {
-                      localStorage.removeItem('cookie-consent');
-                      window.location.reload();
-                    }}
-                    className="relative group/btn inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 mt-2"
+                    onClick={handleResetCookieConsent}
+                    className="group/btn relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500"></div>
-                    <span className="relative">🍪 Modifier mes préférences de cookies</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-pink-500 rounded-xl opacity-80 group-hover/btn:opacity-100 transition-opacity"></div>
+                    <span className="relative text-white font-medium text-sm">🍪 {t('cookiePage.s3Button')}</span>
                   </button>
-                  <div className="mt-4 space-y-2">
-                    <p className="text-white/40 text-xs font-semibold uppercase tracking-wider">Configuration par navigateur :</p>
-                    <ul className="text-white/50 text-xs space-y-1.5">
-                      <li>• <strong className="text-white/70">Chrome</strong> : Paramètres → Confidentialité et sécurité → Cookies</li>
-                      <li>• <strong className="text-white/70">Firefox</strong> : Options → Vie privée et sécurité → Cookies</li>
-                      <li>• <strong className="text-white/70">Safari</strong> : Préférences → Confidentialité → Cookies</li>
-                      <li>• <strong className="text-white/70">Edge</strong> : Paramètres → Cookies et autorisations de site</li>
-                    </ul>
+
+                  <div className="mt-4">
+                    <p className="text-white/80 font-semibold text-xs mb-3">{t('cookiePage.s3BrowserTitle')}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {browsers.map((browser, idx) => (
+                        <div key={idx} className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span>{browser.icon}</span>
+                            <p className="text-white/80 text-xs font-semibold">{t(`cookiePage.${browser.nameKey}`)}</p>
+                          </div>
+                          <p className="text-white/40 text-xs">{t(`cookiePage.${browser.pathKey}`)}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -224,26 +221,26 @@ export default function CookiesPage() {
               <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center">
-                    <span className="text-lg">⏱️</span>
+                    <span className="text-lg">4️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    4. Durée de conservation
+                    {t('cookiePage.s4Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
                   <div className="space-y-3">
                     <div className="flex items-start gap-3 bg-white/[0.02] border border-white/[0.04] rounded-lg p-3">
-                      <span className="text-base mt-0.5">🔄</span>
+                      <span className="text-base mt-0.5">⏳</span>
                       <div>
-                        <p className="text-white/80 text-xs font-semibold">Cookies de session</p>
-                        <p className="text-white/40 text-xs mt-0.5">Supprimés à la fermeture du navigateur</p>
+                        <p className="text-white/80 text-xs font-semibold">{t('cookiePage.s4SessionTitle')}</p>
+                        <p className="text-white/40 text-xs mt-0.5">{t('cookiePage.s4SessionDesc')}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 bg-white/[0.02] border border-white/[0.04] rounded-lg p-3">
-                      <span className="text-base mt-0.5">💾</span>
+                      <span className="text-base mt-0.5">📌</span>
                       <div>
-                        <p className="text-white/80 text-xs font-semibold">Cookies nécessaires persistants (si utilisés)</p>
-                        <p className="text-white/40 text-xs mt-0.5">Conservés pour une durée proportionnée à leur finalité</p>
+                        <p className="text-white/80 text-xs font-semibold">{t('cookiePage.s4PersistentTitle')}</p>
+                        <p className="text-white/40 text-xs mt-0.5">{t('cookiePage.s4PersistentDesc')}</p>
                       </div>
                     </div>
                   </div>
@@ -253,23 +250,28 @@ export default function CookiesPage() {
 
             {/* 5. Contact */}
             <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-rose-500/10 to-pink-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
               <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500/20 to-pink-500/20 border border-white/10 flex items-center justify-center">
-                    <span className="text-lg">📬</span>
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-white/10 flex items-center justify-center">
+                    <span className="text-lg">5️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    5. Contact
+                    {t('cookiePage.s5Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
-                  <p>
-                    Pour toute question :{' '}
-                    <a href="mailto:info@gims-consulting.be" className="text-pink-400 hover:text-pink-300 transition-colors font-medium">
-                      info@gims-consulting.be
-                    </a>
-                  </p>
+                  <p className="mb-3">{t('cookiePage.s5Text')}</p>
+                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 space-y-2">
+                    <p className="text-white/80 font-semibold">Gims Consulting SRL</p>
+                    <p>Avenue Louise 143/4, 1050 Bruxelles</p>
+                    <p>
+                      Email :{' '}
+                      <a href="mailto:info@gims-consulting.be" className="text-pink-400 hover:text-pink-300 transition-colors">
+                        info@gims-consulting.be
+                      </a>
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -281,19 +283,19 @@ export default function CookiesPage() {
             <Link href="/mentions-legales" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
               <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
               <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                ⚖️ Mentions légales →
+                ⚖️ {t('legalPage.linkLegal')} →
               </span>
             </Link>
             <Link href="/confidentialite" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
               <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
               <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                🔐 Politique de confidentialité →
+                🔐 {t('legalPage.linkConfidentiality')} →
               </span>
             </Link>
             <Link href="/cgvu" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
               <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
               <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                📜 CGVU →
+                📜 {t('legalPage.linkCGVU')} →
               </span>
             </Link>
           </div>
@@ -304,20 +306,20 @@ export default function CookiesPage() {
       <footer className="border-t border-white/5 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent text-sm">
-            © {new Date().getFullYear()} My Guide Digital — Gims Consulting SRL — Avenue Louise 143/4, 1050 Bruxelles
+            © {new Date().getFullYear()} {t('legalPage.footerCopyright')}
           </p>
           <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
-            <Link href="/" className="text-white/40 hover:text-white/70 text-xs transition-colors">Accueil</Link>
+            <Link href="/" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.footerHome')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/mentions-legales" className="text-white/40 hover:text-white/70 text-xs transition-colors">Mentions légales</Link>
+            <Link href="/mentions-legales" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkLegal')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/confidentialite" className="text-white/40 hover:text-white/70 text-xs transition-colors">Confidentialité</Link>
+            <Link href="/confidentialite" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkConfidentiality')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/cgvu" className="text-white/40 hover:text-white/70 text-xs transition-colors">CGVU</Link>
+            <Link href="/cgvu" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkCGVU')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/cookies" className="text-pink-400/60 hover:text-pink-400 text-xs transition-colors">Cookies</Link>
+            <Link href="/cookies" className="text-pink-400/60 hover:text-pink-400 text-xs transition-colors">{t('legalPage.linkCookies')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/contact" className="text-white/40 hover:text-white/70 text-xs transition-colors">Contact</Link>
+            <Link href="/contact" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkContact')}</Link>
           </div>
         </div>
       </footer>

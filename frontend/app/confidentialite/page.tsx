@@ -2,8 +2,47 @@
 
 import Link from 'next/link';
 import LanguageSelector from '@/components/LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 export default function ConfidentialitePage() {
+  const { t } = useTranslation();
+
+  const dataTypes = [
+    { icon: '👤', titleKey: 's2d1Title', descKey: 's2d1Desc', gradient: 'from-primary/20 to-pink-500/20' },
+    { icon: '📋', titleKey: 's2d2Title', descKey: 's2d2Desc', gradient: 'from-blue-500/20 to-indigo-500/20' },
+    { icon: '💳', titleKey: 's2d3Title', descKey: 's2d3Desc', gradient: 'from-emerald-500/20 to-teal-500/20' },
+    { icon: '📍', titleKey: 's2d4Title', descKey: 's2d4Desc', gradient: 'from-amber-500/20 to-orange-500/20' },
+    { icon: '📝', titleKey: 's2d5Title', descKey: 's2d5Desc', gradient: 'from-violet-500/20 to-purple-500/20' },
+  ];
+
+  const purposes = ['s3i1', 's3i2', 's3i3', 's3i4', 's3i5', 's3i6'];
+
+  const legalBases = [
+    { titleKey: 's4b1Title', descKey: 's4b1Desc', color: 'from-primary to-pink-500' },
+    { titleKey: 's4b2Title', descKey: 's4b2Desc', color: 'from-emerald-500 to-teal-500' },
+    { titleKey: 's4b3Title', descKey: 's4b3Desc', color: 'from-blue-500 to-indigo-500' },
+    { titleKey: 's4b4Title', descKey: 's4b4Desc', color: 'from-amber-500 to-orange-500' },
+  ];
+
+  const recipients = ['s5i1', 's5i2', 's5i3', 's5i4'];
+
+  const retentionPeriods = [
+    { icon: '👤', labelKey: 's7d1Label', valueKey: 's7d1Value' },
+    { icon: '📋', labelKey: 's7d2Label', valueKey: 's7d2Value' },
+    { icon: '📧', labelKey: 's7d3Label', valueKey: 's7d3Value' },
+    { icon: '🧾', labelKey: 's7d4Label', valueKey: 's7d4Value' },
+  ];
+
+  const rights = [
+    { icon: '👁️', titleKey: 's9r1Title', descKey: 's9r1Desc' },
+    { icon: '✏️', titleKey: 's9r2Title', descKey: 's9r2Desc' },
+    { icon: '🗑️', titleKey: 's9r3Title', descKey: 's9r3Desc' },
+    { icon: '⏸️', titleKey: 's9r4Title', descKey: 's9r4Desc' },
+    { icon: '✋', titleKey: 's9r5Title', descKey: 's9r5Desc' },
+    { icon: '📤', titleKey: 's9r6Title', descKey: 's9r6Desc' },
+    { icon: '🔄', titleKey: 's9r7Title', descKey: 's9r7Desc' },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       {/* Navigation */}
@@ -15,7 +54,7 @@ export default function ConfidentialitePage() {
           <div className="flex items-center gap-4">
             <LanguageSelector />
             <Link href="/" className="text-white/60 hover:text-white transition text-sm">
-              ← Retour à l&apos;accueil
+              {t('legalPage.backHome')}
             </Link>
           </div>
         </div>
@@ -29,19 +68,17 @@ export default function ConfidentialitePage() {
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] mb-6">
             <span>🔐</span>
-            <span className="text-white/60 text-sm font-medium">RGPD</span>
+            <span className="text-white/60 text-sm font-medium">{t('privacyPage.badge')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
-            Politique de{' '}
+            {t('privacyPage.title1')}{' '}
             <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-              Confidentialité
+              {t('privacyPage.title2')}
             </span>
           </h1>
-          <p className="text-white/50 text-base sm:text-lg max-w-2xl mx-auto">
-            My Guide Digital
-          </p>
+          <p className="text-white/50 text-base sm:text-lg max-w-2xl mx-auto">My Guide Digital</p>
           <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06]">
-            <span className="text-white/40 text-xs">Version : v1.4 — Dernière mise à jour : 16/02/2026</span>
+            <span className="text-white/40 text-xs">{t('privacyPage.version')}</span>
           </div>
         </div>
       </section>
@@ -60,19 +97,17 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">1️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Responsable du traitement
+                    {t('privacyPage.s1Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
-                  <p>Le responsable du traitement est :</p>
+                  <p>{t('privacyPage.s1Text')}</p>
                   <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 space-y-2">
                     <p className="text-white/80 font-semibold">Gims Consulting SRL</p>
                     <p>Avenue Louise 143/4, 1050 Bruxelles, Belgique — <strong className="text-white/80">BE0848903319</strong></p>
                     <p>Email : <a href="mailto:info@gims-consulting.be" className="text-pink-400 hover:text-pink-300 transition-colors">info@gims-consulting.be</a></p>
                   </div>
-                  <p className="text-white/40 text-xs italic">
-                    Aucun délégué à la protection des données (DPO) n&apos;est spécifiquement désigné à ce jour.
-                  </p>
+                  <p className="text-white/40 text-xs italic">{t('privacyPage.s1Note')}</p>
                 </div>
               </div>
             </div>
@@ -86,52 +121,21 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">2️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Données personnelles traitées
+                    {t('privacyPage.s2Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
-                  <p>Selon ton usage du Service, nous pouvons traiter :</p>
+                  <p>{t('privacyPage.s2Intro')}</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {[
-                      {
-                        icon: '👤',
-                        title: 'Données d\'identité et de contact',
-                        desc: 'Nom, prénom, email, téléphone, adresse, société, informations nécessaires à la gestion de compte',
-                        gradient: 'from-primary/20 to-pink-500/20',
-                      },
-                      {
-                        icon: '📋',
-                        title: 'Données de compte et d\'usage (logs)',
-                        desc: 'Identifiants de compte, journaux techniques (logs), adresse IP, informations de session, navigateur/appareil, évènements techniques liés à la sécurité',
-                        gradient: 'from-blue-500/20 to-indigo-500/20',
-                      },
-                      {
-                        icon: '💳',
-                        title: 'Données de facturation et paiement',
-                        desc: 'Informations de facturation (raison sociale, adresse, TVA, historique). Données de paiement traitées par Stripe / Bancontact. Nous ne stockons pas les données de carte.',
-                        gradient: 'from-emerald-500/20 to-teal-500/20',
-                      },
-                      {
-                        icon: '📍',
-                        title: 'Localisation',
-                        desc: 'Données de localisation (si fournies par l\'utilisateur ou l\'appareil selon paramètres)',
-                        gradient: 'from-amber-500/20 to-orange-500/20',
-                      },
-                      {
-                        icon: '📝',
-                        title: 'Contenus',
-                        desc: 'Contenus saisis/importés (textes, images, documents), avis/UGC (si activé)',
-                        gradient: 'from-violet-500/20 to-purple-500/20',
-                      },
-                    ].map((item, idx) => (
+                    {dataTypes.map((item, idx) => (
                       <div key={idx} className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-2">
                           <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${item.gradient} border border-white/10 flex items-center justify-center`}>
                             <span className="text-sm">{item.icon}</span>
                           </div>
-                          <p className="text-white/80 text-xs font-semibold">{item.title}</p>
+                          <p className="text-white/80 text-xs font-semibold">{t(`privacyPage.${item.titleKey}`)}</p>
                         </div>
-                        <p className="text-white/40 text-xs leading-relaxed">{item.desc}</p>
+                        <p className="text-white/40 text-xs leading-relaxed">{t(`privacyPage.${item.descKey}`)}</p>
                       </div>
                     ))}
                   </div>
@@ -148,23 +152,16 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">3️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Finalités des traitements
+                    {t('privacyPage.s3Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
-                  <p className="mb-3">Nous traitons ces données pour :</p>
+                  <p className="mb-3">{t('privacyPage.s3Intro')}</p>
                   <ul className="space-y-2.5">
-                    {[
-                      'Créer et gérer le compte Client et les accès Utilisateurs',
-                      'Fournir le Service et ses fonctionnalités',
-                      'Assurer le support et la relation client',
-                      'Exécuter la facturation, gérer les abonnements et obligations comptables',
-                      'Garantir la sécurité, prévenir la fraude et gérer les incidents',
-                      'Communiquer (emails de service) et, si applicable, envoyer des communications marketing/newsletter',
-                    ].map((item, idx) => (
+                    {purposes.map((key, idx) => (
                       <li key={idx} className="flex items-start gap-2.5">
                         <span className="text-emerald-400 mt-0.5">✓</span>
-                        <span>{item}</span>
+                        <span>{t(`privacyPage.${key}`)}</span>
                       </li>
                     ))}
                   </ul>
@@ -181,23 +178,18 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">4️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Bases légales
+                    {t('privacyPage.s4Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {[
-                      { title: 'Exécution du contrat', desc: 'Fourniture du Service, gestion du compte, support, facturation', color: 'from-primary to-pink-500' },
-                      { title: 'Obligation légale', desc: 'Obligations comptables/fiscales', color: 'from-emerald-500 to-teal-500' },
-                      { title: 'Intérêt légitime', desc: 'Sécurité, prévention fraude, amélioration du Service, et marketing direct B2B avec droit d\'opposition', color: 'from-blue-500 to-indigo-500' },
-                      { title: 'Consentement', desc: 'Lorsque requis (ex. inscription à la newsletter, ou autres traitements spécifiques)', color: 'from-amber-500 to-orange-500' },
-                    ].map((item, idx) => (
+                    {legalBases.map((item, idx) => (
                       <div key={idx} className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-2">
                           <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${item.color}`}></div>
-                          <p className="text-white/80 text-xs font-semibold">{item.title}</p>
+                          <p className="text-white/80 text-xs font-semibold">{t(`privacyPage.${item.titleKey}`)}</p>
                         </div>
-                        <p className="text-white/40 text-xs leading-relaxed">{item.desc}</p>
+                        <p className="text-white/40 text-xs leading-relaxed">{t(`privacyPage.${item.descKey}`)}</p>
                       </div>
                     ))}
                   </div>
@@ -214,21 +206,16 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">5️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Destinataires et sous-traitants
+                    {t('privacyPage.s5Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
-                  <p className="mb-3">Les données peuvent être accessibles :</p>
+                  <p className="mb-3">{t('privacyPage.s5Intro')}</p>
                   <ul className="space-y-2.5">
-                    {[
-                      'Aux personnes habilitées chez Gims Consulting SRL',
-                      'À nos sous-traitants techniques nécessaires (hébergement, infrastructure)',
-                      'Aux prestataires de paiement (Stripe / Bancontact)',
-                      'Aux autorités compétentes si la loi l\'exige ou pour la défense de nos droits',
-                    ].map((item, idx) => (
+                    {recipients.map((key, idx) => (
                       <li key={idx} className="flex items-start gap-2.5">
                         <span className="text-amber-400 mt-0.5">→</span>
-                        <span>{item}</span>
+                        <span>{t(`privacyPage.${key}`)}</span>
                       </li>
                     ))}
                   </ul>
@@ -245,14 +232,11 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">6️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Transferts hors Union européenne
+                    {t('privacyPage.s6Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
-                  <p>
-                    Nous n&apos;organisons pas de transferts hors Union européenne dans le cadre normal du Service, 
-                    sur la base des informations communiquées.
-                  </p>
+                  <p>{t('privacyPage.s6Text')}</p>
                 </div>
               </div>
             </div>
@@ -266,23 +250,18 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">7️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Durées de conservation
+                    {t('privacyPage.s7Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
-                  <p className="mb-4">Nous conservons les données uniquement le temps nécessaire :</p>
+                  <p className="mb-4">{t('privacyPage.s7Intro')}</p>
                   <div className="space-y-3">
-                    {[
-                      { icon: '👤', label: 'Données de compte', value: 'Durée de la relation contractuelle, puis 3 mois après la résiliation (sauf obligation légale contraire ou nécessité de preuve/gestion litige)' },
-                      { icon: '📋', label: 'Logs techniques / sécurité', value: '12 mois' },
-                      { icon: '📧', label: 'Newsletter', value: 'Jusqu\'à désinscription' },
-                      { icon: '🧾', label: 'Facturation / comptabilité', value: 'Durée imposée par la législation applicable (comptable/fiscale)' },
-                    ].map((item, idx) => (
+                    {retentionPeriods.map((item, idx) => (
                       <div key={idx} className="flex items-start gap-3 bg-white/[0.02] border border-white/[0.04] rounded-lg p-3">
                         <span className="text-base mt-0.5">{item.icon}</span>
                         <div>
-                          <p className="text-white/80 text-xs font-semibold">{item.label}</p>
-                          <p className="text-white/40 text-xs mt-0.5">{item.value}</p>
+                          <p className="text-white/80 text-xs font-semibold">{t(`privacyPage.${item.labelKey}`)}</p>
+                          <p className="text-white/40 text-xs mt-0.5">{t(`privacyPage.${item.valueKey}`)}</p>
                         </div>
                       </div>
                     ))}
@@ -300,14 +279,11 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">8️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Sécurité
+                    {t('privacyPage.s8Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
-                  <p>
-                    Nous mettons en œuvre des mesures techniques et organisationnelles raisonnables pour protéger les 
-                    données (contrôle d&apos;accès, mesures de sécurité adaptées, sauvegardes, prévention des accès non autorisés).
-                  </p>
+                  <p>{t('privacyPage.s8Text')}</p>
                 </div>
               </div>
             </div>
@@ -321,32 +297,24 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">9️⃣</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Droits des personnes
+                    {t('privacyPage.s9Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
-                  <p>Tu disposes, dans les conditions prévues par le RGPD, des droits suivants :</p>
+                  <p>{t('privacyPage.s9Intro')}</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {[
-                      { icon: '👁️', title: 'Accès', desc: 'Accéder aux données que nous détenons sur toi' },
-                      { icon: '✏️', title: 'Rectification', desc: 'Corriger tes données inexactes ou incomplètes' },
-                      { icon: '🗑️', title: 'Effacement', desc: 'Demander la suppression de tes données' },
-                      { icon: '⏸️', title: 'Limitation', desc: 'Restreindre le traitement de tes données' },
-                      { icon: '✋', title: 'Opposition', desc: 'T\'opposer au traitement (notamment marketing direct)' },
-                      { icon: '📤', title: 'Portabilité', desc: 'Récupérer tes données dans un format structuré (dans certains cas)' },
-                      { icon: '🔄', title: 'Retrait du consentement', desc: 'Lorsque le traitement est basé sur le consentement' },
-                    ].map((right, idx) => (
+                    {rights.map((right, idx) => (
                       <div key={idx} className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-3">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-sm">{right.icon}</span>
-                          <p className="text-white/80 text-xs font-semibold">{right.title}</p>
+                          <p className="text-white/80 text-xs font-semibold">{t(`privacyPage.${right.titleKey}`)}</p>
                         </div>
-                        <p className="text-white/40 text-xs">{right.desc}</p>
+                        <p className="text-white/40 text-xs">{t(`privacyPage.${right.descKey}`)}</p>
                       </div>
                     ))}
                   </div>
                   <p className="mt-3">
-                    Exercice des droits : par email à{' '}
+                    {t('privacyPage.s9Contact')}{' '}
                     <a href="mailto:info@gims-consulting.be" className="text-pink-400 hover:text-pink-300 transition-colors font-medium">
                       info@gims-consulting.be
                     </a>
@@ -364,21 +332,19 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">🔟</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Réclamation (Belgique)
+                    {t('privacyPage.s10Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
-                  <p>Tu peux introduire une réclamation auprès de l&apos;Autorité de protection des données (APD) :</p>
+                  <p>{t('privacyPage.s10Intro')}</p>
                   <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 space-y-2">
                     <div className="flex items-center gap-2">
                       <span>📍</span>
-                      <span>Rue de la Presse 35, 1000 Bruxelles</span>
+                      <span>{t('privacyPage.s10Address')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span>📧</span>
-                      <a href="mailto:contact@apd-gba.be" className="text-pink-400 hover:text-pink-300 transition-colors">
-                        contact@apd-gba.be
-                      </a>
+                      <a href="mailto:contact@apd-gba.be" className="text-pink-400 hover:text-pink-300 transition-colors">contact@apd-gba.be</a>
                     </div>
                   </div>
                 </div>
@@ -394,19 +360,14 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">📬</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Newsletter / prospection (simple opt-in)
+                    {t('privacyPage.s11Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
+                  <p>{t('privacyPage.s11Text1')}</p>
                   <p>
-                    Si tu t&apos;inscris à notre newsletter, ton inscription est effective dès la demande (simple opt-in).
-                  </p>
-                  <p>
-                    Tu peux te désinscrire à tout moment via le lien de désinscription présent dans nos emails ou en 
-                    écrivant à{' '}
-                    <a href="mailto:info@gims-consulting.be" className="text-pink-400 hover:text-pink-300 transition-colors">
-                      info@gims-consulting.be
-                    </a>.
+                    {t('privacyPage.s11Text2')}{' '}
+                    <a href="mailto:info@gims-consulting.be" className="text-pink-400 hover:text-pink-300 transition-colors">info@gims-consulting.be</a>.
                   </p>
                 </div>
               </div>
@@ -421,14 +382,11 @@ export default function ConfidentialitePage() {
                     <span className="text-lg">🔄</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Mise à jour
+                    {t('privacyPage.s12Title')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
-                  <p>
-                    Nous pouvons modifier cette politique pour refléter les évolutions du Service, de nos prestataires 
-                    ou du cadre légal. La date de mise à jour figure en tête du document.
-                  </p>
+                  <p>{t('privacyPage.s12Text')}</p>
                 </div>
               </div>
             </div>
@@ -440,19 +398,19 @@ export default function ConfidentialitePage() {
             <Link href="/mentions-legales" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
               <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
               <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                ⚖️ Mentions légales →
+                ⚖️ {t('legalPage.linkLegal')} →
               </span>
             </Link>
             <Link href="/cgvu" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
               <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
               <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                📜 CGVU →
+                📜 {t('legalPage.linkCGVU')} →
               </span>
             </Link>
             <Link href="/cookies" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
               <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
               <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                🍪 Politique Cookies →
+                🍪 {t('legalPage.linkCookies')} →
               </span>
             </Link>
           </div>
@@ -463,20 +421,20 @@ export default function ConfidentialitePage() {
       <footer className="border-t border-white/5 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent text-sm">
-            © {new Date().getFullYear()} My Guide Digital — Gims Consulting SRL — Avenue Louise 143/4, 1050 Bruxelles
+            © {new Date().getFullYear()} {t('legalPage.footerCopyright')}
           </p>
           <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
-            <Link href="/" className="text-white/40 hover:text-white/70 text-xs transition-colors">Accueil</Link>
+            <Link href="/" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.footerHome')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/mentions-legales" className="text-white/40 hover:text-white/70 text-xs transition-colors">Mentions légales</Link>
+            <Link href="/mentions-legales" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkLegal')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/confidentialite" className="text-pink-400/60 hover:text-pink-400 text-xs transition-colors">Confidentialité</Link>
+            <Link href="/confidentialite" className="text-pink-400/60 hover:text-pink-400 text-xs transition-colors">{t('legalPage.linkConfidentiality')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/cgvu" className="text-white/40 hover:text-white/70 text-xs transition-colors">CGVU</Link>
+            <Link href="/cgvu" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkCGVU')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/cookies" className="text-white/40 hover:text-white/70 text-xs transition-colors">Cookies</Link>
+            <Link href="/cookies" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkCookies')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/contact" className="text-white/40 hover:text-white/70 text-xs transition-colors">Contact</Link>
+            <Link href="/contact" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkContact')}</Link>
           </div>
         </div>
       </footer>

@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import LanguageSelector from '@/components/LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 export default function MentionsLegalesPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       {/* Navigation */}
@@ -15,7 +18,7 @@ export default function MentionsLegalesPage() {
           <div className="flex items-center gap-4">
             <LanguageSelector />
             <Link href="/" className="text-white/60 hover:text-white transition text-sm">
-              ← Retour à l&apos;accueil
+              {t('legalPage.backHome')}
             </Link>
           </div>
         </div>
@@ -29,19 +32,19 @@ export default function MentionsLegalesPage() {
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] mb-6">
             <span>⚖️</span>
-            <span className="text-white/60 text-sm font-medium">Informations légales</span>
+            <span className="text-white/60 text-sm font-medium">{t('legalPage.badge')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
-            Mentions{' '}
+            {t('legalPage.title1')}{' '}
             <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-              Légales
+              {t('legalPage.title2')}
             </span>
           </h1>
           <p className="text-white/50 text-base sm:text-lg max-w-2xl mx-auto">
             My Guide Digital
           </p>
           <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06]">
-            <span className="text-white/40 text-xs">Version : v1.4 — Dernière mise à jour : 16/02/2026</span>
+            <span className="text-white/40 text-xs">{t('legalPage.version')}</span>
           </div>
         </div>
       </section>
@@ -60,19 +63,19 @@ export default function MentionsLegalesPage() {
                     <span className="text-lg">🏢</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Éditeur du site et de l&apos;application
+                    {t('legalPage.editorTitle')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
                   <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-5 space-y-2.5">
-                    <p className="text-white/80 font-semibold text-base">Gims Consulting SRL</p>
+                    <p className="text-white/80 font-semibold text-base">{t('legalPage.editorCompany')}</p>
                     <div className="flex items-center gap-2">
                       <span>📍</span>
-                      <span>Avenue Louise 143/4, 1050 Bruxelles, Belgique</span>
+                      <span>{t('legalPage.editorAddress')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span>🏛️</span>
-                      <span>BCE / TVA : <strong className="text-white/80">BE0848903319</strong></span>
+                      <span>{t('legalPage.editorVAT')} <strong className="text-white/80">BE0848903319</strong></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span>📧</span>
@@ -82,7 +85,7 @@ export default function MentionsLegalesPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span>👤</span>
-                      <span>Représentant : <strong className="text-white/80">Libert Patrice</strong></span>
+                      <span>{t('legalPage.editorRepresentative')} <strong className="text-white/80">{t('legalPage.editorRepName')}</strong></span>
                     </div>
                   </div>
                 </div>
@@ -98,18 +101,18 @@ export default function MentionsLegalesPage() {
                     <span className="text-lg">🌐</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Hébergement
+                    {t('legalPage.hostingTitle')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
                   <p>
-                    Le site et l&apos;application sont hébergés par <strong className="text-white/80">Hostinger France</strong>.
+                    {t('legalPage.hostingText')} <strong className="text-white/80">{t('legalPage.hostingProvider')}</strong>.
                   </p>
                   <p>
-                    Contact : <a href="mailto:info@gims-consulting.be" className="text-pink-400 hover:text-pink-300 transition-colors">info@gims-consulting.be</a>
+                    {t('legalPage.hostingContact')} <a href="mailto:info@gims-consulting.be" className="text-pink-400 hover:text-pink-300 transition-colors">info@gims-consulting.be</a>
                   </p>
                   <p className="text-white/40 text-xs italic">
-                    (contact administratif — pour demandes relatives à l&apos;hébergement, l&apos;Éditeur fera l&apos;intermédiaire avec l&apos;hébergeur).
+                    {t('legalPage.hostingNote')}
                   </p>
                 </div>
               </div>
@@ -124,18 +127,12 @@ export default function MentionsLegalesPage() {
                     <span className="text-lg">©️</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Propriété intellectuelle
+                    {t('legalPage.ipTitle')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
-                  <p>
-                    L&apos;ensemble des éléments du site et de l&apos;application (logiciel, interface, design, textes, logos, 
-                    marques, bases de données, documentation) est protégé par le droit de la propriété intellectuelle.
-                  </p>
-                  <p>
-                    Toute reproduction, représentation, adaptation, extraction ou réutilisation, totale ou partielle, 
-                    sans autorisation écrite préalable de l&apos;Éditeur est interdite.
-                  </p>
+                  <p>{t('legalPage.ipText1')}</p>
+                  <p>{t('legalPage.ipText2')}</p>
                 </div>
               </div>
             </div>
@@ -149,15 +146,11 @@ export default function MentionsLegalesPage() {
                     <span className="text-lg">⚠️</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Responsabilité
+                    {t('legalPage.responsibilityTitle')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed space-y-3">
-                  <p>
-                    My Guide Digital est un outil de création et de gestion de contenus (livrets d&apos;accueil). 
-                    L&apos;Éditeur ne saurait être tenu responsable des contenus saisis, importés ou publiés par les 
-                    utilisateurs, ni des conséquences liées à leur usage.
-                  </p>
+                  <p>{t('legalPage.responsibilityText')}</p>
                 </div>
               </div>
             </div>
@@ -171,12 +164,12 @@ export default function MentionsLegalesPage() {
                     <span className="text-lg">📬</span>
                   </div>
                   <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Contact
+                    {t('legalPage.contactTitle')}
                   </h2>
                 </div>
                 <div className="text-white/60 text-sm leading-relaxed">
                   <p>
-                    Pour toute question :{' '}
+                    {t('legalPage.contactText')}{' '}
                     <a href="mailto:info@gims-consulting.be" className="text-pink-400 hover:text-pink-300 transition-colors font-medium">
                       info@gims-consulting.be
                     </a>
@@ -192,19 +185,19 @@ export default function MentionsLegalesPage() {
             <Link href="/confidentialite" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
               <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
               <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                🔐 Politique de confidentialité →
+                🔐 {t('legalPage.linkPrivacy')} →
               </span>
             </Link>
             <Link href="/cgvu" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
               <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
               <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                📜 CGVU →
+                📜 {t('legalPage.linkCGVU')} →
               </span>
             </Link>
             <Link href="/cookies" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
               <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
               <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                🍪 Politique Cookies →
+                🍪 {t('legalPage.linkCookies')} →
               </span>
             </Link>
           </div>
@@ -215,20 +208,20 @@ export default function MentionsLegalesPage() {
       <footer className="border-t border-white/5 py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent text-sm">
-            © {new Date().getFullYear()} My Guide Digital — Gims Consulting SRL — Avenue Louise 143/4, 1050 Bruxelles
+            © {new Date().getFullYear()} {t('legalPage.footerCopyright')}
           </p>
           <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
-            <Link href="/" className="text-white/40 hover:text-white/70 text-xs transition-colors">Accueil</Link>
+            <Link href="/" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.footerHome')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/mentions-legales" className="text-pink-400/60 hover:text-pink-400 text-xs transition-colors">Mentions légales</Link>
+            <Link href="/mentions-legales" className="text-pink-400/60 hover:text-pink-400 text-xs transition-colors">{t('legalPage.linkLegal')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/confidentialite" className="text-white/40 hover:text-white/70 text-xs transition-colors">Confidentialité</Link>
+            <Link href="/confidentialite" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkConfidentiality')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/cgvu" className="text-white/40 hover:text-white/70 text-xs transition-colors">CGVU</Link>
+            <Link href="/cgvu" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkCGVU')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/cookies" className="text-white/40 hover:text-white/70 text-xs transition-colors">Cookies</Link>
+            <Link href="/cookies" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkCookies')}</Link>
             <span className="text-white/20">|</span>
-            <Link href="/contact" className="text-white/40 hover:text-white/70 text-xs transition-colors">Contact</Link>
+            <Link href="/contact" className="text-white/40 hover:text-white/70 text-xs transition-colors">{t('legalPage.linkContact')}</Link>
           </div>
         </div>
       </footer>
