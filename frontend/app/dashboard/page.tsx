@@ -130,6 +130,16 @@ export default function DashboardPage() {
     }
   };
 
+  const handleDuplicate = async (livretId: string) => {
+    try {
+      await livretsApi.duplicate(livretId);
+      toast.success(t('dashboard.bookletDuplicated', 'Livret dupliqué avec succès'));
+      loadData();
+    } catch (err: any) {
+      toast.error(t('dashboard.duplicateError', 'Erreur lors de la duplication du livret'));
+    }
+  };
+
   const handleToggleActive = async (livret: Livret) => {
     try {
       await livretsApi.update(livret.id, { isActive: !livret.isActive });
@@ -653,6 +663,13 @@ export default function DashboardPage() {
                             📊
                           </button>
                         </Link>
+                        <button
+                          onClick={() => handleDuplicate(livret.id)}
+                          className="px-3 py-2 rounded-lg text-sm border border-blue-200 text-blue-500 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
+                          title={t('dashboard.duplicateBooklet', 'Dupliquer le livret')}
+                        >
+                          📋
+                        </button>
                         <button
                           onClick={() => handleDelete(livret.id)}
                           className="px-3 py-2 rounded-lg text-sm border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 transition-all duration-300"
