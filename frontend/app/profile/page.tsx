@@ -124,10 +124,26 @@ export default function ProfilePage() {
     const photoPath = formData.profilePhoto;
     if (!photoPath) return '';
     if (photoPath.startsWith('http')) return photoPath;
-    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const isLocalNetwork = hostname !== 'localhost' && hostname !== '127.0.0.1';
-    const backendHost = isLocalNetwork ? hostname : 'localhost';
-    return `http://${backendHost}:3001${photoPath}`;
+    
+    if (typeof window === 'undefined') return photoPath;
+    
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    
+    // Localhost → backend direct sur port 3001
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `http://localhost:3001${photoPath}`;
+    }
+    
+    // Production (nom de domaine) → passer par /api/uploads via nginx
+    const isIp = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname);
+    if (!isIp) {
+      // photoPath = "/uploads/profile-xxx.jpg" → on ajoute /api devant
+      return `${protocol}//${hostname}/api${photoPath}`;
+    }
+    
+    // IP locale (réseau local) → backend direct sur port 3001
+    return `${protocol}//${hostname}:3001${photoPath}`;
   };
 
   const completionFields = [

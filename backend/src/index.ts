@@ -217,6 +217,8 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 // Servir les fichiers statiques (uploads)
 const uploadDir = process.env.UPLOAD_DIR || './uploads';
 app.use('/uploads', express.static(uploadDir));
+// Aussi servir via /api/uploads pour que le proxy nginx puisse y accéder en production
+app.use('/api/uploads', express.static(uploadDir));
 
 // Health check
 app.get('/health', (req: express.Request, res: express.Response) => {
