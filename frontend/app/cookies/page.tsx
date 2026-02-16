@@ -1,11 +1,28 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import LanguageSelector from '@/components/LanguageSelector';
 import { useTranslation } from 'react-i18next';
 
 export default function CookiesPage() {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || !ready) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-400">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   const cookieTable = [
     { cookieKey: 's2aCookie1', purposeKey: 's2aPurpose1', durationKey: 's2aDuration1' },
