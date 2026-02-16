@@ -670,6 +670,68 @@
       "pricingCta": "Voir nos tarifs"
     }
   },
+  "tarifs": {
+    "badge": {
+      "trial": "Essai gratuit de 14 jours, sans carte bancaire"
+    },
+    "hero": {
+      "titleLine1": "Sélectionnez",
+      "titleLine2": "votre type d'hébergement",
+      "subtitle": "Sélectionnez votre hébergement pour afficher le tarif associé.",
+      "trial": "Profitez d'un essai gratuit, sans carte bancaire."
+    },
+    "types": {
+      "airbnb": {
+        "title": "Hôtes Airbnb, gîtes & chambres d'hôtes",
+        "desc": "Offrez une expérience fluide et boostez vos avis 5 étoiles grâce à un livret d'accueil digital personnalisé."
+      },
+      "hotel": {
+        "title": "Hôtels",
+        "desc": "Centralisez les infos et digitalisez votre accueil pour une expérience client moderne et professionnelle."
+      },
+      "conciergerie": {
+        "title": "Conciergeries & gestionnaires de location",
+        "desc": "Gagnez du temps avec un outil simple et efficace pour gérer l'accueil de tous vos biens."
+      },
+      "camping": {
+        "title": "Campings & résidences de tourisme",
+        "desc": "Simplifiez la communication avec vos vacanciers et réduisez votre coût d'impression."
+      },
+      "seePricing": "Voir nos tarifs →"
+    },
+    "included": {
+      "badge": "✅ Tout compris",
+      "f1": { "title": "QR Code personnalisé", "desc": "Générez un QR code unique pour chaque livret" },
+      "f2": { "title": "Chatbot IA intégré", "desc": "Assistant intelligent pour vos voyageurs" },
+      "f3": { "title": "Personnalisation complète", "desc": "Couleurs, logo, style à votre image" },
+      "f4": { "title": "Statistiques détaillées", "desc": "Suivez les consultations en temps réel" },
+      "f5": { "title": "Multilingue", "desc": "Traduction automatique pour vos voyageurs internationaux" },
+      "f6": { "title": "17 modules disponibles", "desc": "WiFi, règles, activités, restaurants et bien plus" },
+      "f7": { "title": "Mise à jour instantanée", "desc": "Modifiez en temps réel, vos voyageurs voient les changements" },
+      "f8": { "title": "Affiche imprimable", "desc": "Générez une affiche avec QR code pour votre logement" },
+      "f9": { "title": "Carte de visite digitale", "desc": "Partagez vos coordonnées professionnelles" }
+    },
+    "features": {
+      "title": "Tout est inclus",
+      "subtitle": "Pas de fonctionnalités cachées, pas de suppléments. Tout est inclus dans chaque plan."
+    },
+    "demo": {
+      "title": "Vous souhaitez une démonstration ?",
+      "desc": "En moins de 30 minutes, découvrez l'outil et permettez à vos équipes une prise en main immédiate.",
+      "cta": "Demander une démo"
+    },
+    "migration": {
+      "title": "On s'occupe de tout",
+      "desc": "Vous avez un livret papier ou un document existant ? Envoyez-le nous et nous le transformons en livret digital complet, traduit et enrichi de recommandations locales.",
+      "cta": "Nous contacter"
+    },
+    "cta": {
+      "title": "Prêt à transformer l'expérience de vos voyageurs ?",
+      "subtitle": "Rejoignez des dizaines d'établissements qui font confiance à notre plateforme",
+      "cta": "Testez notre App gratuitement",
+      "login": "J'ai déjà un compte"
+    }
+  },
   "airbnb": {
     "title": "Pour les hôtes Airbnb",
     "subtitle": "Simplifiez la gestion de vos locations et offrez une expérience exceptionnelle à vos voyageurs",

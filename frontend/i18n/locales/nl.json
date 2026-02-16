@@ -660,6 +660,68 @@
       "pricingCta": "Onze prijzen bekijken"
     }
   },
+  "tarifs": {
+    "badge": {
+      "trial": "14 dagen gratis uitproberen, geen creditcard vereist"
+    },
+    "hero": {
+      "titleLine1": "Selecteer",
+      "titleLine2": "uw type accommodatie",
+      "subtitle": "Selecteer uw accommodatie om het bijbehorende tarief te bekijken.",
+      "trial": "Profiteer van een gratis proefperiode, zonder creditcard."
+    },
+    "types": {
+      "airbnb": {
+        "title": "Airbnb-gastheren, vakantiehuizen & B&B's",
+        "desc": "Bied een soepele ervaring en verhoog uw 5-sterrenbeoordelingen met een gepersonaliseerd digitaal welkomstboek."
+      },
+      "hotel": {
+        "title": "Hotels",
+        "desc": "Centraliseer informatie en digitaliseer uw ontvangst voor een moderne en professionele gastervaring."
+      },
+      "conciergerie": {
+        "title": "Conciërgeservices & verhuurbeheerders",
+        "desc": "Bespaar tijd met een eenvoudig en effectief hulpmiddel om het onthaal van al uw panden te beheren."
+      },
+      "camping": {
+        "title": "Campings & vakantieresorts",
+        "desc": "Vereenvoudig de communicatie met uw vakantiegangers en verlaag uw drukkosten."
+      },
+      "seePricing": "Bekijk onze tarieven →"
+    },
+    "included": {
+      "badge": "✅ Alles inbegrepen",
+      "f1": { "title": "Gepersonaliseerde QR-code", "desc": "Genereer een unieke QR-code voor elk boek" },
+      "f2": { "title": "Geïntegreerde AI-chatbot", "desc": "Intelligente assistent voor uw reizigers" },
+      "f3": { "title": "Volledige personalisatie", "desc": "Kleuren, logo, stijl naar uw beeld" },
+      "f4": { "title": "Gedetailleerde statistieken", "desc": "Volg de raadplegingen in real-time" },
+      "f5": { "title": "Meertalig", "desc": "Automatische vertaling voor uw internationale reizigers" },
+      "f6": { "title": "17 beschikbare modules", "desc": "WiFi, regels, activiteiten, restaurants en nog veel meer" },
+      "f7": { "title": "Directe update", "desc": "Bewerk in real-time, uw reizigers zien de wijzigingen" },
+      "f8": { "title": "Afdrukbare poster", "desc": "Genereer een poster met QR-code voor uw accommodatie" },
+      "f9": { "title": "Digitaal visitekaartje", "desc": "Deel uw professionele contactgegevens" }
+    },
+    "features": {
+      "title": "Alles is inbegrepen",
+      "subtitle": "Geen verborgen functies, geen toeslagen. Alles is inbegrepen in elk plan."
+    },
+    "demo": {
+      "title": "Wilt u een demonstratie?",
+      "desc": "In minder dan 30 minuten ontdekt u het hulpmiddel en laat u uw teams onmiddellijk aan de slag gaan.",
+      "cta": "Een demo aanvragen"
+    },
+    "migration": {
+      "title": "Wij regelen alles",
+      "desc": "Heeft u een papieren boek of een bestaand document? Stuur het naar ons en wij maken er een compleet digitaal boek van, vertaald en verrijkt met lokale aanbevelingen.",
+      "cta": "Neem contact op"
+    },
+    "cta": {
+      "title": "Klaar om de ervaring van uw reizigers te transformeren?",
+      "subtitle": "Sluit u aan bij tientallen instellingen die op ons platform vertrouwen",
+      "cta": "Probeer onze App gratis",
+      "login": "Ik heb al een account"
+    }
+  },
   "airbnb": {
     "title": "Voor Airbnb-hosts",
     "subtitle": "Vereenvoudig uw verhuurbeheer en bied uw reizigers een uitzonderlijke ervaring",

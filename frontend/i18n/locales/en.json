@@ -650,6 +650,68 @@
       "pricingCta": "See our pricing"
     }
   },
+  "tarifs": {
+    "badge": {
+      "trial": "Free 14-day trial, no credit card required"
+    },
+    "hero": {
+      "titleLine1": "Select",
+      "titleLine2": "your accommodation type",
+      "subtitle": "Select your accommodation to see the associated pricing.",
+      "trial": "Enjoy a free trial, no credit card required."
+    },
+    "types": {
+      "airbnb": {
+        "title": "Airbnb Hosts, guesthouses & B&Bs",
+        "desc": "Offer a seamless experience and boost your 5-star reviews with a personalized digital welcome booklet."
+      },
+      "hotel": {
+        "title": "Hotels",
+        "desc": "Centralize information and digitize your welcome for a modern and professional guest experience."
+      },
+      "conciergerie": {
+        "title": "Concierge services & rental managers",
+        "desc": "Save time with a simple and effective tool to manage the welcome of all your properties."
+      },
+      "camping": {
+        "title": "Campsites & holiday resorts",
+        "desc": "Simplify communication with your vacationers and reduce your printing costs."
+      },
+      "seePricing": "See our pricing →"
+    },
+    "included": {
+      "badge": "✅ All included",
+      "f1": { "title": "Custom QR Code", "desc": "Generate a unique QR code for each booklet" },
+      "f2": { "title": "Integrated AI Chatbot", "desc": "Intelligent assistant for your travelers" },
+      "f3": { "title": "Full customization", "desc": "Colors, logo, style matching your brand" },
+      "f4": { "title": "Detailed statistics", "desc": "Track consultations in real time" },
+      "f5": { "title": "Multilingual", "desc": "Automatic translation for your international travelers" },
+      "f6": { "title": "17 available modules", "desc": "WiFi, rules, activities, restaurants and much more" },
+      "f7": { "title": "Instant updates", "desc": "Edit in real time, your travelers see the changes" },
+      "f8": { "title": "Printable poster", "desc": "Generate a poster with QR code for your accommodation" },
+      "f9": { "title": "Digital business card", "desc": "Share your professional contact details" }
+    },
+    "features": {
+      "title": "Everything is included",
+      "subtitle": "No hidden features, no extras. Everything is included in every plan."
+    },
+    "demo": {
+      "title": "Would you like a demonstration?",
+      "desc": "In less than 30 minutes, discover the tool and let your teams get started immediately.",
+      "cta": "Request a demo"
+    },
+    "migration": {
+      "title": "We take care of everything",
+      "desc": "Do you have a paper booklet or an existing document? Send it to us and we will transform it into a complete digital booklet, translated and enriched with local recommendations.",
+      "cta": "Contact us"
+    },
+    "cta": {
+      "title": "Ready to transform your travelers' experience?",
+      "subtitle": "Join dozens of establishments that trust our platform",
+      "cta": "Try our App for free",
+      "login": "I already have an account"
+    }
+  },
   "airbnb": {
     "title": "For Airbnb hosts",
     "subtitle": "Simplify your rental management and offer an exceptional experience to your travelers",

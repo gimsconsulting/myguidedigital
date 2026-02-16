@@ -49,15 +49,15 @@ const accommodationTypes = [
 ];
 
 const includedFeatures = [
-  { icon: '📱', title: 'QR Code personnalisé', desc: 'Générez un QR code unique pour chaque livret' },
-  { icon: '🤖', title: 'Chatbot IA intégré', desc: 'Assistant intelligent pour vos voyageurs' },
-  { icon: '🎨', title: 'Personnalisation complète', desc: 'Couleurs, logo, style à votre image' },
-  { icon: '📊', title: 'Statistiques détaillées', desc: 'Suivez les consultations en temps réel' },
-  { icon: '🌍', title: 'Multilingue', desc: 'Traduction automatique pour vos voyageurs internationaux' },
-  { icon: '📝', title: '17 modules disponibles', desc: 'WiFi, règles, activités, restaurants et bien plus' },
-  { icon: '🔄', title: 'Mise à jour instantanée', desc: 'Modifiez en temps réel, vos voyageurs voient les changements' },
-  { icon: '📋', title: 'Affiche imprimable', desc: 'Générez une affiche avec QR code pour votre logement' },
-  { icon: '💼', title: 'Carte de visite digitale', desc: 'Partagez vos coordonnées professionnelles' },
+  { icon: '📱', titleKey: 'tarifs.included.f1.title', titleDefault: 'QR Code personnalisé', descKey: 'tarifs.included.f1.desc', descDefault: 'Générez un QR code unique pour chaque livret' },
+  { icon: '🤖', titleKey: 'tarifs.included.f2.title', titleDefault: 'Chatbot IA intégré', descKey: 'tarifs.included.f2.desc', descDefault: 'Assistant intelligent pour vos voyageurs' },
+  { icon: '🎨', titleKey: 'tarifs.included.f3.title', titleDefault: 'Personnalisation complète', descKey: 'tarifs.included.f3.desc', descDefault: 'Couleurs, logo, style à votre image' },
+  { icon: '📊', titleKey: 'tarifs.included.f4.title', titleDefault: 'Statistiques détaillées', descKey: 'tarifs.included.f4.desc', descDefault: 'Suivez les consultations en temps réel' },
+  { icon: '🌍', titleKey: 'tarifs.included.f5.title', titleDefault: 'Multilingue', descKey: 'tarifs.included.f5.desc', descDefault: 'Traduction automatique pour vos voyageurs internationaux' },
+  { icon: '📝', titleKey: 'tarifs.included.f6.title', titleDefault: '17 modules disponibles', descKey: 'tarifs.included.f6.desc', descDefault: 'WiFi, règles, activités, restaurants et bien plus' },
+  { icon: '🔄', titleKey: 'tarifs.included.f7.title', titleDefault: 'Mise à jour instantanée', descKey: 'tarifs.included.f7.desc', descDefault: 'Modifiez en temps réel, vos voyageurs voient les changements' },
+  { icon: '📋', titleKey: 'tarifs.included.f8.title', titleDefault: 'Affiche imprimable', descKey: 'tarifs.included.f8.desc', descDefault: 'Générez une affiche avec QR code pour votre logement' },
+  { icon: '💼', titleKey: 'tarifs.included.f9.title', titleDefault: 'Carte de visite digitale', descKey: 'tarifs.included.f9.desc', descDefault: 'Partagez vos coordonnées professionnelles' },
 ];
 
 export default function TarifsPage() {
@@ -165,7 +165,7 @@ export default function TarifsPage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-white/70 text-sm font-medium">Essai gratuit de 14 jours, sans carte bancaire</span>
+              <span className="text-white/70 text-sm font-medium">{t('tarifs.badge.trial', 'Essai gratuit de 14 jours, sans carte bancaire')}</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4">
@@ -209,7 +209,7 @@ export default function TarifsPage() {
 
                   <div className="mt-5">
                     <span className={`inline-flex items-center justify-center w-full text-center bg-gradient-to-r ${type.gradient} text-white font-semibold py-2.5 px-6 rounded-full text-sm shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02]`}>
-                      Voir nos tarifs →
+                      {t('tarifs.types.seePricing', 'Voir nos tarifs →')}
                     </span>
                   </div>
                 </div>
@@ -227,7 +227,7 @@ export default function TarifsPage() {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
-              <span className="text-white/70 text-sm font-medium">✅ Tout compris</span>
+              <span className="text-white/70 text-sm font-medium">{t('tarifs.included.badge', '✅ Tout compris')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
               {t('tarifs.features.title', 'Tout est inclus')}
@@ -246,8 +246,8 @@ export default function TarifsPage() {
                 <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/40 via-pink-500/40 to-purple-500/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
                 <div className="relative bg-white/[0.03] backdrop-blur-sm rounded-xl p-6 border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 h-full">
                   <div className="text-3xl mb-3">{feature.icon}</div>
-                  <h3 className="text-lg font-bold text-white mb-2">{t(`tarifs.features.list.${feature.title.toLowerCase().replace(/\s+/g, '')}`, feature.title)}</h3>
-                  <p className="text-sm text-white/40">{feature.desc}</p>
+                  <h3 className="text-lg font-bold text-white mb-2">{t(feature.titleKey, feature.titleDefault)}</h3>
+                  <p className="text-sm text-white/40">{t(feature.descKey, feature.descDefault)}</p>
                 </div>
               </div>
             ))}
@@ -352,7 +352,7 @@ export default function TarifsPage() {
                 My Guide Digital
               </h3>
               <p className="bg-gradient-to-r from-purple-300/60 via-violet-300/50 to-purple-400/60 bg-clip-text text-transparent mb-6 leading-relaxed max-w-md">
-                La solution moderne pour créer et partager vos livrets d&apos;accueil digitaux. Simplifiez l&apos;expérience de vos voyageurs.
+                {t('home.footer.description', 'La solution moderne pour créer et partager vos livrets d\'accueil digitaux.')}
               </p>
               <div className="flex gap-3">
                 {['facebook', 'instagram', 'linkedin'].map((social) => (
@@ -363,27 +363,27 @@ export default function TarifsPage() {
               </div>
             </div>
             <div>
-              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">Navigation</h4>
+              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">{t('home.footer.navigation', 'Navigation')}</h4>
               <ul className="space-y-3">
-                <li><Link href="/" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Accueil</Link></li>
-                <li><Link href="/hote-airbnb" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Nos services</Link></li>
-                <li><Link href="/tarifs" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Nos tarifs</Link></li>
-                <li><Link href="/blog" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Blog</Link></li>
-                <li><Link href="/login" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Connexion</Link></li>
+                <li><Link href="/" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.home', 'Accueil')}</Link></li>
+                <li><Link href="/hote-airbnb" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.services', 'Nos services')}</Link></li>
+                <li><Link href="/tarifs" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.pricing', 'Nos tarifs')}</Link></li>
+                <li><Link href="/blog" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.blog', 'Blog')}</Link></li>
+                <li><Link href="/login" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.login', 'Connexion')}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">Support</h4>
+              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">{t('home.footer.support', 'Support')}</h4>
               <ul className="space-y-3">
-                <li><Link href="/contact" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Contact</Link></li>
+                <li><Link href="/contact" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.contact', 'Contact')}</Link></li>
                 <li><Link href="/#faq" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">FAQ</Link></li>
-                <li><Link href="/affiliation" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Programme d&apos;affiliation</Link></li>
+                <li><Link href="/affiliation" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('home.footer.affiliation', 'Programme d\'affiliation')}</Link></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-white/5 mt-12 pt-8 text-center">
             <p className="bg-gradient-to-r from-purple-400/30 via-violet-300/30 to-purple-400/30 bg-clip-text text-transparent text-sm">
-              © {new Date().getFullYear()} My Guide Digital. Tous droits réservés.
+              © {new Date().getFullYear()} My Guide Digital. {t('home.footer.copyright', 'Tous droits réservés.')}
             </p>
           </div>
         </div>

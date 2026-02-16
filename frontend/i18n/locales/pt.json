@@ -660,6 +660,68 @@
       "pricingCta": "Ver nossas tarifas"
     }
   },
+  "tarifs": {
+    "badge": {
+      "trial": "Teste gratuito de 14 dias, sem cartão de crédito"
+    },
+    "hero": {
+      "titleLine1": "Selecione",
+      "titleLine2": "o seu tipo de alojamento",
+      "subtitle": "Selecione o seu alojamento para ver a tarifa associada.",
+      "trial": "Aproveite um teste gratuito, sem cartão de crédito."
+    },
+    "types": {
+      "airbnb": {
+        "title": "Anfitriões Airbnb, casas rurais & B&Bs",
+        "desc": "Ofereça uma experiência fluida e aumente as suas avaliações 5 estrelas com um livro de boas-vindas digital personalizado."
+      },
+      "hotel": {
+        "title": "Hotéis",
+        "desc": "Centralize informações e digitalize a sua receção para uma experiência moderna e profissional."
+      },
+      "conciergerie": {
+        "title": "Serviços de concierge e gestores de arrendamento",
+        "desc": "Poupe tempo com uma ferramenta simples e eficaz para gerir o acolhimento de todas as suas propriedades."
+      },
+      "camping": {
+        "title": "Campings e residências turísticas",
+        "desc": "Simplifique a comunicação com os seus hóspedes e reduza os seus custos de impressão."
+      },
+      "seePricing": "Ver as nossas tarifas →"
+    },
+    "included": {
+      "badge": "✅ Tudo incluído",
+      "f1": { "title": "QR Code personalizado", "desc": "Gere um QR code único para cada livro" },
+      "f2": { "title": "Chatbot IA integrado", "desc": "Assistente inteligente para os seus viajantes" },
+      "f3": { "title": "Personalização completa", "desc": "Cores, logotipo, estilo à sua imagem" },
+      "f4": { "title": "Estatísticas detalhadas", "desc": "Acompanhe as consultas em tempo real" },
+      "f5": { "title": "Multilingue", "desc": "Tradução automática para os seus viajantes internacionais" },
+      "f6": { "title": "17 módulos disponíveis", "desc": "WiFi, regras, atividades, restaurantes e muito mais" },
+      "f7": { "title": "Atualização instantânea", "desc": "Modifique em tempo real, os seus viajantes veem as alterações" },
+      "f8": { "title": "Poster imprimível", "desc": "Gere um poster com QR code para o seu alojamento" },
+      "f9": { "title": "Cartão de visita digital", "desc": "Partilhe os seus contactos profissionais" }
+    },
+    "features": {
+      "title": "Tudo está incluído",
+      "subtitle": "Sem funcionalidades ocultas, sem suplementos. Tudo está incluído em cada plano."
+    },
+    "demo": {
+      "title": "Deseja uma demonstração?",
+      "desc": "Em menos de 30 minutos, descubra a ferramenta e permita às suas equipas um início imediato.",
+      "cta": "Solicitar uma demo"
+    },
+    "migration": {
+      "title": "Tratamos de tudo",
+      "desc": "Tem um livro em papel ou um documento existente? Envie-nos e nós transformamo-lo num livro digital completo, traduzido e enriquecido com recomendações locais.",
+      "cta": "Contacte-nos"
+    },
+    "cta": {
+      "title": "Pronto para transformar a experiência dos seus viajantes?",
+      "subtitle": "Junte-se a dezenas de estabelecimentos que confiam na nossa plataforma",
+      "cta": "Experimente a nossa App gratuitamente",
+      "login": "Já tenho uma conta"
+    }
+  },
   "airbnb": {
     "title": "Para anfitriões do Airbnb",
     "subtitle": "Simplifique o gerenciamento dos seus aluguéis e ofereça uma experiência excepcional aos seus viajantes",
