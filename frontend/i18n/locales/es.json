@@ -177,10 +177,76 @@
   },
   "contact": {
     "title": "Contáctenos",
-    "subtitle": "Estamos aquí para ayudar. No dude en contactarnos.",
+    "subtitle": "Nuestro equipo está a su disposición para responder a todas sus preguntas y acompañarle en su proyecto.",
+    "badge": "💬 Hablemos de su proyecto",
     "email": "Correo electrónico",
     "phone": "Teléfono",
-    "address": "Dirección"
+    "address": "Dirección",
+    "cards": {
+      "emailDesc": "Respuesta en 24 horas laborables",
+      "phoneTitle": "Teléfono y WhatsApp",
+      "phoneDesc": "Lun-Vie: 9h - 18h (CET)",
+      "addressDesc": "Solo con cita previa"
+    },
+    "form": {
+      "title": "Envíenos un mensaje",
+      "name": "Nombre completo",
+      "namePlaceholder": "Su nombre",
+      "email": "Email",
+      "emailPlaceholder": "su@email.com",
+      "subject": "Asunto",
+      "selectSubject": "Seleccione un asunto",
+      "subjectInfo": "Solicitud de información",
+      "subjectDemo": "Solicitud de demostración",
+      "subjectSupport": "Soporte técnico",
+      "subjectPartnership": "Asociación / Afiliación",
+      "subjectMigration": "Migración de libro",
+      "subjectOther": "Otro",
+      "message": "Mensaje",
+      "messagePlaceholder": "Describa su solicitud en detalle...",
+      "sending": "Enviando...",
+      "send": "Enviar mensaje",
+      "success": "¡Su mensaje ha sido enviado con éxito! Le responderemos lo antes posible.",
+      "error": "Se produjo un error. Inténtelo de nuevo o contáctenos directamente en info@gims-consulting.be"
+    },
+    "why": {
+      "title": "¿Por qué contactarnos?",
+      "demo": "Demostración personalizada gratuita",
+      "migration": "Migración de su libro existente",
+      "advice": "Asesoramiento personalizado para su negocio",
+      "support": "Soporte técnico reactivo",
+      "partnership": "Programa de asociación y afiliación"
+    },
+    "whatsapp": {
+      "title": "Chatea en WhatsApp",
+      "desc": "Respuesta rápida en directo"
+    },
+    "hours": {
+      "title": "Horarios de disponibilidad",
+      "weekdays": "Lunes - Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo",
+      "closed": "Cerrado",
+      "timezone": "Zona horaria: CET (Bruselas)"
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "subtitle": "Encuentre rápidamente las respuestas a sus preguntas",
+      "q1": "¿Cuál es el tiempo de respuesta?",
+      "a1": "Nos comprometemos a responder a todas las consultas en un plazo máximo de 24 horas laborables.",
+      "q2": "¿Ofrecen una demostración?",
+      "a2": "¡Sí! Ofrecemos demostraciones personalizadas gratuitas. Contáctenos para programar una cita.",
+      "q3": "¿Puedo migrar mi libro existente?",
+      "a3": "¡Por supuesto! Nuestro equipo le acompaña en la migración de su libro en papel o PDF a My Guide Digital.",
+      "q4": "¿Tienen un programa de afiliación?",
+      "a4": "Sí, ofrecemos un programa de afiliación con 30% de comisión. Consulte nuestra página dedicada para más información."
+    },
+    "cta": {
+      "title": "¿Listo para digitalizar su acogida?",
+      "subtitle": "Pruebe gratis durante 14 días y ofrezca una experiencia memorable a sus viajeros.",
+      "register": "Crear mi libro gratis",
+      "pricing": "Descubrir nuestras tarifas"
+    }
   },
   "chatDocuments": {
     "title": "Documentos PDF para el Chat",

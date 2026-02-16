@@ -177,10 +177,76 @@
   },
   "contact": {
     "title": "Neem contact met ons op",
-    "subtitle": "We zijn er om te helpen. Neem gerust contact met ons op.",
+    "subtitle": "Ons team staat klaar om al uw vragen te beantwoorden en u te begeleiden bij uw project.",
+    "badge": "💬 Laten we praten over uw project",
     "email": "E-mail",
     "phone": "Telefoon",
-    "address": "Adres"
+    "address": "Adres",
+    "cards": {
+      "emailDesc": "Antwoord binnen 24 werkuren",
+      "phoneTitle": "Telefoon & WhatsApp",
+      "phoneDesc": "Ma-Vr: 9u - 18u (CET)",
+      "addressDesc": "Alleen op afspraak"
+    },
+    "form": {
+      "title": "Stuur ons een bericht",
+      "name": "Volledige naam",
+      "namePlaceholder": "Uw naam",
+      "email": "E-mail",
+      "emailPlaceholder": "uw@email.com",
+      "subject": "Onderwerp",
+      "selectSubject": "Selecteer een onderwerp",
+      "subjectInfo": "Informatieaanvraag",
+      "subjectDemo": "Demo-aanvraag",
+      "subjectSupport": "Technische ondersteuning",
+      "subjectPartnership": "Partnerschap / Affiliatie",
+      "subjectMigration": "Boek migratie",
+      "subjectOther": "Overig",
+      "message": "Bericht",
+      "messagePlaceholder": "Beschrijf uw aanvraag in detail...",
+      "sending": "Verzenden...",
+      "send": "Bericht verzenden",
+      "success": "Uw bericht is succesvol verzonden! We nemen zo snel mogelijk contact met u op.",
+      "error": "Er is een fout opgetreden. Probeer het opnieuw of neem rechtstreeks contact met ons op via info@gims-consulting.be"
+    },
+    "why": {
+      "title": "Waarom contact opnemen?",
+      "demo": "Gratis gepersonaliseerde demonstratie",
+      "migration": "Migratie van uw bestaand boek",
+      "advice": "Advies op maat voor uw bedrijf",
+      "support": "Reactieve technische ondersteuning",
+      "partnership": "Partner- & affiliatieprogramma"
+    },
+    "whatsapp": {
+      "title": "Chat op WhatsApp",
+      "desc": "Snelle live reactie"
+    },
+    "hours": {
+      "title": "Beschikbaarheidsuren",
+      "weekdays": "Maandag - Vrijdag",
+      "saturday": "Zaterdag",
+      "sunday": "Zondag",
+      "closed": "Gesloten",
+      "timezone": "Tijdzone: CET (Brussel)"
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "subtitle": "Vind snel antwoorden op uw vragen",
+      "q1": "Wat is de reactietijd?",
+      "a1": "Wij verbinden ons ertoe alle aanvragen binnen maximaal 24 werkuren te beantwoorden.",
+      "q2": "Bieden jullie een demonstratie aan?",
+      "a2": "Ja! We bieden gratis gepersonaliseerde demonstraties aan. Neem contact met ons op om een afspraak te maken.",
+      "q3": "Kan ik mijn bestaand boek migreren?",
+      "a3": "Absoluut! Ons team begeleidt u bij de migratie van uw papieren of PDF-boek naar My Guide Digital.",
+      "q4": "Hebben jullie een affiliatieprogramma?",
+      "a4": "Ja, we bieden een affiliatieprogramma met 30% commissie. Bezoek onze speciale pagina voor meer informatie."
+    },
+    "cta": {
+      "title": "Klaar om uw onthaal te digitaliseren?",
+      "subtitle": "Probeer 14 dagen gratis en bied uw reizigers een onvergetelijke ervaring.",
+      "register": "Maak mijn boek gratis aan",
+      "pricing": "Ontdek onze tarieven"
+    }
   },
   "chatDocuments": {
     "title": "PDF-documenten voor Chat",

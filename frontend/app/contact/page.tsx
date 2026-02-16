@@ -45,7 +45,7 @@ export default function ContactPage() {
       value: 'info@gims-consulting.be',
       href: 'mailto:info@gims-consulting.be',
       gradient: 'from-primary to-pink-500',
-      description: 'Réponse sous 24h ouvrées',
+      description: t('contact.cards.emailDesc', 'Réponse sous 24h ouvrées'),
     },
     {
       icon: (
@@ -53,11 +53,11 @@ export default function ContactPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
         </svg>
       ),
-      title: 'Téléphone & WhatsApp',
+      title: t('contact.cards.phoneTitle', 'Téléphone & WhatsApp'),
       value: '+32 476 34 23 64',
       href: 'tel:+32476342364',
       gradient: 'from-emerald-500 to-teal-500',
-      description: 'Lun-Ven : 9h - 18h (CET)',
+      description: t('contact.cards.phoneDesc', 'Lun-Ven : 9h - 18h (CET)'),
     },
     {
       icon: (
@@ -66,31 +66,31 @@ export default function ContactPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       ),
-      title: 'Adresse',
+      title: t('contact.address', 'Adresse'),
       value: 'Avenue Louise 143/4',
       secondLine: '1050 Bruxelles, Belgique',
       href: 'https://maps.google.com/?q=Avenue+Louise+143,+1050+Bruxelles',
       gradient: 'from-violet-500 to-purple-500',
-      description: 'Sur rendez-vous uniquement',
+      description: t('contact.cards.addressDesc', 'Sur rendez-vous uniquement'),
     },
   ];
 
   const faqItems = [
     {
-      question: 'Quel est le délai de réponse ?',
-      answer: 'Nous nous engageons à répondre à toutes les demandes dans un délai de 24 heures ouvrées maximum.',
+      question: t('contact.faq.q1', 'Quel est le délai de réponse ?'),
+      answer: t('contact.faq.a1', 'Nous nous engageons à répondre à toutes les demandes dans un délai de 24 heures ouvrées maximum.'),
     },
     {
-      question: 'Proposez-vous une démonstration ?',
-      answer: 'Oui ! Nous proposons des démonstrations personnalisées gratuites. Contactez-nous pour planifier un créneau.',
+      question: t('contact.faq.q2', 'Proposez-vous une démonstration ?'),
+      answer: t('contact.faq.a2', 'Oui ! Nous proposons des démonstrations personnalisées gratuites. Contactez-nous pour planifier un créneau.'),
     },
     {
-      question: 'Puis-je migrer mon livret existant ?',
-      answer: 'Absolument ! Notre équipe vous accompagne dans la migration de votre livret papier ou PDF vers My Guide Digital.',
+      question: t('contact.faq.q3', 'Puis-je migrer mon livret existant ?'),
+      answer: t('contact.faq.a3', 'Absolument ! Notre équipe vous accompagne dans la migration de votre livret papier ou PDF vers My Guide Digital.'),
     },
     {
-      question: 'Avez-vous un programme d\'affiliation ?',
-      answer: 'Oui, nous proposons un programme d\'affiliation avec 30% de commission. Consultez notre page dédiée pour plus d\'informations.',
+      question: t('contact.faq.q4', 'Avez-vous un programme d\'affiliation ?'),
+      answer: t('contact.faq.a4', 'Oui, nous proposons un programme d\'affiliation avec 30% de commission. Consultez notre page dédiée pour plus d\'informations.'),
     },
   ];
 
@@ -195,7 +195,7 @@ export default function ContactPage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8">
-              <span className="text-white/70 text-sm font-medium">💬 Parlons de votre projet</span>
+              <span className="text-white/70 text-sm font-medium">{t('contact.badge', '💬 Parlons de votre projet')}</span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight">
               <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
@@ -256,14 +256,14 @@ export default function ContactPage() {
                 <div className="relative bg-white/[0.03] backdrop-blur-sm rounded-2xl p-8 sm:p-10 border border-white/[0.06]">
                   <div className="flex items-center gap-3 mb-8">
                     <div className="w-1 h-8 bg-gradient-to-b from-primary to-pink-500 rounded-full"></div>
-                    <h2 className="text-2xl font-bold text-white">Envoyez-nous un message</h2>
+                    <h2 className="text-2xl font-bold text-white">{t('contact.form.title', 'Envoyez-nous un message')}</h2>
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
                         <label htmlFor="name" className="block text-sm font-medium text-white/60 mb-2">
-                          Nom complet <span className="text-pink-400">*</span>
+                          {t('contact.form.name', 'Nom complet')} <span className="text-pink-400">*</span>
                         </label>
                         <input
                           type="text"
@@ -272,13 +272,13 @@ export default function ContactPage() {
                           value={formData.name}
                           onChange={handleChange}
                           required
-                          placeholder="Votre nom"
+                          placeholder={t('contact.form.namePlaceholder', 'Votre nom')}
                           className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:bg-white/[0.06] transition-all text-sm"
                         />
                       </div>
                       <div>
                         <label htmlFor="email" className="block text-sm font-medium text-white/60 mb-2">
-                          Email <span className="text-pink-400">*</span>
+                          {t('contact.form.email', 'Email')} <span className="text-pink-400">*</span>
                         </label>
                         <input
                           type="email"
@@ -295,7 +295,7 @@ export default function ContactPage() {
 
                     <div>
                       <label htmlFor="subject" className="block text-sm font-medium text-white/60 mb-2">
-                        Sujet <span className="text-pink-400">*</span>
+                        {t('contact.form.subject', 'Sujet')} <span className="text-pink-400">*</span>
                       </label>
                       <select
                         id="subject"
@@ -305,19 +305,19 @@ export default function ContactPage() {
                         required
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white focus:outline-none focus:border-primary/50 focus:bg-white/[0.06] transition-all text-sm appearance-none"
                       >
-                        <option value="" className="bg-slate-900">Sélectionnez un sujet</option>
-                        <option value="info" className="bg-slate-900">Demande d&apos;information</option>
-                        <option value="demo" className="bg-slate-900">Demande de démonstration</option>
-                        <option value="support" className="bg-slate-900">Support technique</option>
-                        <option value="partnership" className="bg-slate-900">Partenariat / Affiliation</option>
-                        <option value="migration" className="bg-slate-900">Migration de livret</option>
-                        <option value="other" className="bg-slate-900">Autre</option>
+                        <option value="" className="bg-slate-900">{t('contact.form.selectSubject', 'Sélectionnez un sujet')}</option>
+                        <option value="info" className="bg-slate-900">{t('contact.form.subjectInfo', 'Demande d\'information')}</option>
+                        <option value="demo" className="bg-slate-900">{t('contact.form.subjectDemo', 'Demande de démonstration')}</option>
+                        <option value="support" className="bg-slate-900">{t('contact.form.subjectSupport', 'Support technique')}</option>
+                        <option value="partnership" className="bg-slate-900">{t('contact.form.subjectPartnership', 'Partenariat / Affiliation')}</option>
+                        <option value="migration" className="bg-slate-900">{t('contact.form.subjectMigration', 'Migration de livret')}</option>
+                        <option value="other" className="bg-slate-900">{t('contact.form.subjectOther', 'Autre')}</option>
                       </select>
                     </div>
 
                     <div>
                       <label htmlFor="message" className="block text-sm font-medium text-white/60 mb-2">
-                        Message <span className="text-pink-400">*</span>
+                        {t('contact.form.message', 'Message')} <span className="text-pink-400">*</span>
                       </label>
                       <textarea
                         id="message"
@@ -326,7 +326,7 @@ export default function ContactPage() {
                         onChange={handleChange}
                         required
                         rows={6}
-                        placeholder="Décrivez votre demande en détail..."
+                        placeholder={t('contact.form.messagePlaceholder', 'Décrivez votre demande en détail...')}
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:bg-white/[0.06] transition-all text-sm resize-none"
                       />
                     </div>
@@ -342,12 +342,12 @@ export default function ContactPage() {
                         {formStatus === 'sending' ? (
                           <>
                             <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            <span>Envoi en cours...</span>
+                            <span>{t('contact.form.sending', 'Envoi en cours...')}</span>
                           </>
                         ) : (
                           <>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
-                            <span>Envoyer le message</span>
+                            <span>{t('contact.form.send', 'Envoyer le message')}</span>
                           </>
                         )}
                       </span>
@@ -356,14 +356,14 @@ export default function ContactPage() {
                     {formStatus === 'sent' && (
                       <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                         <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <p className="text-emerald-300 text-sm">Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.</p>
+                        <p className="text-emerald-300 text-sm">{t('contact.form.success', 'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.')}</p>
                       </div>
                     )}
 
                     {formStatus === 'error' && (
                       <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
                         <svg className="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <p className="text-red-300 text-sm">Une erreur est survenue. Veuillez réessayer ou nous contacter directement à info@gims-consulting.be</p>
+                        <p className="text-red-300 text-sm">{t('contact.form.error', 'Une erreur est survenue. Veuillez réessayer ou nous contacter directement à info@gims-consulting.be')}</p>
                       </div>
                     )}
                   </form>
@@ -377,15 +377,15 @@ export default function ContactPage() {
               <div className="relative bg-white/[0.03] backdrop-blur-sm rounded-2xl p-8 border border-white/[0.06]">
                 <h3 className="text-lg font-bold text-white mb-5 flex items-center gap-2">
                   <span className="text-2xl">🤝</span>
-                  Pourquoi nous contacter ?
+                  {t('contact.why.title', 'Pourquoi nous contacter ?')}
                 </h3>
                 <ul className="space-y-4">
                   {[
-                    { icon: '🎯', text: 'Démonstration personnalisée gratuite' },
-                    { icon: '🔄', text: 'Migration de votre livret existant' },
-                    { icon: '💡', text: 'Conseils sur mesure pour votre activité' },
-                    { icon: '🛠️', text: 'Support technique réactif' },
-                    { icon: '🤝', text: 'Programme de partenariat & affiliation' },
+                    { icon: '🎯', text: t('contact.why.demo', 'Démonstration personnalisée gratuite') },
+                    { icon: '🔄', text: t('contact.why.migration', 'Migration de votre livret existant') },
+                    { icon: '💡', text: t('contact.why.advice', 'Conseils sur mesure pour votre activité') },
+                    { icon: '🛠️', text: t('contact.why.support', 'Support technique réactif') },
+                    { icon: '🤝', text: t('contact.why.partnership', 'Programme de partenariat & affiliation') },
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <span className="text-lg flex-shrink-0">{item.icon}</span>
@@ -411,8 +411,8 @@ export default function ContactPage() {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-white font-bold text-lg">Discutez sur WhatsApp</p>
-                      <p className="text-white/40 text-sm">Réponse rapide en direct</p>
+                      <p className="text-white font-bold text-lg">{t('contact.whatsapp.title', 'Discutez sur WhatsApp')}</p>
+                      <p className="text-white/40 text-sm">{t('contact.whatsapp.desc', 'Réponse rapide en direct')}</p>
                     </div>
                     <svg className="w-5 h-5 text-white/30 ml-auto group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -425,13 +425,13 @@ export default function ContactPage() {
               <div className="relative bg-white/[0.03] backdrop-blur-sm rounded-2xl p-8 border border-white/[0.06]">
                 <h3 className="text-lg font-bold text-white mb-5 flex items-center gap-2">
                   <span className="text-2xl">🕐</span>
-                  Horaires de disponibilité
+                  {t('contact.hours.title', 'Horaires de disponibilité')}
                 </h3>
                 <div className="space-y-3">
                   {[
-                    { day: 'Lundi - Vendredi', hours: '9h00 - 18h00', active: true },
-                    { day: 'Samedi', hours: '10h00 - 14h00', active: true },
-                    { day: 'Dimanche', hours: 'Fermé', active: false },
+                    { day: t('contact.hours.weekdays', 'Lundi - Vendredi'), hours: '9h00 - 18h00', active: true },
+                    { day: t('contact.hours.saturday', 'Samedi'), hours: '10h00 - 14h00', active: true },
+                    { day: t('contact.hours.sunday', 'Dimanche'), hours: t('contact.hours.closed', 'Fermé'), active: false },
                   ].map((item, i) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0">
                       <span className="text-white/50 text-sm">{item.day}</span>
@@ -441,7 +441,7 @@ export default function ContactPage() {
                     </div>
                   ))}
                 </div>
-                <p className="text-white/20 text-xs mt-4">Fuseau horaire : CET (Bruxelles)</p>
+                <p className="text-white/20 text-xs mt-4">{t('contact.hours.timezone', 'Fuseau horaire : CET (Bruxelles)')}</p>
               </div>
             </div>
           </div>
@@ -455,9 +455,9 @@ export default function ContactPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Questions fréquentes
+              {t('contact.faq.title', 'Questions fréquentes')}
             </h2>
-            <p className="text-white/40 text-lg">Trouvez rapidement les réponses à vos questions</p>
+            <p className="text-white/40 text-lg">{t('contact.faq.subtitle', 'Trouvez rapidement les réponses à vos questions')}</p>
           </div>
 
           <div className="space-y-4">
@@ -498,22 +498,22 @@ export default function ContactPage() {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl"></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">
-            Prêt à digitaliser votre accueil ?
+            {t('contact.cta.title', 'Prêt à digitaliser votre accueil ?')}
           </h2>
           <p className="text-xl sm:text-2xl mb-8 text-white/60">
-            Testez gratuitement pendant 14 jours et offrez une expérience mémorable à vos voyageurs.
+            {t('contact.cta.subtitle', 'Testez gratuitement pendant 14 jours et offrez une expérience mémorable à vos voyageurs.')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
               <button className="relative group px-8 py-4 rounded-full font-semibold text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 text-lg">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500 transition-all duration-300"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-pink-500 to-purple-500 blur-xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
-                <span className="relative">Créer mon livret gratuitement</span>
+                <span className="relative">{t('contact.cta.register', 'Créer mon livret gratuitement')}</span>
               </button>
             </Link>
             <Link href="/tarifs">
               <button className="px-8 py-4 rounded-full font-semibold text-white/80 hover:text-white border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 text-lg">
-                Découvrir nos tarifs
+                {t('contact.cta.pricing', 'Découvrir nos tarifs')}
               </button>
             </Link>
           </div>
@@ -531,7 +531,7 @@ export default function ContactPage() {
                 My Guide Digital
               </h3>
               <p className="bg-gradient-to-r from-purple-300/60 via-violet-300/50 to-purple-400/60 bg-clip-text text-transparent mb-6 leading-relaxed max-w-md">
-                La solution moderne pour créer et partager vos livrets d&apos;accueil digitaux. Simplifiez l&apos;expérience de vos voyageurs.
+                {t('home.footer.description', 'La solution moderne pour créer et partager vos livrets d\'accueil digitaux.')}
               </p>
               <div className="flex gap-3">
                 {['facebook', 'instagram', 'linkedin'].map((social) => (
@@ -542,27 +542,27 @@ export default function ContactPage() {
               </div>
             </div>
             <div>
-              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">Navigation</h4>
+              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">{t('home.footer.navigation', 'Navigation')}</h4>
               <ul className="space-y-3">
-                <li><Link href="/" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Accueil</Link></li>
-                <li><Link href="/hote-airbnb" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Nos services</Link></li>
-                <li><Link href="/tarifs" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Nos tarifs</Link></li>
-                <li><Link href="/blog" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Blog</Link></li>
-                <li><Link href="/login" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Connexion</Link></li>
+                <li><Link href="/" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.home', 'Accueil')}</Link></li>
+                <li><Link href="/hote-airbnb" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.services', 'Nos services')}</Link></li>
+                <li><Link href="/tarifs" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.pricing', 'Nos tarifs')}</Link></li>
+                <li><Link href="/blog" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.blog', 'Blog')}</Link></li>
+                <li><Link href="/login" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.login', 'Connexion')}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">Support</h4>
+              <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">{t('home.footer.support', 'Support')}</h4>
               <ul className="space-y-3">
-                <li><Link href="/contact" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Contact</Link></li>
+                <li><Link href="/contact" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.contact', 'Contact')}</Link></li>
                 <li><Link href="/#faq" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">FAQ</Link></li>
-                <li><Link href="/affiliation" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Programme d&apos;affiliation</Link></li>
+                <li><Link href="/affiliation" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('home.footer.affiliation', 'Programme d\'affiliation')}</Link></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-white/5 mt-12 pt-8 text-center">
             <p className="bg-gradient-to-r from-purple-400/30 via-violet-300/30 to-purple-400/30 bg-clip-text text-transparent text-sm">
-              © {new Date().getFullYear()} My Guide Digital. Tous droits réservés.
+              © {new Date().getFullYear()} My Guide Digital. {t('home.footer.copyright', 'Tous droits réservés.')}
             </p>
           </div>
         </div>

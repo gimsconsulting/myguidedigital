@@ -167,10 +167,76 @@
   },
   "contact": {
     "title": "Contact Us",
-    "subtitle": "We are here to help. Feel free to contact us.",
+    "subtitle": "Our team is here to answer all your questions and support you in your project.",
+    "badge": "💬 Let's talk about your project",
     "email": "Email",
     "phone": "Phone",
-    "address": "Address"
+    "address": "Address",
+    "cards": {
+      "emailDesc": "Response within 24 business hours",
+      "phoneTitle": "Phone & WhatsApp",
+      "phoneDesc": "Mon-Fri: 9am - 6pm (CET)",
+      "addressDesc": "By appointment only"
+    },
+    "form": {
+      "title": "Send us a message",
+      "name": "Full name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "subject": "Subject",
+      "selectSubject": "Select a subject",
+      "subjectInfo": "Information request",
+      "subjectDemo": "Demo request",
+      "subjectSupport": "Technical support",
+      "subjectPartnership": "Partnership / Affiliation",
+      "subjectMigration": "Booklet migration",
+      "subjectOther": "Other",
+      "message": "Message",
+      "messagePlaceholder": "Describe your request in detail...",
+      "sending": "Sending...",
+      "send": "Send message",
+      "success": "Your message has been sent successfully! We will get back to you as soon as possible.",
+      "error": "An error occurred. Please try again or contact us directly at info@gims-consulting.be"
+    },
+    "why": {
+      "title": "Why contact us?",
+      "demo": "Free personalized demonstration",
+      "migration": "Migration of your existing booklet",
+      "advice": "Tailored advice for your business",
+      "support": "Responsive technical support",
+      "partnership": "Partnership & affiliate program"
+    },
+    "whatsapp": {
+      "title": "Chat on WhatsApp",
+      "desc": "Quick live response"
+    },
+    "hours": {
+      "title": "Availability hours",
+      "weekdays": "Monday - Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "closed": "Closed",
+      "timezone": "Timezone: CET (Brussels)"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "subtitle": "Quickly find answers to your questions",
+      "q1": "What is the response time?",
+      "a1": "We commit to responding to all inquiries within a maximum of 24 business hours.",
+      "q2": "Do you offer a demonstration?",
+      "a2": "Yes! We offer free personalized demonstrations. Contact us to schedule a slot.",
+      "q3": "Can I migrate my existing booklet?",
+      "a3": "Absolutely! Our team supports you in migrating your paper or PDF booklet to My Guide Digital.",
+      "q4": "Do you have an affiliate program?",
+      "a4": "Yes, we offer an affiliate program with 30% commission. Visit our dedicated page for more information."
+    },
+    "cta": {
+      "title": "Ready to digitize your welcome?",
+      "subtitle": "Try free for 14 days and offer a memorable experience to your travelers.",
+      "register": "Create my booklet for free",
+      "pricing": "Discover our pricing"
+    }
   },
   "chatDocuments": {
     "title": "PDF Documents for Chat",

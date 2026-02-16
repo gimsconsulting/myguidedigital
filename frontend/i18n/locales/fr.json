@@ -167,10 +167,76 @@
   },
   "contact": {
     "title": "Contactez-nous",
-    "subtitle": "Nous sommes là pour vous aider. N'hésitez pas à nous contacter.",
+    "subtitle": "Notre équipe est à votre écoute pour répondre à toutes vos questions et vous accompagner dans votre projet.",
+    "badge": "💬 Parlons de votre projet",
     "email": "Email",
     "phone": "Téléphone",
-    "address": "Adresse"
+    "address": "Adresse",
+    "cards": {
+      "emailDesc": "Réponse sous 24h ouvrées",
+      "phoneTitle": "Téléphone & WhatsApp",
+      "phoneDesc": "Lun-Ven : 9h - 18h (CET)",
+      "addressDesc": "Sur rendez-vous uniquement"
+    },
+    "form": {
+      "title": "Envoyez-nous un message",
+      "name": "Nom complet",
+      "namePlaceholder": "Votre nom",
+      "email": "Email",
+      "emailPlaceholder": "votre@email.com",
+      "subject": "Sujet",
+      "selectSubject": "Sélectionnez un sujet",
+      "subjectInfo": "Demande d'information",
+      "subjectDemo": "Demande de démonstration",
+      "subjectSupport": "Support technique",
+      "subjectPartnership": "Partenariat / Affiliation",
+      "subjectMigration": "Migration de livret",
+      "subjectOther": "Autre",
+      "message": "Message",
+      "messagePlaceholder": "Décrivez votre demande en détail...",
+      "sending": "Envoi en cours...",
+      "send": "Envoyer le message",
+      "success": "Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.",
+      "error": "Une erreur est survenue. Veuillez réessayer ou nous contacter directement à info@gims-consulting.be"
+    },
+    "why": {
+      "title": "Pourquoi nous contacter ?",
+      "demo": "Démonstration personnalisée gratuite",
+      "migration": "Migration de votre livret existant",
+      "advice": "Conseils sur mesure pour votre activité",
+      "support": "Support technique réactif",
+      "partnership": "Programme de partenariat & affiliation"
+    },
+    "whatsapp": {
+      "title": "Discutez sur WhatsApp",
+      "desc": "Réponse rapide en direct"
+    },
+    "hours": {
+      "title": "Horaires de disponibilité",
+      "weekdays": "Lundi - Vendredi",
+      "saturday": "Samedi",
+      "sunday": "Dimanche",
+      "closed": "Fermé",
+      "timezone": "Fuseau horaire : CET (Bruxelles)"
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "subtitle": "Trouvez rapidement les réponses à vos questions",
+      "q1": "Quel est le délai de réponse ?",
+      "a1": "Nous nous engageons à répondre à toutes les demandes dans un délai de 24 heures ouvrées maximum.",
+      "q2": "Proposez-vous une démonstration ?",
+      "a2": "Oui ! Nous proposons des démonstrations personnalisées gratuites. Contactez-nous pour planifier un créneau.",
+      "q3": "Puis-je migrer mon livret existant ?",
+      "a3": "Absolument ! Notre équipe vous accompagne dans la migration de votre livret papier ou PDF vers My Guide Digital.",
+      "q4": "Avez-vous un programme d'affiliation ?",
+      "a4": "Oui, nous proposons un programme d'affiliation avec 30% de commission. Consultez notre page dédiée pour plus d'informations."
+    },
+    "cta": {
+      "title": "Prêt à digitaliser votre accueil ?",
+      "subtitle": "Testez gratuitement pendant 14 jours et offrez une expérience mémorable à vos voyageurs.",
+      "register": "Créer mon livret gratuitement",
+      "pricing": "Découvrir nos tarifs"
+    }
   },
   "chatDocuments": {
     "title": "Documents pour le Chat",

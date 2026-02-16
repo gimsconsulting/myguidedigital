@@ -177,10 +177,76 @@
   },
   "contact": {
     "title": "Kontaktieren Sie uns",
-    "subtitle": "Wir sind hier, um zu helfen. Kontaktieren Sie uns gerne.",
+    "subtitle": "Unser Team steht Ihnen zur Verfügung, um alle Ihre Fragen zu beantworten und Sie bei Ihrem Projekt zu unterstützen.",
+    "badge": "💬 Sprechen wir über Ihr Projekt",
     "email": "E-Mail",
     "phone": "Telefon",
-    "address": "Adresse"
+    "address": "Adresse",
+    "cards": {
+      "emailDesc": "Antwort innerhalb von 24 Geschäftsstunden",
+      "phoneTitle": "Telefon & WhatsApp",
+      "phoneDesc": "Mo-Fr: 9-18 Uhr (MEZ)",
+      "addressDesc": "Nur nach Vereinbarung"
+    },
+    "form": {
+      "title": "Senden Sie uns eine Nachricht",
+      "name": "Vollständiger Name",
+      "namePlaceholder": "Ihr Name",
+      "email": "E-Mail",
+      "emailPlaceholder": "ihre@email.com",
+      "subject": "Betreff",
+      "selectSubject": "Wählen Sie ein Thema",
+      "subjectInfo": "Informationsanfrage",
+      "subjectDemo": "Demo-Anfrage",
+      "subjectSupport": "Technischer Support",
+      "subjectPartnership": "Partnerschaft / Affiliate",
+      "subjectMigration": "Buch-Migration",
+      "subjectOther": "Sonstiges",
+      "message": "Nachricht",
+      "messagePlaceholder": "Beschreiben Sie Ihre Anfrage im Detail...",
+      "sending": "Wird gesendet...",
+      "send": "Nachricht senden",
+      "success": "Ihre Nachricht wurde erfolgreich gesendet! Wir werden uns so schnell wie möglich bei Ihnen melden.",
+      "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt unter info@gims-consulting.be"
+    },
+    "why": {
+      "title": "Warum uns kontaktieren?",
+      "demo": "Kostenlose personalisierte Demonstration",
+      "migration": "Migration Ihres bestehenden Buches",
+      "advice": "Maßgeschneiderte Beratung für Ihr Unternehmen",
+      "support": "Reaktiver technischer Support",
+      "partnership": "Partner- & Affiliate-Programm"
+    },
+    "whatsapp": {
+      "title": "Chatten Sie auf WhatsApp",
+      "desc": "Schnelle Live-Antwort"
+    },
+    "hours": {
+      "title": "Verfügbarkeitszeiten",
+      "weekdays": "Montag - Freitag",
+      "saturday": "Samstag",
+      "sunday": "Sonntag",
+      "closed": "Geschlossen",
+      "timezone": "Zeitzone: MEZ (Brüssel)"
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "subtitle": "Finden Sie schnell Antworten auf Ihre Fragen",
+      "q1": "Wie lang ist die Antwortzeit?",
+      "a1": "Wir verpflichten uns, alle Anfragen innerhalb von maximal 24 Geschäftsstunden zu beantworten.",
+      "q2": "Bieten Sie eine Demonstration an?",
+      "a2": "Ja! Wir bieten kostenlose personalisierte Demonstrationen an. Kontaktieren Sie uns, um einen Termin zu vereinbaren.",
+      "q3": "Kann ich mein bestehendes Buch migrieren?",
+      "a3": "Absolut! Unser Team unterstützt Sie bei der Migration Ihres Papier- oder PDF-Buches zu My Guide Digital.",
+      "q4": "Haben Sie ein Affiliate-Programm?",
+      "a4": "Ja, wir bieten ein Affiliate-Programm mit 30% Provision an. Besuchen Sie unsere spezielle Seite für weitere Informationen."
+    },
+    "cta": {
+      "title": "Bereit, Ihren Empfang zu digitalisieren?",
+      "subtitle": "Testen Sie 14 Tage kostenlos und bieten Sie Ihren Reisenden ein unvergessliches Erlebnis.",
+      "register": "Mein Buch kostenlos erstellen",
+      "pricing": "Unsere Preise entdecken"
+    }
   },
   "chatDocuments": {
     "title": "PDF-Dokumente für den Chat",

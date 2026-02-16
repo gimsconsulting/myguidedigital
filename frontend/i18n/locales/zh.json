@@ -177,10 +177,76 @@
   },
   "contact": {
     "title": "联系我们",
-    "subtitle": "我们随时为您提供帮助。请随时与我们联系。",
+    "subtitle": "我们的团队随时为您解答所有问题并支持您的项目。",
+    "badge": "💬 让我们谈谈您的项目",
     "email": "电子邮件",
     "phone": "电话",
-    "address": "地址"
+    "address": "地址",
+    "cards": {
+      "emailDesc": "24个工作小时内回复",
+      "phoneTitle": "电话和WhatsApp",
+      "phoneDesc": "周一至周五：9:00 - 18:00（CET）",
+      "addressDesc": "仅限预约"
+    },
+    "form": {
+      "title": "给我们发送消息",
+      "name": "全名",
+      "namePlaceholder": "您的姓名",
+      "email": "电子邮件",
+      "emailPlaceholder": "your@email.com",
+      "subject": "主题",
+      "selectSubject": "选择主题",
+      "subjectInfo": "信息咨询",
+      "subjectDemo": "演示请求",
+      "subjectSupport": "技术支持",
+      "subjectPartnership": "合作/联盟",
+      "subjectMigration": "手册迁移",
+      "subjectOther": "其他",
+      "message": "消息",
+      "messagePlaceholder": "请详细描述您的需求...",
+      "sending": "发送中...",
+      "send": "发送消息",
+      "success": "您的消息已成功发送！我们将尽快回复您。",
+      "error": "发生错误。请重试或直接联系我们：info@gims-consulting.be"
+    },
+    "why": {
+      "title": "为什么联系我们？",
+      "demo": "免费个性化演示",
+      "migration": "迁移您现有的手册",
+      "advice": "为您的业务量身定制建议",
+      "support": "响应迅速的技术支持",
+      "partnership": "合作伙伴和联盟计划"
+    },
+    "whatsapp": {
+      "title": "在WhatsApp上聊天",
+      "desc": "快速实时回复"
+    },
+    "hours": {
+      "title": "可用时间",
+      "weekdays": "周一 - 周五",
+      "saturday": "周六",
+      "sunday": "周日",
+      "closed": "关闭",
+      "timezone": "时区：CET（布鲁塞尔）"
+    },
+    "faq": {
+      "title": "常见问题",
+      "subtitle": "快速找到您问题的答案",
+      "q1": "回复时间是多少？",
+      "a1": "我们承诺在最多24个工作小时内回复所有咨询。",
+      "q2": "你们提供演示吗？",
+      "a2": "是的！我们提供免费的个性化演示。联系我们预约时间。",
+      "q3": "我可以迁移现有的手册吗？",
+      "a3": "当然可以！我们的团队会协助您将纸质或PDF手册迁移到My Guide Digital。",
+      "q4": "你们有联盟计划吗？",
+      "a4": "是的，我们提供30%佣金的联盟计划。请访问我们的专属页面了解更多信息。"
+    },
+    "cta": {
+      "title": "准备好数字化您的欢迎服务了吗？",
+      "subtitle": "免费试用14天，为您的旅客提供难忘的体验。",
+      "register": "免费创建我的手册",
+      "pricing": "了解我们的价格"
+    }
   },
   "chatDocuments": {
     "title": "聊天PDF文档",
