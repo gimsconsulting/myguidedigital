@@ -883,40 +883,40 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
                 My Guide Digital
               </h3>
-              <p className="text-white/30 mb-6 leading-relaxed max-w-md">
+              <p className="bg-gradient-to-r from-purple-300/60 via-violet-300/50 to-purple-400/60 bg-clip-text text-transparent mb-6 leading-relaxed max-w-md">
                 {t('home.footer.description', 'La solution moderne pour créer et partager vos livrets d\'accueil digitaux. Simplifiez l\'expérience de vos voyageurs.')}
               </p>
-              {/* Social icons placeholder */}
               <div className="flex gap-3">
                 {['facebook', 'instagram', 'linkedin'].map((social) => (
                   <a key={social} href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all">
-                    <span className="text-white/40 text-xs">{social.charAt(0).toUpperCase()}</span>
+                    <span className="bg-gradient-to-r from-purple-300 to-violet-400 bg-clip-text text-transparent text-xs font-semibold">{social.charAt(0).toUpperCase()}</span>
                   </a>
                 ))}
               </div>
             </div>
             <div>
               <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">{t('home.footer.navigation', 'Navigation')}</h4>
-              <ul className="space-y-3 text-white/30">
-                <li><Link href="/" className="hover:text-white/70 transition-colors text-sm">{t('nav.home', 'Accueil')}</Link></li>
-                <li><Link href="/hote-airbnb" className="hover:text-white/70 transition-colors text-sm">{t('nav.services', 'Nos services')}</Link></li>
-                <li><Link href="/tarifs" className="hover:text-white/70 transition-colors text-sm">{t('nav.pricing', 'Nos tarifs')}</Link></li>
-                <li><Link href="/blog" className="hover:text-white/70 transition-colors text-sm">{t('nav.blog', 'Blog')}</Link></li>
-                <li><Link href="/login" className="hover:text-white/70 transition-colors text-sm">{t('nav.login', 'Connexion')}</Link></li>
+              <ul className="space-y-3">
+                <li><Link href="/" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.home', 'Accueil')}</Link></li>
+                <li><Link href="/hote-airbnb" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.services', 'Nos services')}</Link></li>
+                <li><Link href="/tarifs" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.pricing', 'Nos tarifs')}</Link></li>
+                <li><Link href="/blog" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.blog', 'Blog')}</Link></li>
+                <li><Link href="/login" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('nav.login', 'Connexion')}</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-5 text-white text-sm uppercase tracking-wider">{t('home.footer.support', 'Support')}</h4>
-              <ul className="space-y-3 text-white/30">
-                <li><a href="#" className="hover:text-white/70 transition-colors text-sm">{t('home.footer.documentation', 'Documentation')}</a></li>
-                <li><Link href="/contact" className="hover:text-white/70 transition-colors text-sm">{t('home.footer.contact', 'Contact')}</Link></li>
-                <li><Link href="#faq" className="hover:text-white/70 transition-colors text-sm">FAQ</Link></li>
-                <li><Link href="/affiliation" className="hover:text-white/70 transition-colors text-sm">Programme d&apos;affiliation</Link></li>
+              <ul className="space-y-3">
+                <li><Link href="/contact" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('home.footer.contact', 'Contact')}</Link></li>
+                <li><Link href="#faq" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">FAQ</Link></li>
+                <li><Link href="/affiliation" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Programme d&apos;affiliation</Link></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-white/5 mt-12 pt-8 text-center text-white/20 text-sm">
-            <p>{t('home.footer.copyright', '© 2026 My Guide Digital. Tous droits réservés.')}</p>
+          <div className="border-t border-white/5 mt-12 pt-8 text-center">
+            <p className="bg-gradient-to-r from-purple-400/30 via-violet-300/30 to-purple-400/30 bg-clip-text text-transparent text-sm">
+              {t('home.footer.copyright', '© 2026 My Guide Digital. Tous droits réservés.')}
+            </p>
           </div>
         </div>
       </footer>
