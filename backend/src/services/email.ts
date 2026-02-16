@@ -285,6 +285,120 @@ export async function sendTrialExpiredEmail(user: { firstName?: string | null; l
   }
 }
 
+// Template d'email de contact
+function getContactEmailTemplate(data: { name: string; email: string; subject: string; message: string }) {
+  const subjectLabels: Record<string, string> = {
+    info: "Demande d'information",
+    demo: 'Demande de démonstration',
+    support: 'Support technique',
+    partnership: 'Partenariat / Affiliation',
+    migration: 'Migration de livret',
+    other: 'Autre',
+  };
+
+  const subjectLabel = subjectLabels[data.subject] || data.subject;
+
+  return {
+    subject: `[Contact MGD] ${subjectLabel} - ${data.name}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nouveau message de contact</title>
+      </head>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 22px;">📬 Nouveau message de contact</h1>
+        </div>
+        
+        <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+            <p style="margin: 0 0 5px 0; font-size: 14px; color: #999;">Expéditeur</p>
+            <p style="margin: 0; font-weight: bold; font-size: 16px;">${data.name}</p>
+          </div>
+
+          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ec4899;">
+            <p style="margin: 0 0 5px 0; font-size: 14px; color: #999;">Email</p>
+            <p style="margin: 0;"><a href="mailto:${data.email}" style="color: #667eea; font-weight: bold;">${data.email}</a></p>
+          </div>
+
+          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #f59e0b;">
+            <p style="margin: 0 0 5px 0; font-size: 14px; color: #999;">Sujet</p>
+            <p style="margin: 0; font-weight: bold;">${subjectLabel}</p>
+          </div>
+
+          <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981;">
+            <p style="margin: 0 0 10px 0; font-size: 14px; color: #999;">Message</p>
+            <p style="margin: 0; white-space: pre-wrap;">${data.message}</p>
+          </div>
+
+          <div style="margin-top: 20px; text-align: center;">
+            <a href="mailto:${data.email}?subject=Re: ${subjectLabel}" 
+               style="background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+              Répondre à ${data.name}
+            </a>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #999;">
+          <p>Message envoyé depuis le formulaire de contact MyGuideDigital</p>
+          <p>© ${new Date().getFullYear()} MyGuideDigital. Tous droits réservés.</p>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `
+Nouveau message de contact MyGuideDigital
+
+Expéditeur: ${data.name}
+Email: ${data.email}
+Sujet: ${subjectLabel}
+
+Message:
+${data.message}
+
+---
+Pour répondre, envoyez un email à ${data.email}
+    `.trim(),
+  };
+}
+
+/**
+ * Envoyer un email de contact vers info@gims-consulting.be
+ */
+export async function sendContactEmail(data: { name: string; email: string; subject: string; message: string }): Promise<boolean> {
+  try {
+    const emailTransporter = initEmailTransporter();
+    
+    if (!emailTransporter) {
+      console.warn('⚠️ [EMAIL] Transporteur email non disponible - Message de contact non envoyé');
+      return false;
+    }
+
+    const emailContent = getContactEmailTemplate(data);
+    const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@myguidedigital.com';
+    const contactEmail = 'info@gims-consulting.be';
+
+    const mailOptions = {
+      from: `"MyGuideDigital - Contact" <${fromEmail}>`,
+      to: contactEmail,
+      replyTo: data.email,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
+    };
+
+    const info = await emailTransporter.sendMail(mailOptions);
+    console.log('✅ [EMAIL] Message de contact envoyé à:', contactEmail, 'de:', data.email, 'Message ID:', info.messageId);
+    return true;
+  } catch (error: any) {
+    console.error('❌ [EMAIL] Erreur lors de l\'envoi du message de contact:', error);
+    return false;
+  }
+}
+
 /**
  * Vérifier la configuration email
  */

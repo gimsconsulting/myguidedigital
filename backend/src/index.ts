@@ -19,6 +19,7 @@ import adminRoutes from './routes/admin';
 import chatDocumentsRoutes from './routes/chat-documents';
 import chatRoutes from './routes/chat';
 import affiliateRoutes from './routes/affiliates';
+import contactRoutes from './routes/contact';
 
 // Import CSRF middleware
 import { getCsrfToken, validateCsrfToken } from './middleware/csrf';
@@ -243,6 +244,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/chat-documents', chatDocumentsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/affiliates', affiliateRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Error handling middleware - Gestion améliorée des erreurs
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

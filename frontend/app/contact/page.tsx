@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import LanguageSelector from '@/components/LanguageSelector';
+import api from '@/lib/api';
 
 export default function ContactPage() {
   const { t } = useTranslation();
@@ -23,11 +24,14 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus('sending');
-    // Simulate sending
-    setTimeout(() => {
+    try {
+      await api.post('/contact', formData);
       setFormStatus('sent');
       setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 1500);
+    } catch (error: any) {
+      console.error('Erreur envoi formulaire de contact:', error);
+      setFormStatus('error');
+    }
   };
 
   const contactCards = [
@@ -353,6 +357,13 @@ export default function ContactPage() {
                       <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                         <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         <p className="text-emerald-300 text-sm">Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.</p>
+                      </div>
+                    )}
+
+                    {formStatus === 'error' && (
+                      <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                        <svg className="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <p className="text-red-300 text-sm">Une erreur est survenue. Veuillez réessayer ou nous contacter directement à info@gims-consulting.be</p>
                       </div>
                     )}
                   </form>
