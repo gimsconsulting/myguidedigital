@@ -17,7 +17,8 @@ declare global {
   }
 }
 
-const ERROR_STORAGE_KEY = 'login-error';
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+const isGoogleConfigured = !!GOOGLE_CLIENT_ID;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,15 +32,19 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
+  // Nettoyer les anciennes erreurs persistantes au montage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('login-error');
+    }
+  }, []);
+
   const handleGoogleSuccess = useCallback(async (response: any) => {
     setIsGoogleLoading(true);
     try {
       const result = await authApi.googleAuth({ credential: response.credential });
       const { token, user } = result.data;
       setError('');
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem(ERROR_STORAGE_KEY);
-      }
       toast.success(t('login.success', 'Connexion réussie !'));
       setAuth(token, user);
       router.push('/dashboard');
@@ -53,8 +58,10 @@ export default function LoginPage() {
     }
   }, [router, setAuth, t]);
 
-  // Charger le script Google avec la bonne langue et rendre le bouton
+  // Charger le script Google avec la bonne langue et rendre le bouton (seulement si configuré)
   useEffect(() => {
+    if (!isGoogleConfigured) return;
+
     const lang = i18n.language || 'fr';
 
     // Supprimer l'ancien script Google si présent (pour forcer le rechargement avec la nouvelle langue)
@@ -71,7 +78,7 @@ export default function LoginPage() {
     script.onload = () => {
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          client_id: GOOGLE_CLIENT_ID,
           callback: handleGoogleSuccess,
         });
         const container = document.getElementById('google-signin-btn-login');
@@ -95,48 +102,17 @@ export default function LoginPage() {
     };
   }, [handleGoogleSuccess, i18n.language]);
 
-  // Charger l'erreur depuis sessionStorage au montage et la garder
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedError = sessionStorage.getItem(ERROR_STORAGE_KEY);
-      if (storedError) {
-        setError(storedError);
-      }
-    }
-  }, []);
-
-  // Mettre à jour sessionStorage quand l'erreur change
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (error) {
-        sessionStorage.setItem(ERROR_STORAGE_KEY, error);
-      } else {
-        sessionStorage.removeItem(ERROR_STORAGE_KEY);
-      }
-    }
-  }, [error]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Ne pas réinitialiser l'erreur immédiatement - elle sera mise à jour après la réponse
+    setError('');
     setIsLoading(true);
 
     try {
       const response = await authApi.login({ email, password });
       const { token, user } = response.data;
       
-      // Nettoyer l'erreur en cas de succès
-      setError('');
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem(ERROR_STORAGE_KEY);
-      }
-      
       toast.success(t('login.success', 'Connexion réussie !'));
-      
-      // Si "Rester connecté" est coché, sauvegarder le token dans localStorage (déjà fait par setAuth)
-      // Sinon, le token sera dans sessionStorage seulement
       setAuth(token, user);
-      
       router.push('/dashboard');
     } catch (err: any) {
       console.error('Erreur connexion:', err);
@@ -148,9 +124,6 @@ export default function LoginPage() {
         const errorMessage = err.response?.data?.error || 
                             `Trop de tentatives de connexion. Veuillez réessayer dans ${minutes} minute(s).`;
         setError(errorMessage);
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem(ERROR_STORAGE_KEY, errorMessage);
-        }
         toast.error(errorMessage);
         return;
       }
@@ -160,23 +133,21 @@ export default function LoginPage() {
                           err.response?.data?.errors?.[0]?.msg ||
                           err.message || 
                           t('login.error', 'Erreur lors de la connexion');
-      // Sauvegarder l'erreur dans sessionStorage pour persistance
       setError(errorMessage);
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem(ERROR_STORAGE_KEY, errorMessage);
-      }
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Ne pas effacer l'erreur quand on tape - elle reste affichée
+  // Effacer l'erreur quand l'utilisateur commence à taper
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (error) setError('');
     setEmail(e.target.value);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (error) setError('');
     setPassword(e.target.value);
   };
 
@@ -201,28 +172,32 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Bouton Google */}
-        <div className="mb-6">
-          <div id="google-signin-btn-login" className="flex justify-center"></div>
-          {isGoogleLoading && (
-            <div className="flex items-center justify-center mt-2">
-              <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <span className="ml-2 text-sm text-gray-500">Connexion en cours...</span>
+        {/* Bouton Google - uniquement si configuré */}
+        {isGoogleConfigured && (
+          <>
+            <div className="mb-6">
+              <div id="google-signin-btn-login" className="flex justify-center"></div>
+              {isGoogleLoading && (
+                <div className="flex items-center justify-center mt-2">
+                  <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span className="ml-2 text-sm text-gray-500">Connexion en cours...</span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-gray-500">ou</span>
-          </div>
-        </div>
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-gray-500">ou</span>
+              </div>
+            </div>
+          </>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
           {error && (
