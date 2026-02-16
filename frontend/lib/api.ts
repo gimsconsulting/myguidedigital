@@ -433,6 +433,7 @@ export const blogApi = {
   getArticles: (params?: { category?: string; featured?: string; page?: number; limit?: number; search?: string }) =>
     api.get('/blog', { params }),
   getArticle: (slug: string) => api.get(`/blog/article/${slug}`),
+  getPublicCategories: () => api.get('/blog/categories'),
   // Admin
   adminList: (params?: { status?: string; category?: string; page?: number; limit?: number }) =>
     api.get('/blog/admin/list', { params }),
@@ -448,6 +449,13 @@ export const blogApi = {
   adminPexelsSearch: (query: string, page?: number) =>
     api.get('/blog/admin/pexels/search', { params: { query, page: page || 1 } }),
   adminStats: () => api.get('/blog/admin/stats'),
+  // Admin - Catégories
+  adminGetCategories: () => api.get('/blog/admin/categories'),
+  adminCreateCategory: (data: { label: string; emoji?: string; gradient?: string }) =>
+    api.post('/blog/admin/categories', data),
+  adminUpdateCategory: (id: string, data: { label?: string; emoji?: string; gradient?: string; isActive?: boolean }) =>
+    api.put(`/blog/admin/categories/${id}`, data),
+  adminDeleteCategory: (id: string) => api.delete(`/blog/admin/categories/${id}`),
 };
 
 export default api;

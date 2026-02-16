@@ -42,12 +42,35 @@ interface PexelsPhoto {
   };
 }
 
-const categories = [
-  { id: 'conseils', label: 'Conseils', emoji: '💡', gradient: 'from-amber-500 to-orange-500' },
-  { id: 'avantages', label: 'Avantages', emoji: '🚀', gradient: 'from-emerald-500 to-teal-500' },
-  { id: 'technologie', label: 'Technologie', emoji: '🤖', gradient: 'from-violet-500 to-purple-500' },
-  { id: 'temoignages', label: 'Témoignages', emoji: '⭐', gradient: 'from-pink-500 to-rose-500' },
-  { id: 'actualites', label: 'Actualités', emoji: '📢', gradient: 'from-primary to-blue-500' },
+interface BlogCategoryType {
+  id: string;
+  slug: string;
+  label: string;
+  emoji: string;
+  gradient: string;
+  isActive: boolean;
+  order: number;
+}
+
+// Catégories par défaut (fallback si DB vide)
+const defaultCategories: BlogCategoryType[] = [
+  { id: 'default-1', slug: 'conseils', label: 'Conseils', emoji: '💡', gradient: 'from-amber-500 to-orange-500', isActive: true, order: 0 },
+  { id: 'default-2', slug: 'avantages', label: 'Avantages', emoji: '🚀', gradient: 'from-emerald-500 to-teal-500', isActive: true, order: 1 },
+  { id: 'default-3', slug: 'technologie', label: 'Technologie', emoji: '🤖', gradient: 'from-violet-500 to-purple-500', isActive: true, order: 2 },
+  { id: 'default-4', slug: 'temoignages', label: 'Témoignages', emoji: '⭐', gradient: 'from-pink-500 to-rose-500', isActive: true, order: 3 },
+  { id: 'default-5', slug: 'actualites', label: 'Actualités', emoji: '📢', gradient: 'from-primary to-blue-500', isActive: true, order: 4 },
+];
+
+const gradientOptions = [
+  { value: 'from-amber-500 to-orange-500', label: '🟠 Orange' },
+  { value: 'from-emerald-500 to-teal-500', label: '🟢 Vert' },
+  { value: 'from-violet-500 to-purple-500', label: '🟣 Violet' },
+  { value: 'from-pink-500 to-rose-500', label: '🩷 Rose' },
+  { value: 'from-primary to-blue-500', label: '🔵 Bleu' },
+  { value: 'from-red-500 to-pink-500', label: '🔴 Rouge' },
+  { value: 'from-cyan-500 to-blue-500', label: '🩵 Cyan' },
+  { value: 'from-yellow-500 to-amber-500', label: '🟡 Jaune' },
+  { value: 'from-primary to-pink-500', label: '💜 Brand' },
 ];
 
 function getImageUrl(path: string | null): string {
@@ -75,6 +98,15 @@ export default function AdminBlogPage() {
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [stats, setStats] = useState<any>(null);
+
+  // Catégories dynamiques
+  const [categories, setCategories] = useState<BlogCategoryType[]>(defaultCategories);
+  const [editingCategory, setEditingCategory] = useState<BlogCategoryType | null>(null);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [catFormLabel, setCatFormLabel] = useState('');
+  const [catFormEmoji, setCatFormEmoji] = useState('📁');
+  const [catFormGradient, setCatFormGradient] = useState('from-primary to-pink-500');
+  const [catSaving, setCatSaving] = useState(false);
 
   // Editor states
   const [title, setTitle] = useState('');
@@ -124,16 +156,87 @@ export default function AdminBlogPage() {
   async function loadData() {
     try {
       setLoading(true);
-      const [articlesRes, statsRes] = await Promise.all([
+      const [articlesRes, statsRes, categoriesRes] = await Promise.all([
         blogApi.adminList({ status: filterStatus || undefined, category: filterCategory || undefined }),
         blogApi.adminStats(),
+        blogApi.adminGetCategories(),
       ]);
       setArticles(articlesRes.data.articles);
       setStats(statsRes.data);
+      if (categoriesRes.data && categoriesRes.data.length > 0) {
+        setCategories(categoriesRes.data);
+      }
     } catch (error) {
       console.error('Erreur chargement blog:', error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  // ───── Category management ─────
+  function openNewCategory() {
+    setEditingCategory(null);
+    setCatFormLabel('');
+    setCatFormEmoji('📁');
+    setCatFormGradient('from-primary to-pink-500');
+    setShowCategoryForm(true);
+  }
+
+  function openEditCategory(cat: BlogCategoryType) {
+    setEditingCategory(cat);
+    setCatFormLabel(cat.label);
+    setCatFormEmoji(cat.emoji);
+    setCatFormGradient(cat.gradient);
+    setShowCategoryForm(true);
+  }
+
+  async function handleSaveCategory() {
+    if (!catFormLabel.trim()) return;
+    setCatSaving(true);
+    try {
+      if (editingCategory) {
+        const res = await blogApi.adminUpdateCategory(editingCategory.id, {
+          label: catFormLabel,
+          emoji: catFormEmoji,
+          gradient: catFormGradient,
+        });
+        setCategories(categories.map((c) => (c.id === editingCategory.id ? res.data : c)));
+      } else {
+        const res = await blogApi.adminCreateCategory({
+          label: catFormLabel,
+          emoji: catFormEmoji,
+          gradient: catFormGradient,
+        });
+        setCategories([...categories, res.data]);
+      }
+      setShowCategoryForm(false);
+      setEditingCategory(null);
+    } catch (error: any) {
+      console.error('Erreur catégorie:', error);
+      alert(error.response?.data?.message || 'Erreur lors de la sauvegarde');
+    } finally {
+      setCatSaving(false);
+    }
+  }
+
+  async function handleToggleCategory(cat: BlogCategoryType) {
+    try {
+      const res = await blogApi.adminUpdateCategory(cat.id, { isActive: !cat.isActive });
+      setCategories(categories.map((c) => (c.id === cat.id ? res.data : c)));
+    } catch (error: any) {
+      console.error('Erreur toggle catégorie:', error);
+      alert(error.response?.data?.message || 'Erreur lors de la mise à jour');
+    }
+  }
+
+  async function handleDeleteCategory(cat: BlogCategoryType) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${cat.label}" ?`)) return;
+    try {
+      await blogApi.adminDeleteCategory(cat.id);
+      setCategories(categories.filter((c) => c.id !== cat.id));
+    } catch (error: any) {
+      console.error('Erreur suppression catégorie:', error);
+      alert(error.response?.data?.message || 'Erreur lors de la suppression');
     }
   }
 
@@ -326,7 +429,7 @@ export default function AdminBlogPage() {
   }
 
   // ───── Render helpers ─────
-  const getCategoryInfo = (catId: string) => categories.find((c) => c.id === catId);
+  const getCategoryInfo = (catSlug: string) => categories.find((c) => c.slug === catSlug);
 
   // ═══════════════════════════════════════════════════════════
   // RENDER
@@ -464,7 +567,7 @@ export default function AdminBlogPage() {
           >
             <option value="">Toutes catégories</option>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
+              <option key={cat.id} value={cat.slug}>
                 {cat.emoji} {cat.label}
               </option>
             ))}
@@ -778,23 +881,148 @@ export default function AdminBlogPage() {
 
             {/* Catégorie */}
             <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6">
-              <h3 className="text-white font-semibold mb-4">Catégorie *</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-semibold">Catégorie *</h3>
+                <button
+                  onClick={openNewCategory}
+                  className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all text-xs font-medium"
+                  title="Ajouter une catégorie"
+                >
+                  + Ajouter
+                </button>
+              </div>
               <div className="grid grid-cols-1 gap-2">
                 {categories.map((cat) => (
-                  <button
+                  <div
                     key={cat.id}
-                    onClick={() => setCategory(cat.id)}
-                    className={`px-4 py-2.5 rounded-xl text-sm text-left transition-all flex items-center gap-2 ${
-                      category === cat.id
+                    className={`rounded-xl text-sm transition-all flex items-center group ${
+                      !cat.isActive ? 'opacity-40' : ''
+                    } ${
+                      category === cat.slug
                         ? `bg-gradient-to-r ${cat.gradient} text-white shadow-lg`
                         : 'bg-white/[0.03] border border-white/[0.08] text-white/50 hover:text-white hover:border-white/[0.15]'
                     }`}
                   >
-                    <span>{cat.emoji}</span>
-                    <span>{cat.label}</span>
-                  </button>
+                    {/* Zone cliquable pour sélectionner */}
+                    <button
+                      onClick={() => cat.isActive && setCategory(cat.slug)}
+                      className={`flex-1 flex items-center gap-2 px-4 py-2.5 text-left ${!cat.isActive ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                      disabled={!cat.isActive}
+                    >
+                      <span>{cat.emoji}</span>
+                      <span className="flex-1">{cat.label}</span>
+                      {!cat.isActive && <span className="text-[10px] opacity-60">inactif</span>}
+                    </button>
+
+                    {/* Actions : toggle + edit + delete */}
+                    <div className="flex items-center gap-1 pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {/* Toggle actif/inactif */}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleToggleCategory(cat); }}
+                        className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
+                        style={{ backgroundColor: cat.isActive ? '#22c55e' : '#374151' }}
+                        title={cat.isActive ? 'Désactiver' : 'Activer'}
+                      >
+                        <span
+                          className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-md transition-transform"
+                          style={{ left: cat.isActive ? '18px' : '2px' }}
+                        />
+                      </button>
+                      {/* Crayon modifier */}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openEditCategory(cat); }}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/40 hover:text-primary hover:bg-primary/10 transition-all"
+                        title="Modifier"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                      {/* Poubelle supprimer */}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat); }}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                        title="Supprimer"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
+
+              {/* Modal formulaire catégorie */}
+              {showCategoryForm && (
+                <div className="mt-4 p-4 bg-white/[0.03] border border-white/[0.1] rounded-xl space-y-3">
+                  <h4 className="text-white/70 text-sm font-medium">
+                    {editingCategory ? '✏️ Modifier la catégorie' : '➕ Nouvelle catégorie'}
+                  </h4>
+                  <div>
+                    <label className="text-white/40 text-xs mb-1 block">Nom</label>
+                    <input
+                      type="text"
+                      value={catFormLabel}
+                      onChange={(e) => setCatFormLabel(e.target.value)}
+                      placeholder="Ex: Tourisme"
+                      className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-white text-sm placeholder:text-white/20 focus:border-primary/50 focus:outline-none"
+                      autoFocus
+                    />
+                  </div>
+                  <div>
+                    <label className="text-white/40 text-xs mb-1 block">Emoji</label>
+                    <input
+                      type="text"
+                      value={catFormEmoji}
+                      onChange={(e) => setCatFormEmoji(e.target.value)}
+                      placeholder="📁"
+                      className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-white text-sm placeholder:text-white/20 focus:border-primary/50 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-white/40 text-xs mb-1 block">Couleur</label>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {gradientOptions.map((g) => (
+                        <button
+                          key={g.value}
+                          onClick={() => setCatFormGradient(g.value)}
+                          className={`px-2 py-1.5 rounded-lg text-xs transition-all ${
+                            catFormGradient === g.value
+                              ? `bg-gradient-to-r ${g.value} text-white shadow-lg ring-2 ring-white/30`
+                              : 'bg-white/[0.03] border border-white/[0.08] text-white/50 hover:border-white/[0.15]'
+                          }`}
+                        >
+                          {g.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Preview */}
+                  <div className="pt-2">
+                    <label className="text-white/40 text-xs mb-1 block">Aperçu</label>
+                    <div className={`px-4 py-2.5 rounded-xl bg-gradient-to-r ${catFormGradient} text-white text-sm flex items-center gap-2 shadow-lg`}>
+                      <span>{catFormEmoji}</span>
+                      <span>{catFormLabel || 'Nom...'}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={handleSaveCategory}
+                      disabled={catSaving || !catFormLabel.trim()}
+                      className="flex-1 px-3 py-2 rounded-lg bg-gradient-to-r from-primary to-pink-500 text-white text-sm font-medium hover:shadow-lg transition-all disabled:opacity-50"
+                    >
+                      {catSaving ? '⏳ ...' : editingCategory ? '✅ Modifier' : '✅ Créer'}
+                    </button>
+                    <button
+                      onClick={() => { setShowCategoryForm(false); setEditingCategory(null); }}
+                      className="px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white/50 hover:text-white text-sm transition-all"
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Tags */}

@@ -138,6 +138,20 @@ router.get('/', async (req: express.Request, res: express.Response) => {
   }
 });
 
+// GET /api/blog/categories - Catégories actives (public)
+router.get('/categories', async (req: express.Request, res: express.Response) => {
+  try {
+    const categories = await prisma.blogCategory.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+    });
+    res.json(categories);
+  } catch (error: any) {
+    console.error('❌ [BLOG] Erreur catégories publiques:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
 // GET /api/blog/article/:slug - Article unique (public)
 router.get('/article/:slug', async (req: express.Request, res: express.Response) => {
   try {
@@ -169,6 +183,192 @@ router.get('/article/:slug', async (req: express.Request, res: express.Response)
 // ═══════════════════════════════════════════════════════════
 // ROUTES ADMIN (authentifiées)
 // ═══════════════════════════════════════════════════════════
+
+// ───── CATEGORIES (doivent être AVANT /admin/:id pour éviter conflit) ─────
+
+// GET /api/blog/admin/categories - Liste des catégories (admin)
+router.get('/admin/categories', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const categories = await prisma.blogCategory.findMany({
+      orderBy: { order: 'asc' },
+    });
+
+    // Si aucune catégorie, insérer les catégories par défaut
+    if (categories.length === 0) {
+      const defaults = [
+        { slug: 'conseils', label: 'Conseils', emoji: '💡', gradient: 'from-amber-500 to-orange-500', order: 0 },
+        { slug: 'avantages', label: 'Avantages', emoji: '🚀', gradient: 'from-emerald-500 to-teal-500', order: 1 },
+        { slug: 'technologie', label: 'Technologie', emoji: '🤖', gradient: 'from-violet-500 to-purple-500', order: 2 },
+        { slug: 'temoignages', label: 'Témoignages', emoji: '⭐', gradient: 'from-pink-500 to-rose-500', order: 3 },
+        { slug: 'actualites', label: 'Actualités', emoji: '📢', gradient: 'from-primary to-blue-500', order: 4 },
+      ];
+
+      for (const cat of defaults) {
+        await prisma.blogCategory.create({ data: cat });
+      }
+
+      const newCategories = await prisma.blogCategory.findMany({ orderBy: { order: 'asc' } });
+      return res.json(newCategories);
+    }
+
+    res.json(categories);
+  } catch (error: any) {
+    console.error('❌ [BLOG] Erreur catégories:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+// POST /api/blog/admin/categories - Créer une catégorie (admin)
+router.post('/admin/categories', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const { label, emoji, gradient } = req.body;
+
+    if (!label) {
+      return res.status(400).json({ message: 'Le nom de la catégorie est requis' });
+    }
+
+    // Générer un slug unique
+    const slug = label
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+
+    const existing = await prisma.blogCategory.findUnique({ where: { slug } });
+    if (existing) {
+      return res.status(400).json({ message: 'Une catégorie avec ce nom existe déjà' });
+    }
+
+    // Trouver l'ordre max
+    const maxOrder = await prisma.blogCategory.aggregate({ _max: { order: true } });
+    const newOrder = (maxOrder._max.order ?? -1) + 1;
+
+    const category = await prisma.blogCategory.create({
+      data: {
+        slug,
+        label,
+        emoji: emoji || '📁',
+        gradient: gradient || 'from-primary to-pink-500',
+        order: newOrder,
+      },
+    });
+
+    console.log('✅ [BLOG] Catégorie créée:', category.slug);
+    res.status(201).json(category);
+  } catch (error: any) {
+    console.error('❌ [BLOG] Erreur création catégorie:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+// PUT /api/blog/admin/categories/:id - Modifier une catégorie (admin)
+router.put('/admin/categories/:id', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const { label, emoji, gradient, isActive } = req.body;
+
+    const existing = await prisma.blogCategory.findUnique({ where: { id: req.params.id } });
+    if (!existing) {
+      return res.status(404).json({ message: 'Catégorie non trouvée' });
+    }
+
+    const data: any = {};
+    if (label !== undefined) {
+      data.label = label;
+      data.slug = label
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+      const slugExists = await prisma.blogCategory.findFirst({
+        where: { slug: data.slug, id: { not: req.params.id } },
+      });
+      if (slugExists) {
+        data.slug = `${data.slug}-${Date.now()}`;
+      }
+    }
+    if (emoji !== undefined) data.emoji = emoji;
+    if (gradient !== undefined) data.gradient = gradient;
+    if (isActive !== undefined) data.isActive = isActive;
+
+    const category = await prisma.blogCategory.update({
+      where: { id: req.params.id },
+      data,
+    });
+
+    console.log('✅ [BLOG] Catégorie modifiée:', category.slug, data);
+    res.json(category);
+  } catch (error: any) {
+    console.error('❌ [BLOG] Erreur modification catégorie:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+// DELETE /api/blog/admin/categories/:id - Supprimer une catégorie (admin)
+router.delete('/admin/categories/:id', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const existing = await prisma.blogCategory.findUnique({ where: { id: req.params.id } });
+    if (!existing) {
+      return res.status(404).json({ message: 'Catégorie non trouvée' });
+    }
+
+    const articlesCount = await prisma.blogArticle.count({
+      where: { category: existing.slug },
+    });
+
+    if (articlesCount > 0) {
+      return res.status(400).json({
+        message: `Impossible de supprimer : ${articlesCount} article(s) utilisent cette catégorie. Réassignez-les d'abord.`,
+      });
+    }
+
+    await prisma.blogCategory.delete({ where: { id: req.params.id } });
+
+    console.log('✅ [BLOG] Catégorie supprimée:', existing.slug);
+    res.json({ message: 'Catégorie supprimée avec succès' });
+  } catch (error: any) {
+    console.error('❌ [BLOG] Erreur suppression catégorie:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+// ───── STATS (avant /admin/:id pour éviter conflit) ─────
+
+// GET /api/blog/admin/stats - Statistiques blog (admin)
+router.get('/admin/stats', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const [total, published, draft, featured] = await Promise.all([
+      prisma.blogArticle.count(),
+      prisma.blogArticle.count({ where: { status: 'PUBLISHED' } }),
+      prisma.blogArticle.count({ where: { status: 'DRAFT' } }),
+      prisma.blogArticle.count({ where: { featured: true } }),
+    ]);
+
+    const byCategory = await prisma.blogArticle.groupBy({
+      by: ['category'],
+      _count: { id: true },
+    });
+
+    res.json({
+      total,
+      published,
+      draft,
+      featured,
+      byCategory: byCategory.reduce((acc: any, item) => {
+        acc[item.category] = item._count.id;
+        return acc;
+      }, {}),
+    });
+  } catch (error: any) {
+    console.error('❌ [BLOG] Erreur stats:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+// ───── ARTICLES ─────
 
 // GET /api/blog/admin/list - Tous les articles (admin)
 router.get('/admin/list', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
@@ -444,37 +644,6 @@ router.get('/admin/pexels/search', authenticateToken, requireAdmin, async (req: 
   } catch (error: any) {
     console.error('❌ [BLOG] Erreur Pexels:', error.message);
     res.status(500).json({ message: 'Erreur lors de la recherche Pexels' });
-  }
-});
-
-// GET /api/blog/admin/stats - Statistiques blog (admin)
-router.get('/admin/stats', authenticateToken, requireAdmin, async (req: express.Request, res: express.Response) => {
-  try {
-    const [total, published, draft, featured] = await Promise.all([
-      prisma.blogArticle.count(),
-      prisma.blogArticle.count({ where: { status: 'PUBLISHED' } }),
-      prisma.blogArticle.count({ where: { status: 'DRAFT' } }),
-      prisma.blogArticle.count({ where: { featured: true } }),
-    ]);
-
-    const byCategory = await prisma.blogArticle.groupBy({
-      by: ['category'],
-      _count: { id: true },
-    });
-
-    res.json({
-      total,
-      published,
-      draft,
-      featured,
-      byCategory: byCategory.reduce((acc: any, item) => {
-        acc[item.category] = item._count.id;
-        return acc;
-      }, {}),
-    });
-  } catch (error: any) {
-    console.error('❌ [BLOG] Erreur stats:', error);
-    res.status(500).json({ message: 'Erreur serveur' });
   }
 });
 
