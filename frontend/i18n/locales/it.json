@@ -172,7 +172,8 @@
     "blog": "Blog",
     "contact": "Contatto",
     "login": "Accedi",
-    "testApp": "Prova la nostra App gratuitamente"
+    "testApp": "Prova la nostra App gratuitamente",
+    "services": "I nostri servizi"
   },
   "contact": {
     "title": "Contattaci",
@@ -333,6 +334,16 @@
     }
   },
   "home": {
+    "badge": {
+      "platform": "Piattaforma N°1 per gli opuscoli di benvenuto digitali",
+      "features": "🚀 Funzionalità",
+      "ai": "🤖 Intelligenza Artificiale",
+      "benefits": "💡 Vantaggi",
+      "getStarted": "🎯 Inizia",
+      "testimonials": "⭐ Testimonianze",
+      "faq": "❓ FAQ",
+      "readyToStart": "Pronto a iniziare?"
+    },
     "hero": {
       "title": "Guida digitale intelligente",
       "subtitle": "per Airbnb, affitti e host",
@@ -405,9 +416,20 @@
       "configuration": "Configurazione",
       "customizable": "Personalizzabile"
     },
+    "demo": {
+      "title": "Desidera una dimostrazione?",
+      "desc": "In meno di 30 minuti, scopra lo strumento e permetta ai suoi team di iniziare immediatamente.",
+      "cta": "Richiedere una demo"
+    },
+    "migration": {
+      "title": "Ci occupiamo di tutto",
+      "desc": "Ha un opuscolo cartaceo o un documento esistente? Ce lo invii e lo trasformeremo in un opuscolo digitale completo.",
+      "cta": "Contattaci"
+    },
     "pricing": {
       "title": "Prezzi semplici e trasparenti",
       "subtitle": "Scegli il piano che si adatta alle tue esigenze",
+      "seeAll": "Scoprire tutti i nostri prezzi dettagliati",
       "launchOffer": "OFFERTA DI LANCIO",
       "launchOfferSubtitle": "Valida per un periodo limitato",
       "monthly": {
@@ -505,7 +527,8 @@
       "support": "Supporto",
       "documentation": "Documentazione",
       "contact": "Contatto",
-      "copyright": "© 2026 My Guide Digital. Tutti i diritti riservati."
+      "copyright": "© 2026 My Guide Digital. Tutti i diritti riservati.",
+      "affiliation": "Programma di affiliazione"
     }
   },
   "login": {
@@ -545,6 +568,97 @@
     "title": "Blog My Guide Digital",
     "subtitle": "Consigli, trucchi e notizie per ottimizzare la tua attività di host",
     "readMore": "Leggi di più"
+  },
+  "services": {
+    "badge": "Soluzione tutto in uno per l'accoglienza digitale",
+    "hero": {
+      "title1": "Reinventate l'accoglienza",
+      "title2": "dei vostri viaggiatori",
+      "subtitle": "Trasformate ogni soggiorno in un'esperienza unica",
+      "description": "Facilitate l'accesso alle informazioni essenziali, personalizzate l'accoglienza dei vostri visitatori e rispondete alle aspettative dei viaggiatori di oggi. My Guide Digital accompagna albergatori, gestori di campeggi e proprietari di affitti stagionali.",
+      "cta": "Creare il vostro opuscolo di benvenuto digitale",
+      "pricing": "Scoprire le nostre tariffe"
+    },
+    "why": {
+      "badge": "💡 Perché sceglierci",
+      "title1": "Perché My Guide Digital è",
+      "title2": "la soluzione ideale",
+      "subtitle": "Un opuscolo di benvenuto digitale pensato per rispondere alle aspettative dei viaggiatori e semplificare la vostra quotidianità.",
+      "block1Title": "Accessibile ovunque, in qualsiasi momento",
+      "block1Desc": "Il vostro opuscolo di benvenuto è 100% digitale e consultabile su smartphone, tablet o computer. I vostri viaggiatori accedono a tutte le informazioni essenziali con un semplice scan del QR code, senza scaricare nulla.",
+      "block2Title": "Personalizzazione completa a vostra immagine",
+      "block2Desc": "Integrate il vostro logo, i colori e l'identità visiva per offrire un'accoglienza professionale e coerente con il vostro marchio. Ogni dettaglio riflette il vostro stabilimento.",
+      "block3Title": "Un approccio eco-responsabile",
+      "block3Desc": "Basta con le stampe ripetitive su carta. Con My Guide Digital, solo il QR code viene stampato. Riducete la vostra impronta ecologica modernizzando la vostra accoglienza.",
+      "block4Title": "Strumenti innovativi integrati",
+      "block4Desc": "Chatbot IA disponibile 24/7, traduzione multilingue automatica, statistiche d'uso e check-in digitalizzato: tutto è pensato per arricchire l'esperienza dei vostri viaggiatori."
+    },
+    "features": {
+      "badge": "⚡ Funzionalità",
+      "title1": "Scoprite le nostre soluzioni",
+      "title2": "per un'accoglienza perfetta",
+      "subtitle": "Ogni funzionalità è progettata per migliorare l'accoglienza dei vostri viaggiatori.",
+      "learnMore": "Per saperne di più",
+      "ctaTest": "🚀 Provare My Guide Digital gratuitamente",
+      "f1Title": "Traduzione multilingue automatica",
+      "f1Desc": "Accogliete viaggiatori da tutto il mondo con la traduzione automatica del vostro opuscolo in più lingue. Il contenuto si adatta automaticamente alla lingua di ogni visitatore.",
+      "f2Title": "Statistiche e monitoraggio dell'engagement",
+      "f2Desc": "Misurate l'impatto del vostro opuscolo con dati di consultazione dettagliati. Identificate le sezioni più consultate e ottimizzate il vostro contenuto di conseguenza.",
+      "f3Title": "Aggiornamenti istantanei e duplicazione",
+      "f3Desc": "Modificate le vostre informazioni in tempo reale dal vostro pannello di controllo. Duplicate facilmente i vostri opuscoli per gestire più alloggi senza ricominciare da zero.",
+      "f4Title": "Raccomandazioni e punti di interesse locali",
+      "f4Desc": "Condividete i vostri migliori indirizzi, ristoranti, attività e siti turistici nelle vicinanze. Arricchite il soggiorno dei vostri viaggiatori con consigli personalizzati.",
+      "f5Title": "Link utili e vendite aggiuntive",
+      "f5Desc": "Aggiungete link cliccabili ai vostri partner, prenotazioni di attività o negozio online. Create nuove opportunità di guadagno migliorando l'esperienza.",
+      "f6Title": "Personalizzazione avanzata e white label",
+      "f6Desc": "Adattate ogni modulo del vostro opuscolo: colori, font, logo, categorie personalizzate e consigli su misura. Offrite un'accoglienza digitale che vi rappresenti davvero.",
+      "f7Title": "Accesso semplificato tramite QR code",
+      "f7Desc": "Un semplice scan dallo smartphone basta per accedere all'intero opuscolo. Posizionate il QR code all'ingresso, sul comodino o nella vostra email di benvenuto.",
+      "f8Title": "Chatbot IA integrato 24/7",
+      "f8Desc": "Il vostro assistente intelligente risponde istantaneamente alle domande dei vostri viaggiatori, giorno e notte. Codice Wi-Fi, orari, istruzioni, raccomandazioni: tutto viene gestito automaticamente.",
+      "f9Title": "Gestione intuitiva dei contenuti",
+      "f9Desc": "Aggiungete facilmente foto, video, documenti PDF e testi. Riorganizzate i vostri moduli con pochi clic per creare un opuscolo completo e attraente."
+    },
+    "testimonials": {
+      "badge": "⭐ Testimonianze",
+      "title1": "Hanno adottato My Guide Digital,",
+      "title2": "scoprite le loro testimonianze!",
+      "t1Name": "Aurélien B.",
+      "t1Role": "Proprietario di agriturismo",
+      "t1Text": "Ottimo servizio per la gestione del nostro agriturismo. Lo strumento è così piacevole e intuitivo che abbiamo deciso di adottarlo definitivamente. I nostri viaggiatori lo adorano!",
+      "t2Name": "Caroline M.",
+      "t2Role": "Host Airbnb",
+      "t2Text": "Applicazione al top! Da più di un anno nell'affitto stagionale, i miei clienti la trovano super pratica. La traduzione in più lingue è un vero vantaggio.",
+      "t3Name": "Jan F.",
+      "t3Role": "Multi-proprietario",
+      "t3Text": "Da 2 anni usiamo My Guide Digital per i nostri due agriturismi. Il grande vantaggio è poter modificare un singolo modulo quando si cambia un'attrezzatura.",
+      "t4Name": "Élodie S.",
+      "t4Role": "Concierge",
+      "t4Text": "Applicazione molto facile da usare, semplice, efficiente e completa. Il servizio di assistenza è attento e reattivo. Un aiuto prezioso!",
+      "t5Name": "Tiffany C.",
+      "t5Role": "Gestrice di affitti",
+      "t5Text": "Gestisco diversi affitti vacanzieri e gli opuscoli mi fanno risparmiare moltissimo tempo negli scambi con i viaggiatori.",
+      "t6Name": "Christophe R.",
+      "t6Role": "Affitto stagionale",
+      "t6Text": "Abbiamo diversi appartamenti in affitto stagionale. La creazione di un opuscolo è rapida e intuitiva con molte opzioni di personalizzazione. Lo raccomandiamo!"
+    },
+    "demo": {
+      "title": "Vorreste",
+      "titleHighlight": "scoprire l'opuscolo",
+      "demoTitle": "Desiderate una dimostrazione?",
+      "demoDesc": "In meno di 30 minuti, scoprite lo strumento e permettete ai vostri team di iniziare immediatamente. Ideale per ottimizzare la vostra accoglienza!",
+      "demoCta": "Prenotare una demo",
+      "migrationTitle": "Ci occupiamo di tutto",
+      "migrationDesc": "Avete un opuscolo cartaceo o un documento esistente? Inviatecelo e lo trasformeremo in un opuscolo digitale completo, tradotto e arricchito con raccomandazioni locali.",
+      "migrationCta": "Contattateci"
+    },
+    "cta": {
+      "title": "È ora di creare il vostro opuscolo!",
+      "desc": "Provate gratuitamente e offrite un'esperienza memorabile ai vostri viaggiatori.",
+      "launch": "Lanciatevi!",
+      "createCta": "Creare il mio opuscolo di benvenuto",
+      "pricingCta": "Vedere le nostre tariffe"
+    }
   },
   "airbnb": {
     "title": "Per host Airbnb",

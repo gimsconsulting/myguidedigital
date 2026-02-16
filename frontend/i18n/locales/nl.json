@@ -172,7 +172,8 @@
     "blog": "Blog",
     "contact": "Contact",
     "login": "Inloggen",
-    "testApp": "Probeer onze App gratis"
+    "testApp": "Probeer onze App gratis",
+    "services": "Onze diensten"
   },
   "contact": {
     "title": "Neem contact met ons op",
@@ -333,6 +334,16 @@
     }
   },
   "home": {
+    "badge": {
+      "platform": "Platform Nr. 1 voor digitale welkomstboekjes",
+      "features": "🚀 Functies",
+      "ai": "🤖 Kunstmatige Intelligentie",
+      "benefits": "💡 Voordelen",
+      "getStarted": "🎯 Aan de slag",
+      "testimonials": "⭐ Getuigenissen",
+      "faq": "❓ FAQ",
+      "readyToStart": "Klaar om te beginnen?"
+    },
     "hero": {
       "title": "Slimme digitale welkomstgids",
       "subtitle": "voor Airbnb, verhuur en hosts",
@@ -405,9 +416,20 @@
       "configuration": "Configuratie",
       "customizable": "Aanpasbaar"
     },
+    "demo": {
+      "title": "Wilt u een demonstratie?",
+      "desc": "Ontdek in minder dan 30 minuten de tool en laat uw teams direct aan de slag gaan.",
+      "cta": "Demo aanvragen"
+    },
+    "migration": {
+      "title": "Wij nemen alles over",
+      "desc": "Heeft u een papieren boekje of een bestaand document? Stuur het ons en wij zetten het om in een compleet digitaal boekje.",
+      "cta": "Neem contact op"
+    },
     "pricing": {
       "title": "Eenvoudige en transparante prijzen",
       "subtitle": "Kies het plan dat bij uw behoeften past",
+      "seeAll": "Al onze gedetailleerde prijzen ontdekken",
       "launchOffer": "LANCERINGSAANBIEDING",
       "launchOfferSubtitle": "Geldig voor beperkte tijd",
       "monthly": {
@@ -505,7 +527,8 @@
       "support": "Ondersteuning",
       "documentation": "Documentatie",
       "contact": "Contact",
-      "copyright": "© 2026 My Guide Digital. Alle rechten voorbehouden."
+      "copyright": "© 2026 My Guide Digital. Alle rechten voorbehouden.",
+      "affiliation": "Partnerprogramma"
     }
   },
   "login": {
@@ -545,6 +568,97 @@
     "title": "My Guide Digital Blog",
     "subtitle": "Tips, trucs en nieuws om uw hostingactiviteit te optimaliseren",
     "readMore": "Lees meer"
+  },
+  "services": {
+    "badge": "Alles-in-één oplossing voor digitaal ontvangst",
+    "hero": {
+      "title1": "Heruitvind het onthaal",
+      "title2": "van uw reizigers",
+      "subtitle": "Verander elk verblijf in een unieke ervaring",
+      "description": "Vergemakkelijk de toegang tot essentiële informatie, personaliseer het onthaal van uw bezoekers en voldoe aan de verwachtingen van de reizigers van vandaag. My Guide Digital begeleidt hoteliers, campingbeheerders en eigenaren van vakantieverhuur.",
+      "cta": "Maak uw digitaal welkomstboekje",
+      "pricing": "Ontdek onze tarieven"
+    },
+    "why": {
+      "badge": "💡 Waarom ons kiezen",
+      "title1": "Waarom My Guide Digital",
+      "title2": "de ideale oplossing is",
+      "subtitle": "Een digitaal welkomstboekje ontworpen om aan de verwachtingen van reizigers te voldoen en uw dagelijks leven te vereenvoudigen.",
+      "block1Title": "Overal en altijd toegankelijk",
+      "block1Desc": "Uw welkomstboekje is 100% digitaal en raadpleegbaar op smartphone, tablet of computer. Uw reizigers krijgen toegang tot alle essentiële informatie met een eenvoudige QR-codescan, zonder iets te downloaden.",
+      "block2Title": "Volledige aanpassing aan uw imago",
+      "block2Desc": "Integreer uw logo, kleuren en visuele identiteit voor een professioneel onthaal dat consistent is met uw merk. Elk detail weerspiegelt uw instelling.",
+      "block3Title": "Een milieuvriendelijke aanpak",
+      "block3Desc": "Gedaan met herhaaldelijk papier afdrukken. Met My Guide Digital wordt alleen de QR-code afgedrukt. Verminder uw ecologische voetafdruk terwijl u uw onthaal moderniseert.",
+      "block4Title": "Innovatieve geïntegreerde tools",
+      "block4Desc": "AI-chatbot 24/7 beschikbaar, automatische meertalige vertaling, gebruiksstatistieken en gedigitaliseerde check-in: alles is ontworpen om de ervaring van uw reizigers te verrijken."
+    },
+    "features": {
+      "badge": "⚡ Functies",
+      "title1": "Ontdek onze oplossingen",
+      "title2": "voor een perfect onthaal",
+      "subtitle": "Elke functie is ontworpen om het onthaal van uw reizigers te verbeteren.",
+      "learnMore": "Meer informatie",
+      "ctaTest": "🚀 My Guide Digital gratis testen",
+      "f1Title": "Automatische meertalige vertaling",
+      "f1Desc": "Verwelkom reizigers van over de hele wereld met automatische vertaling van uw boekje in meerdere talen. De inhoud past zich automatisch aan de taal van elke bezoeker aan.",
+      "f2Title": "Statistieken en engagement tracking",
+      "f2Desc": "Meet de impact van uw boekje met gedetailleerde consultatiegegevens. Identificeer de meest geraadpleegde secties en optimaliseer uw inhoud dienovereenkomstig.",
+      "f3Title": "Directe updates en duplicatie",
+      "f3Desc": "Wijzig uw informatie in realtime vanuit uw dashboard. Dupliceer eenvoudig uw boekjes om meerdere accommodaties te beheren zonder opnieuw te beginnen.",
+      "f4Title": "Lokale aanbevelingen en bezienswaardigheden",
+      "f4Desc": "Deel uw beste adressen, restaurants, activiteiten en toeristische bezienswaardigheden in de buurt. Verrijk het verblijf van uw reizigers met persoonlijke tips.",
+      "f5Title": "Nuttige links en aanvullende verkoop",
+      "f5Desc": "Voeg klikbare links toe naar uw partners, activiteitsreserveringen of online winkel. Creëer nieuwe inkomstenopties terwijl u de ervaring verbetert.",
+      "f6Title": "Geavanceerde aanpassing en white label",
+      "f6Desc": "Pas elke module van uw boekje aan: kleuren, lettertypen, logo, aangepaste categorieën en advies op maat. Bied een digitaal onthaal dat echt bij u past.",
+      "f7Title": "Vereenvoudigde toegang via QR-code",
+      "f7Desc": "Een eenvoudige scan met de smartphone is voldoende om uw hele boekje te openen. Plaats de QR-code bij de ingang, op het nachtkastje of in uw welkomstmail.",
+      "f8Title": "Geïntegreerde AI-chatbot 24/7",
+      "f8Desc": "Uw intelligente assistent beantwoordt direct de vragen van uw reizigers, dag en nacht. Wi-Fi-code, schema's, instructies, aanbevelingen: alles wordt automatisch verwerkt.",
+      "f9Title": "Intuïtief contentbeheer",
+      "f9Desc": "Voeg eenvoudig foto's, video's, PDF-documenten en teksten toe. Herorden uw modules met een paar klikken om een volledig en aantrekkelijk boekje te maken."
+    },
+    "testimonials": {
+      "badge": "⭐ Getuigenissen",
+      "title1": "Ze hebben My Guide Digital geadopteerd,",
+      "title2": "ontdek hun getuigenissen!",
+      "t1Name": "Aurélien B.",
+      "t1Role": "Gasthuiseigenaar",
+      "t1Text": "Geweldige service voor het beheer van ons gasthuis. De tool is zo prettig en intuïtief dat we besloten het definitief te gebruiken. Onze reizigers zijn er dol op!",
+      "t2Name": "Caroline M.",
+      "t2Role": "Airbnb-host",
+      "t2Text": "Top applicatie! Al meer dan een jaar in seizoensverhuur vinden mijn klanten het super praktisch. De vertaling in meerdere talen is een echt pluspunt.",
+      "t3Name": "Jan F.",
+      "t3Role": "Multi-eigenaar",
+      "t3Text": "Al 2 jaar gebruiken we My Guide Digital voor onze twee gasthuizen. Het grote voordeel is dat je een enkele module kunt wijzigen bij het vervangen van apparatuur.",
+      "t4Name": "Élodie S.",
+      "t4Role": "Conciërgeservice",
+      "t4Text": "Zeer gebruiksvriendelijke applicatie, eenvoudig, efficiënt en compleet. De klantenservice is attent en responsief. Een waardevolle hulp!",
+      "t5Name": "Tiffany C.",
+      "t5Role": "Verhuurbeheerder",
+      "t5Text": "Ik beheer meerdere vakantieverhuren en de boekjes besparen me enorm veel tijd bij het contact met reizigers.",
+      "t6Name": "Christophe R.",
+      "t6Role": "Seizoensverhuur",
+      "t6Text": "We hebben meerdere appartementen voor seizoensverhuur. Het maken van een boekje is snel en intuïtief met veel aanpassingsopties. Zeer aan te bevelen!"
+    },
+    "demo": {
+      "title": "Wilt u",
+      "titleHighlight": "het boekje ontdekken",
+      "demoTitle": "Wilt u een demonstratie?",
+      "demoDesc": "Ontdek in minder dan 30 minuten de tool en laat uw teams direct aan de slag gaan. Ideaal om uw onthaal te optimaliseren!",
+      "demoCta": "Een demo boeken",
+      "migrationTitle": "Wij nemen alles over",
+      "migrationDesc": "Heeft u een papieren boekje of een bestaand document? Stuur het ons en wij zetten het om in een compleet digitaal boekje, vertaald en verrijkt met lokale aanbevelingen.",
+      "migrationCta": "Neem contact op"
+    },
+    "cta": {
+      "title": "Het is tijd om uw boekje te maken!",
+      "desc": "Test gratis en bied uw reizigers een onvergetelijke ervaring.",
+      "launch": "Ga van start!",
+      "createCta": "Mijn welkomstboekje maken",
+      "pricingCta": "Onze prijzen bekijken"
+    }
   },
   "airbnb": {
     "title": "Voor Airbnb-hosts",

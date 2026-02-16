@@ -172,7 +172,8 @@
     "blog": "Blog",
     "contact": "Kontakt",
     "login": "Anmelden",
-    "testApp": "Testen Sie unsere App kostenlos"
+    "testApp": "Testen Sie unsere App kostenlos",
+    "services": "Unsere Dienste"
   },
   "contact": {
     "title": "Kontaktieren Sie uns",
@@ -333,6 +334,16 @@
     }
   },
   "home": {
+    "badge": {
+      "platform": "Plattform Nr. 1 für digitale Willkommenshefte",
+      "features": "🚀 Funktionen",
+      "ai": "🤖 Künstliche Intelligenz",
+      "benefits": "💡 Vorteile",
+      "getStarted": "🎯 Loslegen",
+      "testimonials": "⭐ Erfahrungsberichte",
+      "faq": "❓ FAQ",
+      "readyToStart": "Bereit loszulegen?"
+    },
     "hero": {
       "title": "Intelligenter digitaler Willkommensführer",
       "subtitle": "für Airbnb, Vermietungen und Gastgeber",
@@ -405,9 +416,20 @@
       "configuration": "Konfiguration",
       "customizable": "Anpassbar"
     },
+    "demo": {
+      "title": "Möchten Sie eine Demonstration?",
+      "desc": "In weniger als 30 Minuten entdecken Sie das Tool und lassen Ihre Teams sofort loslegen.",
+      "cta": "Demo anfordern"
+    },
+    "migration": {
+      "title": "Wir kümmern uns um alles",
+      "desc": "Haben Sie ein Papierheft oder ein bestehendes Dokument? Senden Sie es uns und wir verwandeln es in ein vollständiges digitales Heft.",
+      "cta": "Kontaktieren Sie uns"
+    },
     "pricing": {
       "title": "Einfache und transparente Preise",
       "subtitle": "Wählen Sie den Plan, der Ihren Bedürfnissen entspricht",
+      "seeAll": "Alle unsere detaillierten Preise entdecken",
       "launchOffer": "LAUNCH-ANGEBOT",
       "launchOfferSubtitle": "Gültig für begrenzte Zeit",
       "monthly": {
@@ -505,7 +527,8 @@
       "support": "Support",
       "documentation": "Dokumentation",
       "contact": "Kontakt",
-      "copyright": "© 2026 My Guide Digital. Alle Rechte vorbehalten."
+      "copyright": "© 2026 My Guide Digital. Alle Rechte vorbehalten.",
+      "affiliation": "Partnerprogramm"
     }
   },
   "login": {
@@ -545,6 +568,97 @@
     "title": "My Guide Digital Blog",
     "subtitle": "Tipps, Tricks und Neuigkeiten zur Optimierung Ihrer Gastgeberaktivität",
     "readMore": "Weiterlesen"
+  },
+  "services": {
+    "badge": "All-in-One-Lösung für den digitalen Empfang",
+    "hero": {
+      "title1": "Erfinden Sie den Empfang",
+      "title2": "Ihrer Reisenden neu",
+      "subtitle": "Verwandeln Sie jeden Aufenthalt in ein einzigartiges Erlebnis",
+      "description": "Erleichtern Sie den Zugang zu wesentlichen Informationen, personalisieren Sie den Empfang Ihrer Besucher und erfüllen Sie die Erwartungen der heutigen Reisenden. My Guide Digital begleitet Hoteliers, Campingplatzverwalter und Ferienwohnungsbesitzer.",
+      "cta": "Erstellen Sie Ihr digitales Willkommensheft",
+      "pricing": "Unsere Preise entdecken"
+    },
+    "why": {
+      "badge": "💡 Warum uns wählen",
+      "title1": "Warum My Guide Digital",
+      "title2": "die ideale Lösung ist",
+      "subtitle": "Ein digitales Willkommensheft, das auf die Erwartungen der Reisenden abgestimmt ist und Ihren Alltag vereinfacht.",
+      "block1Title": "Überall und jederzeit zugänglich",
+      "block1Desc": "Ihr Willkommensheft ist 100% digital und auf Smartphone, Tablet oder Computer abrufbar. Ihre Reisenden greifen mit einem einfachen QR-Code-Scan auf alle wesentlichen Informationen zu, ohne etwas herunterzuladen.",
+      "block2Title": "Vollständige Anpassung an Ihr Image",
+      "block2Desc": "Integrieren Sie Ihr Logo, Ihre Farben und Ihre visuelle Identität für einen professionellen Empfang, der zu Ihrer Marke passt. Jedes Detail spiegelt Ihr Unternehmen wider.",
+      "block3Title": "Ein umweltbewusster Ansatz",
+      "block3Desc": "Schluss mit wiederholtem Papierdrucken. Mit My Guide Digital wird nur der QR-Code gedruckt. Reduzieren Sie Ihren ökologischen Fußabdruck und modernisieren Sie gleichzeitig Ihren Empfang.",
+      "block4Title": "Innovative integrierte Tools",
+      "block4Desc": "KI-Chatbot rund um die Uhr verfügbar, automatische mehrsprachige Übersetzung, Nutzungsstatistiken und digitaler Check-in: alles ist darauf ausgelegt, das Erlebnis Ihrer Reisenden zu bereichern."
+    },
+    "features": {
+      "badge": "⚡ Funktionen",
+      "title1": "Entdecken Sie unsere Lösungen",
+      "title2": "für einen perfekten Empfang",
+      "subtitle": "Jede Funktion ist darauf ausgelegt, den Empfang Ihrer Reisenden zu verbessern.",
+      "learnMore": "Mehr erfahren",
+      "ctaTest": "🚀 My Guide Digital kostenlos testen",
+      "f1Title": "Automatische mehrsprachige Übersetzung",
+      "f1Desc": "Begrüßen Sie Reisende aus der ganzen Welt mit der automatischen Übersetzung Ihres Hefts in mehrere Sprachen. Der Inhalt passt sich automatisch an die Sprache jedes Besuchers an.",
+      "f2Title": "Statistiken und Engagement-Tracking",
+      "f2Desc": "Messen Sie die Wirkung Ihres Hefts mit detaillierten Konsultationsdaten. Identifizieren Sie die am häufigsten aufgerufenen Abschnitte und optimieren Sie Ihren Inhalt entsprechend.",
+      "f3Title": "Sofortige Aktualisierungen und Duplizierung",
+      "f3Desc": "Ändern Sie Ihre Informationen in Echtzeit von Ihrem Dashboard aus. Duplizieren Sie einfach Ihre Hefte, um mehrere Unterkünfte zu verwalten, ohne von vorn zu beginnen.",
+      "f4Title": "Lokale Empfehlungen und Sehenswürdigkeiten",
+      "f4Desc": "Teilen Sie Ihre besten Adressen, Restaurants, Aktivitäten und Sehenswürdigkeiten in der Nähe. Bereichern Sie den Aufenthalt Ihrer Reisenden mit personalisierten Tipps.",
+      "f5Title": "Nützliche Links und Zusatzverkäufe",
+      "f5Desc": "Fügen Sie klickbare Links zu Ihren Partnern, Aktivitätsbuchungen oder Ihrem Online-Shop hinzu. Schaffen Sie neue Umsatzmöglichkeiten und verbessern Sie das Erlebnis.",
+      "f6Title": "Erweiterte Anpassung und White Label",
+      "f6Desc": "Passen Sie jedes Modul Ihres Hefts an: Farben, Schriftarten, Logo, benutzerdefinierte Kategorien und maßgeschneiderte Tipps. Bieten Sie einen digitalen Empfang, der wirklich zu Ihnen passt.",
+      "f7Title": "Vereinfachter Zugang per QR-Code",
+      "f7Desc": "Ein einfacher Scan vom Smartphone reicht aus, um auf Ihr gesamtes Heft zuzugreifen. Platzieren Sie den QR-Code am Eingang, auf dem Nachttisch oder in Ihrer Willkommens-E-Mail.",
+      "f8Title": "Integrierter KI-Chatbot 24/7",
+      "f8Desc": "Ihr intelligenter Assistent beantwortet sofort die Fragen Ihrer Reisenden, Tag und Nacht. WLAN-Code, Zeitpläne, Anweisungen, Empfehlungen: alles wird automatisch verarbeitet.",
+      "f9Title": "Intuitive Inhaltsverwaltung",
+      "f9Desc": "Fügen Sie einfach Fotos, Videos, PDF-Dokumente und Texte hinzu. Ordnen Sie Ihre Module mit wenigen Klicks neu an, um ein vollständiges und attraktives Heft zu erstellen."
+    },
+    "testimonials": {
+      "badge": "⭐ Erfahrungsberichte",
+      "title1": "Sie haben My Guide Digital angenommen,",
+      "title2": "entdecken Sie ihre Erfahrungsberichte!",
+      "t1Name": "Aurélien B.",
+      "t1Role": "Gästehaus-Besitzer",
+      "t1Text": "Großartiger Service für die Verwaltung unseres Gästehauses. Das Tool ist so angenehm und intuitiv, dass wir es dauerhaft übernommen haben. Unsere Reisenden lieben es!",
+      "t2Name": "Caroline M.",
+      "t2Role": "Airbnb-Gastgeber",
+      "t2Text": "Top-Anwendung! Seit über einem Jahr in der saisonalen Vermietung finden meine Kunden sie super praktisch. Die Übersetzung in mehrere Sprachen ist ein echter Vorteil.",
+      "t3Name": "Jan F.",
+      "t3Role": "Multi-Eigentümer",
+      "t3Text": "Seit 2 Jahren nutzen wir My Guide Digital für unsere zwei Gästehäuser. Der große Vorteil ist, ein einzelnes Modul ändern zu können, wenn man Ausstattung wechselt.",
+      "t4Name": "Élodie S.",
+      "t4Role": "Concierge-Service",
+      "t4Text": "Sehr einfach zu bedienende Anwendung, simpel, effizient und vollständig. Der Kundendienst ist aufmerksam und reaktiv. Eine wertvolle Hilfe!",
+      "t5Name": "Tiffany C.",
+      "t5Role": "Vermietungsmanagerin",
+      "t5Text": "Ich verwalte mehrere Ferienwohnungen und die Hefte sparen mir enorm viel Zeit beim Austausch mit Reisenden.",
+      "t6Name": "Christophe R.",
+      "t6Role": "Saisonale Vermietung",
+      "t6Text": "Wir haben mehrere Wohnungen zur saisonalen Vermietung. Die Erstellung eines Hefts ist schnell und intuitiv mit vielen Anpassungsoptionen. Sehr zu empfehlen!"
+    },
+    "demo": {
+      "title": "Möchten Sie",
+      "titleHighlight": "das Heft entdecken",
+      "demoTitle": "Möchten Sie eine Demonstration?",
+      "demoDesc": "In weniger als 30 Minuten entdecken Sie das Tool und lassen Ihre Teams sofort loslegen. Ideal zur Optimierung Ihres Empfangs!",
+      "demoCta": "Demo buchen",
+      "migrationTitle": "Wir kümmern uns um alles",
+      "migrationDesc": "Haben Sie ein Papierheft oder ein bestehendes Dokument? Senden Sie es uns und wir verwandeln es in ein vollständiges digitales Heft, übersetzt und mit lokalen Empfehlungen angereichert.",
+      "migrationCta": "Kontaktieren Sie uns"
+    },
+    "cta": {
+      "title": "Es ist Zeit, Ihr Heft zu erstellen!",
+      "desc": "Testen Sie kostenlos und bieten Sie Ihren Reisenden ein unvergessliches Erlebnis.",
+      "launch": "Legen Sie los!",
+      "createCta": "Mein Willkommensheft erstellen",
+      "pricingCta": "Unsere Preise sehen"
+    }
   },
   "airbnb": {
     "title": "Für Airbnb-Gastgeber",

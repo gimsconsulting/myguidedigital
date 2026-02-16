@@ -172,7 +172,8 @@
     "blog": "Blog",
     "contact": "Contato",
     "login": "Entrar",
-    "testApp": "Teste nossa App gratuitamente"
+    "testApp": "Teste nossa App gratuitamente",
+    "services": "Nossos serviços"
   },
   "contact": {
     "title": "Entre em contato",
@@ -333,6 +334,16 @@
     }
   },
   "home": {
+    "badge": {
+      "platform": "Plataforma N°1 de folhetos de boas-vindas digitais",
+      "features": "🚀 Funcionalidades",
+      "ai": "🤖 Inteligência Artificial",
+      "benefits": "💡 Benefícios",
+      "getStarted": "🎯 Começar",
+      "testimonials": "⭐ Depoimentos",
+      "faq": "❓ FAQ",
+      "readyToStart": "Pronto para começar?"
+    },
     "hero": {
       "title": "Guia digital inteligente de boas-vindas",
       "subtitle": "para Airbnb, aluguéis e anfitriões",
@@ -405,9 +416,20 @@
       "configuration": "Configuração",
       "customizable": "Personalizável"
     },
+    "demo": {
+      "title": "Deseja uma demonstração?",
+      "desc": "Em menos de 30 minutos, descubra a ferramenta e permita que suas equipes comecem imediatamente.",
+      "cta": "Solicitar uma demo"
+    },
+    "migration": {
+      "title": "Cuidamos de tudo",
+      "desc": "Tem um folheto em papel ou um documento existente? Envie-nos e transformaremos em um folheto digital completo.",
+      "cta": "Entre em contato"
+    },
     "pricing": {
       "title": "Preços simples e transparentes",
       "subtitle": "Escolha o plano que se adapta às suas necessidades",
+      "seeAll": "Descobrir todos os nossos preços detalhados",
       "launchOffer": "OFERTA DE LANÇAMENTO",
       "launchOfferSubtitle": "Válida por tempo limitado",
       "monthly": {
@@ -505,7 +527,8 @@
       "support": "Suporte",
       "documentation": "Documentação",
       "contact": "Contato",
-      "copyright": "© 2026 My Guide Digital. Todos os direitos reservados."
+      "copyright": "© 2026 My Guide Digital. Todos os direitos reservados.",
+      "affiliation": "Programa de afiliação"
     }
   },
   "login": {
@@ -545,6 +568,97 @@
     "title": "Blog My Guide Digital",
     "subtitle": "Dicas, truques e notícias para otimizar sua atividade de anfitrião",
     "readMore": "Ler mais"
+  },
+  "services": {
+    "badge": "Solução tudo-em-um para recepção digital",
+    "hero": {
+      "title1": "Reinvente a recepção",
+      "title2": "dos seus viajantes",
+      "subtitle": "Transforme cada estadia em uma experiência única",
+      "description": "Facilite o acesso às informações essenciais, personalize a recepção dos seus visitantes e atenda às expectativas dos viajantes de hoje. My Guide Digital acompanha hoteleiros, gestores de campings e proprietários de aluguéis de temporada.",
+      "cta": "Criar seu folheto de boas-vindas digital",
+      "pricing": "Descobrir nossas tarifas"
+    },
+    "why": {
+      "badge": "💡 Por que nos escolher",
+      "title1": "Por que My Guide Digital é",
+      "title2": "a solução ideal",
+      "subtitle": "Um folheto de boas-vindas digital pensado para atender às expectativas dos viajantes e simplificar seu dia a dia.",
+      "block1Title": "Acessível em qualquer lugar, a qualquer momento",
+      "block1Desc": "Seu folheto de boas-vindas é 100% digital e consultável em smartphone, tablet ou computador. Seus viajantes acessam todas as informações essenciais com um simples scan de QR code, sem baixar nada.",
+      "block2Title": "Personalização completa à sua imagem",
+      "block2Desc": "Integre seu logo, cores e identidade visual para oferecer uma recepção profissional e coerente com sua marca. Cada detalhe reflete seu estabelecimento.",
+      "block3Title": "Uma abordagem eco-responsável",
+      "block3Desc": "Acabaram as impressões repetitivas em papel. Com My Guide Digital, apenas o QR code é impresso. Reduza sua pegada ecológica enquanto moderniza sua recepção.",
+      "block4Title": "Ferramentas inovadoras integradas",
+      "block4Desc": "Chatbot IA disponível 24/7, tradução multilíngue automática, estatísticas de uso e check-in digitalizado: tudo é pensado para enriquecer a experiência dos seus viajantes."
+    },
+    "features": {
+      "badge": "⚡ Funcionalidades",
+      "title1": "Descubra nossas soluções",
+      "title2": "para uma recepção perfeita",
+      "subtitle": "Cada funcionalidade é projetada para melhorar a recepção dos seus viajantes.",
+      "learnMore": "Saiba mais",
+      "ctaTest": "🚀 Testar My Guide Digital gratuitamente",
+      "f1Title": "Tradução multilíngue automática",
+      "f1Desc": "Receba viajantes do mundo todo com tradução automática do seu folheto em vários idiomas. O conteúdo se adapta automaticamente ao idioma de cada visitante.",
+      "f2Title": "Estatísticas e acompanhamento de engajamento",
+      "f2Desc": "Meça o impacto do seu folheto com dados de consulta detalhados. Identifique as seções mais consultadas e otimize seu conteúdo de acordo.",
+      "f3Title": "Atualizações instantâneas e duplicação",
+      "f3Desc": "Modifique suas informações em tempo real pelo seu painel. Duplique facilmente seus folhetos para gerenciar vários alojamentos sem recomeçar do zero.",
+      "f4Title": "Recomendações e pontos de interesse locais",
+      "f4Desc": "Compartilhe seus melhores endereços, restaurantes, atividades e pontos turísticos próximos. Enriqueça a estadia dos seus viajantes com dicas personalizadas.",
+      "f5Title": "Links úteis e vendas adicionais",
+      "f5Desc": "Adicione links clicáveis para seus parceiros, reservas de atividades ou loja online. Crie novas oportunidades de receita melhorando a experiência.",
+      "f6Title": "Personalização avançada e marca branca",
+      "f6Desc": "Adapte cada módulo do seu folheto: cores, fontes, logo, categorias personalizadas e dicas sob medida. Ofereça uma recepção digital que realmente represente você.",
+      "f7Title": "Acesso simplificado por QR code",
+      "f7Desc": "Um simples scan pelo smartphone basta para acessar todo o seu folheto. Coloque o QR code na entrada, na mesa de cabeceira ou no seu email de boas-vindas.",
+      "f8Title": "Chatbot IA integrado 24/7",
+      "f8Desc": "Seu assistente inteligente responde instantaneamente às perguntas dos seus viajantes, dia e noite. Código Wi-Fi, horários, instruções, recomendações: tudo é processado automaticamente.",
+      "f9Title": "Gestão intuitiva de conteúdo",
+      "f9Desc": "Adicione facilmente fotos, vídeos, documentos PDF e textos. Reorganize seus módulos em poucos cliques para criar um folheto completo e atraente."
+    },
+    "testimonials": {
+      "badge": "⭐ Depoimentos",
+      "title1": "Eles adotaram My Guide Digital,",
+      "title2": "descubra seus depoimentos!",
+      "t1Name": "Aurélien B.",
+      "t1Role": "Proprietário de pousada",
+      "t1Text": "Ótimo serviço para a gestão da nossa pousada. A ferramenta é tão agradável e intuitiva que decidimos adotá-la definitivamente. Nossos viajantes adoram!",
+      "t2Name": "Caroline M.",
+      "t2Role": "Host Airbnb",
+      "t2Text": "Aplicativo nota 10! Há mais de um ano em aluguel de temporada, meus clientes acham super prático. A tradução em vários idiomas é um verdadeiro diferencial.",
+      "t3Name": "Jan F.",
+      "t3Role": "Multi-proprietário",
+      "t3Text": "Há 2 anos usamos My Guide Digital para nossas duas pousadas. A grande vantagem é poder modificar um único módulo ao trocar um equipamento.",
+      "t4Name": "Élodie S.",
+      "t4Role": "Concierge",
+      "t4Text": "Aplicativo muito fácil de usar, simples, eficiente e completo. O serviço de suporte é atencioso e reativo. Uma ajuda valiosa!",
+      "t5Name": "Tiffany C.",
+      "t5Role": "Gestora de aluguéis",
+      "t5Text": "Gerencio vários aluguéis de férias e os folhetos me economizam muito tempo nas trocas com os viajantes.",
+      "t6Name": "Christophe R.",
+      "t6Role": "Aluguel de temporada",
+      "t6Text": "Temos vários apartamentos para aluguel de temporada. A criação de um folheto é rápida e intuitiva com muitas opções de personalização. Recomendamos!"
+    },
+    "demo": {
+      "title": "Gostaria de",
+      "titleHighlight": "descobrir o folheto",
+      "demoTitle": "Deseja uma demonstração?",
+      "demoDesc": "Em menos de 30 minutos, descubra a ferramenta e permita que suas equipes comecem imediatamente. Ideal para otimizar sua recepção!",
+      "demoCta": "Agendar uma demo",
+      "migrationTitle": "Cuidamos de tudo",
+      "migrationDesc": "Tem um folheto em papel ou um documento existente? Envie-nos e transformaremos em um folheto digital completo, traduzido e enriquecido com recomendações locais.",
+      "migrationCta": "Entre em contato"
+    },
+    "cta": {
+      "title": "É hora de criar seu folheto!",
+      "desc": "Teste gratuitamente e ofereça uma experiência memorável aos seus viajantes.",
+      "launch": "Comece agora!",
+      "createCta": "Criar meu folheto de boas-vindas",
+      "pricingCta": "Ver nossas tarifas"
+    }
   },
   "airbnb": {
     "title": "Para anfitriões do Airbnb",
