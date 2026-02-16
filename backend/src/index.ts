@@ -20,6 +20,7 @@ import chatDocumentsRoutes from './routes/chat-documents';
 import chatRoutes from './routes/chat';
 import affiliateRoutes from './routes/affiliates';
 import contactRoutes from './routes/contact';
+import blogRoutes from './routes/blog';
 
 // Import CSRF middleware
 import { getCsrfToken, validateCsrfToken } from './middleware/csrf';
@@ -220,6 +221,9 @@ const uploadDir = process.env.UPLOAD_DIR || './uploads';
 app.use('/uploads', express.static(uploadDir));
 // Aussi servir via /api/uploads pour que le proxy nginx puisse y accéder en production
 app.use('/api/uploads', express.static(uploadDir));
+// Servir les images du blog
+app.use('/uploads/blog', express.static(path.join(uploadDir, 'blog')));
+app.use('/api/uploads/blog', express.static(path.join(uploadDir, 'blog')));
 
 // Health check
 app.get('/health', (req: express.Request, res: express.Response) => {
@@ -245,6 +249,7 @@ app.use('/api/chat-documents', chatDocumentsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/affiliates', affiliateRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/blog', blogRoutes);
 
 // Error handling middleware - Gestion améliorée des erreurs
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

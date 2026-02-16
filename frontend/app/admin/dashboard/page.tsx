@@ -357,13 +357,14 @@ export default function AdminDashboardPage() {
             <span className="w-1.5 h-5 bg-gradient-to-b from-primary to-pink-500 rounded-full"></span>
             Navigation rapide
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
             {[
               { href: '/admin/users', icon: '👥', label: 'Utilisateurs', gradient: 'from-primary to-purple-600', shadow: 'shadow-primary/20' },
               { href: '/admin/revenue', icon: '💰', label: 'Revenus', gradient: 'from-pink-500 to-rose-500', shadow: 'shadow-pink-200' },
               { href: '/admin/subscriptions', icon: '💎', label: 'Abonnements', gradient: 'from-violet-500 to-indigo-500', shadow: 'shadow-violet-200' },
               { href: '/admin/livrets', icon: '📚', label: 'Livrets', gradient: 'from-emerald-400 to-teal-500', shadow: 'shadow-emerald-200' },
               { href: '/admin/invoices', icon: '🧾', label: 'Factures', gradient: 'from-amber-400 to-orange-500', shadow: 'shadow-amber-200' },
+              { href: '/admin/blog', icon: '📝', label: 'Blog', gradient: 'from-cyan-400 to-blue-500', shadow: 'shadow-cyan-200' },
             ].map((item, i) => (
               <Link key={i} href={item.href} className="group relative overflow-hidden bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 text-center">
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>

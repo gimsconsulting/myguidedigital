@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import LanguageSelector from '@/components/LanguageSelector';
+import { blogApi } from '@/lib/api';
 
 const categories = [
   { id: 'all', label: 'Tous les articles', emoji: '📰' },
@@ -14,85 +15,77 @@ const categories = [
   { id: 'actualites', label: 'Actualités', emoji: '📢' },
 ];
 
-const articles = [
-  {
-    id: 1,
-    title: 'Comment créer un guide d\'accueil digital efficace pour votre location Airbnb',
-    excerpt: 'Découvrez les meilleures pratiques pour créer un guide d\'accueil qui impressionnera vos voyageurs et facilitera leur séjour. Un livret bien structuré peut significativement améliorer vos avis et votre taux de retour.',
-    date: '15 Janvier 2026',
-    category: 'conseils',
-    categoryLabel: 'Conseils',
-    readTime: '5 min',
-    gradient: 'from-primary to-pink-500',
-    featured: true,
-  },
-  {
-    id: 2,
-    title: '5 avantages des guides digitaux pour les hôtes Airbnb',
-    excerpt: 'Les guides d\'accueil digitaux transforment la façon dont les hôtes communiquent avec leurs invités. Voici pourquoi vous devriez en adopter un dès maintenant.',
-    date: '10 Janvier 2026',
-    category: 'avantages',
-    categoryLabel: 'Avantages',
-    readTime: '4 min',
-    gradient: 'from-emerald-500 to-teal-500',
-    featured: true,
-  },
-  {
-    id: 3,
-    title: 'L\'IA au service de l\'hospitalité : comment MGD améliore l\'expérience voyageur',
-    excerpt: 'Explorez comment l\'intelligence artificielle révolutionne l\'accueil dans le secteur de l\'hospitalité avec des chatbots intelligents et la traduction automatique.',
-    date: '5 Janvier 2026',
-    category: 'technologie',
-    categoryLabel: 'Technologie',
-    readTime: '6 min',
-    gradient: 'from-violet-500 to-purple-500',
-    featured: true,
-  },
-  {
-    id: 4,
-    title: 'Pourquoi digitaliser son livret d\'accueil en 2026 ?',
-    excerpt: 'Le papier c\'est fini ! Découvrez pourquoi de plus en plus d\'hébergeurs passent au digital pour leur livret d\'accueil et les bénéfices concrets qu\'ils en tirent.',
-    date: '28 Décembre 2025',
-    category: 'avantages',
-    categoryLabel: 'Avantages',
-    readTime: '3 min',
-    gradient: 'from-amber-500 to-orange-500',
-    featured: false,
-  },
-  {
-    id: 5,
-    title: 'Comment améliorer vos avis Airbnb grâce à un accueil digital',
-    excerpt: 'Vos avis clients sont votre meilleur atout. Un livret digital bien pensé peut transformer l\'expérience de vos voyageurs et booster significativement vos notes.',
-    date: '20 Décembre 2025',
-    category: 'conseils',
-    categoryLabel: 'Conseils',
-    readTime: '4 min',
-    gradient: 'from-pink-500 to-rose-500',
-    featured: false,
-  },
-  {
-    id: 6,
-    title: 'La traduction multilingue : un atout majeur pour l\'accueil international',
-    excerpt: 'Accueillir des voyageurs du monde entier demande une communication adaptée. Découvrez comment la traduction automatique facilite l\'accueil de vos hôtes internationaux.',
-    date: '15 Décembre 2025',
-    category: 'technologie',
-    categoryLabel: 'Technologie',
-    readTime: '5 min',
-    gradient: 'from-blue-500 to-cyan-500',
-    featured: false,
-  },
-];
+const categoryGradients: Record<string, string> = {
+  conseils: 'from-amber-500 to-orange-500',
+  avantages: 'from-emerald-500 to-teal-500',
+  technologie: 'from-violet-500 to-purple-500',
+  temoignages: 'from-pink-500 to-rose-500',
+  actualites: 'from-primary to-blue-500',
+};
+
+const categoryLabels: Record<string, string> = {
+  conseils: 'Conseils',
+  avantages: 'Avantages',
+  technologie: 'Technologie',
+  temoignages: 'Témoignages',
+  actualites: 'Actualités',
+};
+
+interface BlogArticle {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  thumbnail: string | null;
+  category: string;
+  tags: string | null;
+  featured: boolean;
+  readTime: string | null;
+  publishedAt: string | null;
+  createdAt: string;
+  author: { id: string; firstName: string; lastName: string; profilePhoto: string | null };
+}
+
+function getImageUrl(path: string | null): string {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || /^\d/.test(hostname)) {
+      return `http://${hostname}:3001${path}`;
+    }
+    return `/api${path}`;
+  }
+  return path;
+}
 
 export default function BlogPage() {
   const { t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
+  const [articles, setArticles] = useState<BlogArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadArticles();
+  }, []);
+
+  async function loadArticles() {
+    try {
+      const res = await blogApi.getArticles({ limit: 50 });
+      setArticles(res.data.articles || []);
+    } catch (error) {
+      console.error('Erreur chargement articles:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const filteredArticles = activeCategory === 'all'
     ? articles
     : articles.filter(a => a.category === activeCategory);
 
-  const featuredArticles = articles.filter(a => a.featured);
+  const featuredArticles = articles.filter(a => a.featured).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#0c0a1d] to-slate-950">
@@ -210,6 +203,7 @@ export default function BlogPage() {
       {/* ══════════════════════════════════════ */}
       {/* ARTICLES À LA UNE */}
       {/* ══════════════════════════════════════ */}
+      {featuredArticles.length > 0 && (
       <section className="pb-16 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-8">
@@ -217,48 +211,65 @@ export default function BlogPage() {
             <h2 className="text-2xl font-bold text-white">À la une</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {featuredArticles.map((article, index) => (
-              <div
+            {featuredArticles.map((article, index) => {
+              const gradient = categoryGradients[article.category] || 'from-primary to-pink-500';
+              return (
+              <Link
+                href={`/blog/${article.slug}`}
                 key={article.id}
                 className={`group relative ${index === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}`}
               >
-                <div className={`absolute -inset-[1px] bg-gradient-to-r ${article.gradient} rounded-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-500 blur-md`}></div>
-                <div className={`relative bg-white/[0.03] backdrop-blur-sm rounded-2xl border border-white/[0.06] hover:border-white/[0.15] transition-all duration-300 h-full flex flex-col overflow-hidden ${index === 0 ? 'p-8' : 'p-6'}`}>
-                  {/* Decorative gradient bar */}
-                  <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${article.gradient}`}></div>
+                <div className={`absolute -inset-[1px] bg-gradient-to-r ${gradient} rounded-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-500 blur-md`}></div>
+                <div className={`relative bg-white/[0.03] backdrop-blur-sm rounded-2xl border border-white/[0.06] hover:border-white/[0.15] transition-all duration-300 h-full flex flex-col overflow-hidden`}>
+                  {/* Thumbnail */}
+                  {article.thumbnail ? (
+                    <div className={`w-full ${index === 0 ? 'h-64' : 'h-40'} overflow-hidden`}>
+                      <img src={article.thumbnail.startsWith('http') ? article.thumbnail : getImageUrl(article.thumbnail)} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                  ) : (
+                    <div className={`w-full ${index === 0 ? 'h-32' : 'h-20'} bg-gradient-to-r ${gradient} flex items-center justify-center`}>
+                      <span className="text-4xl">{categories.find(c => c.id === article.category)?.emoji || '📝'}</span>
+                    </div>
+                  )}
 
-                  <div className="flex items-center gap-3 mb-4 mt-2">
-                    <span className={`px-3 py-1 bg-gradient-to-r ${article.gradient} rounded-full text-white text-xs font-semibold`}>
-                      {article.categoryLabel}
-                    </span>
-                    <span className="text-white/30 text-xs">{article.date}</span>
-                    <span className="text-white/30 text-xs flex items-center gap-1">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      {article.readTime}
-                    </span>
-                  </div>
+                  <div className={`${index === 0 ? 'p-8' : 'p-6'} flex flex-col flex-grow`}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className={`px-3 py-1 bg-gradient-to-r ${gradient} rounded-full text-white text-xs font-semibold`}>
+                        {categoryLabels[article.category] || article.category}
+                      </span>
+                      <span className="text-white/30 text-xs">{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}</span>
+                      {article.readTime && (
+                        <span className="text-white/30 text-xs flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          {article.readTime}
+                        </span>
+                      )}
+                    </div>
 
-                  <h3 className={`font-bold text-white mb-3 group-hover:text-primary transition-colors leading-tight ${index === 0 ? 'text-2xl sm:text-3xl' : 'text-xl'}`}>
-                    {article.title}
-                  </h3>
-                  <p className={`text-white/40 leading-relaxed flex-grow ${index === 0 ? 'text-base' : 'text-sm'}`}>
-                    {article.excerpt}
-                  </p>
+                    <h3 className={`font-bold text-white mb-3 group-hover:text-primary transition-colors leading-tight ${index === 0 ? 'text-2xl sm:text-3xl' : 'text-xl'}`}>
+                      {article.title}
+                    </h3>
+                    <p className={`text-white/40 leading-relaxed flex-grow ${index === 0 ? 'text-base' : 'text-sm'} line-clamp-3`}>
+                      {article.excerpt}
+                    </p>
 
-                  <div className="mt-5">
-                    <span className="inline-flex items-center text-primary hover:text-pink-400 transition-colors text-sm font-semibold group/link cursor-pointer">
-                      {t('blog.readMore', 'Lire la suite')}
-                      <svg className="w-4 h-4 ml-1 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </span>
+                    <div className="mt-5">
+                      <span className="inline-flex items-center text-primary hover:text-pink-400 transition-colors text-sm font-semibold group/link">
+                        {t('blog.readMore', 'Lire la suite')}
+                        <svg className="w-4 h-4 ml-1 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              </Link>
+              );
+            })}
           </div>
         </div>
       </section>
+      )}
 
       {/* ══════════════════════════════════════ */}
       {/* FILTRE PAR CATÉGORIE + TOUS LES ARTICLES */}
@@ -284,48 +295,73 @@ export default function BlogPage() {
             ))}
           </div>
 
+          {/* Loading */}
+          {loading && (
+            <div className="text-center py-20">
+              <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
+              <p className="text-white/40 mt-4">Chargement des articles...</p>
+            </div>
+          )}
+
           {/* Grille d'articles */}
+          {!loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredArticles.map((article) => (
-              <article
+            {filteredArticles.map((article) => {
+              const gradient = categoryGradients[article.category] || 'from-primary to-pink-500';
+              return (
+              <Link
+                href={`/blog/${article.slug}`}
                 key={article.id}
                 className="group relative"
               >
-                <div className={`absolute -inset-[1px] bg-gradient-to-r ${article.gradient} rounded-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-500 blur-md`}></div>
-                <div className="relative bg-white/[0.03] backdrop-blur-sm rounded-2xl p-6 border border-white/[0.06] hover:border-white/[0.15] transition-all duration-300 h-full flex flex-col overflow-hidden">
-                  {/* Decorative gradient bar */}
-                  <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${article.gradient}`}></div>
+                <div className={`absolute -inset-[1px] bg-gradient-to-r ${gradient} rounded-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-500 blur-md`}></div>
+                <div className="relative bg-white/[0.03] backdrop-blur-sm rounded-2xl border border-white/[0.06] hover:border-white/[0.15] transition-all duration-300 h-full flex flex-col overflow-hidden">
+                  {/* Thumbnail */}
+                  {article.thumbnail ? (
+                    <div className="w-full h-48 overflow-hidden">
+                      <img src={article.thumbnail.startsWith('http') ? article.thumbnail : getImageUrl(article.thumbnail)} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                  ) : (
+                    <div className={`w-full h-2 bg-gradient-to-r ${gradient}`}></div>
+                  )}
 
-                  <div className="flex items-center gap-3 mb-4 mt-2">
-                    <span className={`px-3 py-1 bg-gradient-to-r ${article.gradient} rounded-full text-white text-xs font-semibold`}>
-                      {article.categoryLabel}
-                    </span>
-                    <span className="text-white/30 text-xs">{article.date}</span>
-                  </div>
+                  <div className="p-6 flex flex-col flex-grow">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className={`px-3 py-1 bg-gradient-to-r ${gradient} rounded-full text-white text-xs font-semibold`}>
+                        {categoryLabels[article.category] || article.category}
+                      </span>
+                      <span className="text-white/30 text-xs">{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}</span>
+                    </div>
 
-                  <h3 className="text-lg font-bold text-white mb-3 group-hover:text-primary transition-colors leading-tight">
-                    {article.title}
-                  </h3>
-                  <p className="text-sm text-white/40 leading-relaxed flex-grow">
-                    {article.excerpt}
-                  </p>
+                    <h3 className="text-lg font-bold text-white mb-3 group-hover:text-primary transition-colors leading-tight">
+                      {article.title}
+                    </h3>
+                    <p className="text-sm text-white/40 leading-relaxed flex-grow line-clamp-3">
+                      {article.excerpt}
+                    </p>
 
-                  <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/[0.06]">
-                    <span className="text-white/30 text-xs flex items-center gap-1">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      {article.readTime}
-                    </span>
-                    <span className="inline-flex items-center text-primary hover:text-pink-400 transition-colors text-sm font-semibold group/link cursor-pointer">
-                      Lire
-                      <svg className="w-4 h-4 ml-1 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </span>
+                    <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/[0.06]">
+                      <span className="text-white/30 text-xs flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {article.readTime || '3 min'}
+                      </span>
+                      {article.author && (
+                        <span className="text-white/20 text-xs">✍️ {article.author.firstName || 'Admin'}</span>
+                      )}
+                      <span className="inline-flex items-center text-primary hover:text-pink-400 transition-colors text-sm font-semibold group/link">
+                        Lire
+                        <svg className="w-4 h-4 ml-1 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </article>
-            ))}
+              </Link>
+              );
+            })}
           </div>
+          )}
 
           {/* Empty state */}
           {filteredArticles.length === 0 && (

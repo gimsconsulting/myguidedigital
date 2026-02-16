@@ -427,4 +427,27 @@ export const affiliatesApi = {
   adminOverview: () => api.get('/affiliates/admin/overview'),
 };
 
+// Blog
+export const blogApi = {
+  // Public
+  getArticles: (params?: { category?: string; featured?: string; page?: number; limit?: number; search?: string }) =>
+    api.get('/blog', { params }),
+  getArticle: (slug: string) => api.get(`/blog/article/${slug}`),
+  // Admin
+  adminList: (params?: { status?: string; category?: string; page?: number; limit?: number }) =>
+    api.get('/blog/admin/list', { params }),
+  adminGetArticle: (id: string) => api.get(`/blog/admin/${id}`),
+  adminCreate: (data: any) => api.post('/blog/admin', data),
+  adminUpdate: (id: string, data: any) => api.put(`/blog/admin/${id}`, data),
+  adminDelete: (id: string) => api.delete(`/blog/admin/${id}`),
+  adminUploadImage: (file: File) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return api.post('/blog/admin/upload-image', formData);
+  },
+  adminPexelsSearch: (query: string, page?: number) =>
+    api.get('/blog/admin/pexels/search', { params: { query, page: page || 1 } }),
+  adminStats: () => api.get('/blog/admin/stats'),
+};
+
 export default api;
