@@ -604,7 +604,11 @@
       "documentation": "Documentation",
       "contact": "Contact",
       "copyright": "© 2026 My Guide Digital. Tous droits réservés.",
-      "affiliation": "Programme d'affiliation"
+      "affiliation": "Programme d'affiliation",
+      "legal": "Mentions légales",
+      "privacy": "Confidentialité",
+      "cgvu": "CGVU",
+      "cookies": "Politique de cookies"
     }
   },
   "login": {

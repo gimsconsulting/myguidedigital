@@ -571,7 +571,12 @@
       "support": "Поддержка",
       "documentation": "Документация",
       "contact": "Контакты",
-      "copyright": "© 2026 My Guide Digital. Все права защищены."
+      "copyright": "© 2026 My Guide Digital. Все права защищены.",
+      "affiliation": "Партнёрская программа",
+      "legal": "Юридическая информация",
+      "privacy": "Политика конфиденциальности",
+      "cgvu": "Общие условия",
+      "cookies": "Политика cookies"
     }
   },
   "login": {

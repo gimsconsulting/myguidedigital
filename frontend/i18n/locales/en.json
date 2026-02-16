@@ -584,7 +584,11 @@
       "documentation": "Documentation",
       "contact": "Contact",
       "copyright": "© 2026 My Guide Digital. All rights reserved.",
-      "affiliation": "Affiliate Program"
+      "affiliation": "Affiliate Program",
+      "legal": "Legal Notice",
+      "privacy": "Privacy Policy",
+      "cgvu": "Terms & Conditions",
+      "cookies": "Cookie Policy"
     }
   },
   "login": {

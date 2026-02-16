@@ -594,7 +594,11 @@
       "documentation": "Documentazione",
       "contact": "Contatto",
       "copyright": "© 2026 My Guide Digital. Tutti i diritti riservati.",
-      "affiliation": "Programma di affiliazione"
+      "affiliation": "Programma di affiliazione",
+      "legal": "Note legali",
+      "privacy": "Informativa sulla privacy",
+      "cgvu": "Condizioni generali",
+      "cookies": "Politica sui cookie"
     }
   },
   "login": {

@@ -594,7 +594,11 @@
       "documentation": "文档",
       "contact": "联系",
       "copyright": "© 2026 My Guide Digital. 保留所有权利。",
-      "affiliation": "联盟计划"
+      "affiliation": "联盟计划",
+      "legal": "法律声明",
+      "privacy": "隐私政策",
+      "cgvu": "一般条款",
+      "cookies": "Cookie 政策"
     }
   },
   "login": {

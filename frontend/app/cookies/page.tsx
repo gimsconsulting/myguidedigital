@@ -290,6 +290,12 @@ export default function CookiesPage() {
                 🔐 Politique de confidentialité →
               </span>
             </Link>
+            <Link href="/cgvu" className="group relative px-6 py-3 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+              <div className="absolute inset-0 bg-white/[0.03] border border-white/[0.06] rounded-xl group-hover:border-white/10 transition-all"></div>
+              <span className="relative text-sm font-medium bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                📜 CGVU →
+              </span>
+            </Link>
           </div>
         </div>
       </section>
@@ -306,6 +312,8 @@ export default function CookiesPage() {
             <Link href="/mentions-legales" className="text-white/40 hover:text-white/70 text-xs transition-colors">Mentions légales</Link>
             <span className="text-white/20">|</span>
             <Link href="/confidentialite" className="text-white/40 hover:text-white/70 text-xs transition-colors">Confidentialité</Link>
+            <span className="text-white/20">|</span>
+            <Link href="/cgvu" className="text-white/40 hover:text-white/70 text-xs transition-colors">CGVU</Link>
             <span className="text-white/20">|</span>
             <Link href="/cookies" className="text-pink-400/60 hover:text-pink-400 text-xs transition-colors">Cookies</Link>
             <span className="text-white/20">|</span>

@@ -594,7 +594,11 @@
       "documentation": "Documentatie",
       "contact": "Contact",
       "copyright": "© 2026 My Guide Digital. Alle rechten voorbehouden.",
-      "affiliation": "Partnerprogramma"
+      "affiliation": "Partnerprogramma",
+      "legal": "Wettelijke vermeldingen",
+      "privacy": "Privacybeleid",
+      "cgvu": "Algemene voorwaarden",
+      "cookies": "Cookiebeleid"
     }
   },
   "login": {
