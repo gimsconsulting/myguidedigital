@@ -530,13 +530,13 @@ export default function ContactPage() {
               <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
                 My Guide Digital
               </h3>
-              <p className="bg-gradient-to-r from-pink-300/60 via-rose-300/50 to-pink-400/60 bg-clip-text text-transparent mb-6 leading-relaxed max-w-md">
+              <p className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent mb-6 leading-relaxed max-w-md">
                 {t('home.footer.description', 'La solution moderne pour créer et partager vos livrets d\'accueil digitaux.')}
               </p>
               <div className="flex gap-3 mb-5">
                 {['facebook', 'instagram', 'linkedin'].map((social) => (
                   <a key={social} href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all">
-                    <span className="bg-gradient-to-r from-pink-300 to-rose-400 bg-clip-text text-transparent text-xs font-semibold">{social.charAt(0).toUpperCase()}</span>
+                    <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent text-xs font-semibold">{social.charAt(0).toUpperCase()}</span>
                   </a>
                 ))}
               </div>
@@ -552,32 +552,32 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-white font-semibold text-sm">WhatsApp</p>
-                  <p className="text-white/30 text-xs">+32 476 34 23 64</p>
+                  <p className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent font-semibold text-sm">WhatsApp</p>
+                  <p className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent text-xs">+32 476 34 23 64</p>
                 </div>
               </a>
             </div>
             <div>
               <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">{t('home.footer.navigation', 'Navigation')}</h4>
               <ul className="space-y-3">
-                <li><Link href="/" className="bg-gradient-to-r from-pink-300/50 to-rose-300/50 bg-clip-text text-transparent hover:from-pink-200 hover:to-rose-200 transition-all text-sm">{t('nav.home', 'Accueil')}</Link></li>
-                <li><Link href="/hote-airbnb" className="bg-gradient-to-r from-pink-300/50 to-rose-300/50 bg-clip-text text-transparent hover:from-pink-200 hover:to-rose-200 transition-all text-sm">{t('nav.services', 'Nos services')}</Link></li>
-                <li><Link href="/tarifs" className="bg-gradient-to-r from-pink-300/50 to-rose-300/50 bg-clip-text text-transparent hover:from-pink-200 hover:to-rose-200 transition-all text-sm">{t('nav.pricing', 'Nos tarifs')}</Link></li>
-                <li><Link href="/blog" className="bg-gradient-to-r from-pink-300/50 to-rose-300/50 bg-clip-text text-transparent hover:from-pink-200 hover:to-rose-200 transition-all text-sm">{t('nav.blog', 'Blog')}</Link></li>
-                <li><Link href="/login" className="bg-gradient-to-r from-pink-300/50 to-rose-300/50 bg-clip-text text-transparent hover:from-pink-200 hover:to-rose-200 transition-all text-sm">{t('nav.login', 'Connexion')}</Link></li>
+                <li><Link href="/" className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent hover:from-primary hover:via-pink-300 hover:to-purple-300 transition-all text-sm">{t('nav.home', 'Accueil')}</Link></li>
+                <li><Link href="/hote-airbnb" className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent hover:from-primary hover:via-pink-300 hover:to-purple-300 transition-all text-sm">{t('nav.services', 'Nos services')}</Link></li>
+                <li><Link href="/tarifs" className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent hover:from-primary hover:via-pink-300 hover:to-purple-300 transition-all text-sm">{t('nav.pricing', 'Nos tarifs')}</Link></li>
+                <li><Link href="/blog" className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent hover:from-primary hover:via-pink-300 hover:to-purple-300 transition-all text-sm">{t('nav.blog', 'Blog')}</Link></li>
+                <li><Link href="/login" className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent hover:from-primary hover:via-pink-300 hover:to-purple-300 transition-all text-sm">{t('nav.login', 'Connexion')}</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">{t('home.footer.support', 'Support')}</h4>
               <ul className="space-y-3">
-                <li><Link href="/contact" className="bg-gradient-to-r from-pink-300/50 to-rose-300/50 bg-clip-text text-transparent hover:from-pink-200 hover:to-rose-200 transition-all text-sm">{t('nav.contact', 'Contact')}</Link></li>
-                <li><Link href="/#faq" className="bg-gradient-to-r from-pink-300/50 to-rose-300/50 bg-clip-text text-transparent hover:from-pink-200 hover:to-rose-200 transition-all text-sm">FAQ</Link></li>
-                <li><Link href="/affiliation" className="bg-gradient-to-r from-pink-300/50 to-rose-300/50 bg-clip-text text-transparent hover:from-pink-200 hover:to-rose-200 transition-all text-sm">{t('home.footer.affiliation', 'Programme d\'affiliation')}</Link></li>
+                <li><Link href="/contact" className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent hover:from-primary hover:via-pink-300 hover:to-purple-300 transition-all text-sm">{t('nav.contact', 'Contact')}</Link></li>
+                <li><Link href="/#faq" className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent hover:from-primary hover:via-pink-300 hover:to-purple-300 transition-all text-sm">FAQ</Link></li>
+                <li><Link href="/affiliation" className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent hover:from-primary hover:via-pink-300 hover:to-purple-300 transition-all text-sm">{t('home.footer.affiliation', 'Programme d\'affiliation')}</Link></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-white/5 mt-12 pt-8 text-center">
-            <p className="bg-gradient-to-r from-pink-400/30 via-rose-300/30 to-pink-400/30 bg-clip-text text-transparent text-sm">
+            <p className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent text-sm">
               © {new Date().getFullYear()} My Guide Digital. {t('home.footer.copyright', 'Tous droits réservés.')}
             </p>
           </div>
