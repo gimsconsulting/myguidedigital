@@ -344,6 +344,16 @@
     }
   },
   "home": {
+    "badge": {
+      "platform": "Plateforme N°1 des livrets d'accueil digitaux",
+      "features": "🚀 Fonctionnalités",
+      "ai": "🤖 Intelligence Artificielle",
+      "benefits": "💡 Avantages",
+      "getStarted": "🎯 Démarrage",
+      "testimonials": "⭐ Témoignages",
+      "faq": "❓ FAQ",
+      "readyToStart": "Prêt à commencer ?"
+    },
     "hero": {
       "title": "Guide d'accueil digital intelligent",
       "subtitle": "pour Airbnb, locations et hôtes",
@@ -418,7 +428,8 @@
     },
     "pricing": {
       "title": "Tarifs simples et transparents",
-      "subtitle": "Choisissez le plan qui correspond à vos besoins",
+      "subtitle": "Nous vous accompagnons à chaque étape",
+      "seeAll": "Découvrir tous nos tarifs détaillés",
       "launchOffer": "OFFRE DE LANCEMENT",
       "launchOfferSubtitle": "Valable pendant une durée limitée",
       "monthly": {
@@ -504,6 +515,16 @@
       "q10": "Où puis‑je trouver les tarifs et les conditions d'utilisation de My Guide Digital ?",
       "a10": "Les tarifs sont accessibles via la page « Nos tarifs » et les informations légales via les pages « Mentions légales » et « Conditions Générales » en bas du site."
     },
+    "demo": {
+      "title": "Vous souhaitez une démonstration ?",
+      "desc": "En moins de 30 minutes, découvrez l'outil et permettez à vos équipes une prise en main immédiate.",
+      "cta": "Demander une démo"
+    },
+    "migration": {
+      "title": "On s'occupe de tout",
+      "desc": "Vous avez un livret papier ou un document existant ? Envoyez-le nous et nous le transformons en livret digital complet.",
+      "cta": "Nous contacter"
+    },
     "cta": {
       "title": "Prêt à transformer l'expérience de vos voyageurs ?",
       "subtitle": "Rejoignez des dizaines d'établissements qui font confiance à notre plateforme",
@@ -516,7 +537,8 @@
       "support": "Support",
       "documentation": "Documentation",
       "contact": "Contact",
-      "copyright": "© 2026 My Guide Digital. Tous droits réservés."
+      "copyright": "© 2026 My Guide Digital. Tous droits réservés.",
+      "affiliation": "Programme d'affiliation"
     }
   },
   "login": {

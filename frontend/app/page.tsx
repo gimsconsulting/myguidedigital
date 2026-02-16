@@ -155,7 +155,7 @@ export default function Home() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-5 py-2 bg-white/5 rounded-full border border-white/10 mb-8">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-white/60 text-sm font-medium">Plateforme N°1 des livrets d&apos;accueil digitaux</span>
+              <span className="text-white/60 text-sm font-medium">{t('home.badge.platform', 'Plateforme N°1 des livrets d\'accueil digitaux')}</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
@@ -224,7 +224,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-fade-in">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full border border-primary/20 mb-4">
-              <span className="text-primary text-sm font-medium">🚀 Fonctionnalités</span>
+              <span className="text-primary text-sm font-medium">{t('home.badge.features', '🚀 Fonctionnalités')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
               {t('home.features.title', 'Tout ce dont vous avez besoin')}
@@ -448,7 +448,7 @@ export default function Home() {
             {/* Right Side: Text Content */}
             <div className="animate-slide-up space-y-6">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                <span className="text-emerald-400 text-sm font-medium">🤖 Intelligence Artificielle</span>
+                <span className="text-emerald-400 text-sm font-medium">{t('home.badge.ai', '🤖 Intelligence Artificielle')}</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
@@ -506,7 +506,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="animate-fade-in">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-pink-500/10 rounded-full border border-pink-500/20 mb-6">
-                <span className="text-pink-400 text-sm font-medium">💡 Avantages</span>
+                <span className="text-pink-400 text-sm font-medium">{t('home.badge.benefits', '💡 Avantages')}</span>
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-8">
                 {t('home.benefits.title', 'Pourquoi choisir nos livrets digitaux ?')}
@@ -578,7 +578,7 @@ export default function Home() {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-fade-in">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-violet-500/10 rounded-full border border-violet-500/20 mb-4">
-              <span className="text-violet-400 text-sm font-medium">🎯 Démarrage</span>
+              <span className="text-violet-400 text-sm font-medium">{t('home.badge.getStarted', '🎯 Démarrage')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
               {t('home.pricing.title', 'Comment démarrer ?')}
@@ -659,7 +659,7 @@ export default function Home() {
           {/* Header */}
           <div className="text-center mb-16 animate-fade-in">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-500/10 rounded-full border border-amber-500/20 mb-4">
-              <span className="text-amber-400 text-sm font-medium">⭐ Témoignages</span>
+              <span className="text-amber-400 text-sm font-medium">{t('home.badge.testimonials', '⭐ Témoignages')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
               {t('home.testimonials.title', 'Ce que nos clients disent')}
@@ -707,17 +707,17 @@ export default function Home() {
                 text: t('home.testimonials.testimonial4.text', 'Les statistiques nous donnent une vision claire de ce que nos clients recherchent. On peut adapter nos livrets en fonction des modules les plus consultés.'),
                 gradient: 'from-emerald-500 to-teal-500',
               },
-            ].map((t, idx) => (
+            ].map((testimonial, idx) => (
               <div key={idx} className="group relative" style={{ animationDelay: `${idx * 0.1}s` }}>
-                <div className={`absolute -inset-0.5 bg-gradient-to-r ${t.gradient} rounded-2xl blur-lg opacity-0 group-hover:opacity-30 transition-all duration-500`}></div>
+                <div className={`absolute -inset-0.5 bg-gradient-to-r ${testimonial.gradient} rounded-2xl blur-lg opacity-0 group-hover:opacity-30 transition-all duration-500`}></div>
                 <div className="relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 hover:bg-white/[0.06] transition-all duration-300 h-full flex flex-col">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-11 h-11 rounded-full bg-gradient-to-r ${t.gradient} flex items-center justify-center flex-shrink-0 shadow-lg`}>
-                      <span className="text-white font-bold text-sm">{t.initials}</span>
+                    <div className={`w-11 h-11 rounded-full bg-gradient-to-r ${testimonial.gradient} flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                      <span className="text-white font-bold text-sm">{testimonial.initials}</span>
                     </div>
                     <div>
-                      <h3 className="font-bold text-white text-sm">{t.name}</h3>
-                      <p className="text-xs text-white/40">{t.role}</p>
+                      <h3 className="font-bold text-white text-sm">{testimonial.name}</h3>
+                      <p className="text-xs text-white/40">{testimonial.role}</p>
                     </div>
                   </div>
                   <div className="flex gap-0.5 mb-3">
@@ -728,7 +728,7 @@ export default function Home() {
                     ))}
                   </div>
                   <p className="text-white/40 text-sm leading-relaxed flex-1">
-                    &quot;{t.text}&quot;
+                    &quot;{testimonial.text}&quot;
                   </p>
                 </div>
               </div>
@@ -848,13 +848,13 @@ export default function Home() {
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in">
           <div className="inline-flex items-center gap-2 px-5 py-2 bg-white/10 rounded-full border border-white/10 mb-8">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="text-white/60 text-sm font-medium">Prêt à commencer ?</span>
+            <span className="text-white/60 text-sm font-medium">{t('home.badge.readyToStart', 'Prêt à commencer ?')}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">
             {t('home.cta.title', 'Prêt à transformer l\'expérience de vos voyageurs ?')}
           </h2>
           <p className="text-xl sm:text-2xl mb-10 text-white/50">
-            Rejoignez des dizaines d&apos;établissements qui font confiance à notre plateforme
+            {t('home.cta.subtitle', 'Rejoignez des dizaines d\'établissements qui font confiance à notre plateforme')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
@@ -909,7 +909,7 @@ export default function Home() {
               <ul className="space-y-3">
                 <li><Link href="/contact" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('home.footer.contact', 'Contact')}</Link></li>
                 <li><Link href="#faq" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">FAQ</Link></li>
-                <li><Link href="/affiliation" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">Programme d&apos;affiliation</Link></li>
+                <li><Link href="/affiliation" className="bg-gradient-to-r from-purple-300/50 to-violet-300/50 bg-clip-text text-transparent hover:from-purple-200 hover:to-violet-200 transition-all text-sm">{t('home.footer.affiliation', 'Programme d\'affiliation')}</Link></li>
               </ul>
             </div>
           </div>

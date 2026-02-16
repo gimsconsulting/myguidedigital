@@ -158,6 +158,7 @@
     "appName": "Welcome Booklets",
     "home": "Home",
     "airbnbHost": "Airbnb Host",
+    "services": "Our Services",
     "pricing": "Our Pricing",
     "blog": "Blog",
     "contact": "Contact",
@@ -323,6 +324,16 @@
     }
   },
   "home": {
+    "badge": {
+      "platform": "#1 Platform for digital welcome booklets",
+      "features": "🚀 Features",
+      "ai": "🤖 Artificial Intelligence",
+      "benefits": "💡 Benefits",
+      "getStarted": "🎯 Get Started",
+      "testimonials": "⭐ Testimonials",
+      "faq": "❓ FAQ",
+      "readyToStart": "Ready to start?"
+    },
     "hero": {
       "title": "Smart digital welcome guide",
       "subtitle": "for Airbnb, rentals and hosts",
@@ -395,9 +406,20 @@
       "configuration": "Configuration",
       "customizable": "Customizable"
     },
+    "demo": {
+      "title": "Would you like a demonstration?",
+      "desc": "In less than 30 minutes, discover the tool and let your teams get started immediately.",
+      "cta": "Request a demo"
+    },
+    "migration": {
+      "title": "We take care of everything",
+      "desc": "Do you have a paper booklet or an existing document? Send it to us and we will transform it into a complete digital booklet.",
+      "cta": "Contact us"
+    },
     "pricing": {
-      "title": "Simple and transparent pricing",
-      "subtitle": "Choose the plan that fits your needs",
+      "title": "How to get started?",
+      "subtitle": "We support you every step of the way",
+      "seeAll": "Discover all our detailed pricing",
       "launchOffer": "LAUNCH OFFER",
       "launchOfferSubtitle": "Valid for a limited time",
       "monthly": {
@@ -495,7 +517,8 @@
       "support": "Support",
       "documentation": "Documentation",
       "contact": "Contact",
-      "copyright": "© 2026 My Guide Digital. All rights reserved."
+      "copyright": "© 2026 My Guide Digital. All rights reserved.",
+      "affiliation": "Affiliate Program"
     }
   },
   "login": {
