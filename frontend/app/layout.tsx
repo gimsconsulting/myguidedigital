@@ -5,6 +5,7 @@ import Layout from '@/components/Layout'
 import { ToastContainer } from '@/components/ui/Toast'
 import { I18nProvider } from '@/i18n/client'
 import ScrollToTop from '@/components/ScrollToTop'
+import CookieConsent from '@/components/CookieConsent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,6 +25,7 @@ export default function RootLayout({
         <I18nProvider>
           <Layout>{children}</Layout>
           <ScrollToTop />
+          <CookieConsent />
           <ToastContainer />
         </I18nProvider>
       </body>
