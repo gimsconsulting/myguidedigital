@@ -384,6 +384,7 @@ export const adminApi = {
   updateUserRole: (userId: string, role: 'USER' | 'ADMIN') => 
     api.put(`/admin/users/${userId}/role`, { role }),
   deleteUser: (userId: string) => api.delete(`/admin/users/${userId}`),
+  extendTrial: (userId: string) => api.post(`/admin/users/${userId}/extend-trial`),
   getRevenue: (params?: { period?: number }) =>
     api.get('/admin/revenue', { params }),
   getSubscriptions: (params?: { page?: number; limit?: number; plan?: string; status?: string }) =>

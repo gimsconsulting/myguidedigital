@@ -122,6 +122,19 @@ export default function AdminUsersPage() {
     setRoleConfirm({ isOpen: true, userId, userEmail, newRole });
   };
 
+  const handleExtendTrial = async (userId: string, userEmail: string) => {
+    if (!confirm(`Ajouter 14 jours d'essai gratuit à ${userEmail} ?`)) return;
+    
+    try {
+      await adminApi.extendTrial(userId);
+      toast.success(`14 jours d'essai supplémentaires accordés à ${userEmail}`);
+      loadUsers();
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Erreur lors de la prolongation de l\'essai';
+      toast.error(errorMessage);
+    }
+  };
+
   const confirmRoleChange = async () => {
     if (!roleConfirm.userId || !roleConfirm.newRole) return;
 
@@ -280,14 +293,23 @@ export default function AdminUsersPage() {
                           )}
                         </button>
                         <button
+                          onClick={() => handleExtendTrial(u.id, u.email)}
+                          className="text-emerald-600 hover:text-emerald-800 flex items-center gap-1"
+                          title="Ajouter 14 jours d'essai gratuit"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-xs">+14j</span>
+                        </button>
+                        <button
                           onClick={() => handleDeleteClick(u.id, u.email)}
-                          className="text-red-600 hover:text-red-800 hover:underline flex items-center gap-1"
+                          className="text-red-600 hover:text-red-800 flex items-center"
                           title={t('admin.users.delete', 'Supprimer')}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
-                          {t('admin.users.delete', 'Supprimer')}
                         </button>
                       </div>
                     </td>

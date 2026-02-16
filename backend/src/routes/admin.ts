@@ -418,6 +418,96 @@ router.put('/users/:userId/role', authenticateToken, requireAdmin, [
   }
 });
 
+// Route pour prolonger l'essai d'un utilisateur de 14 jours
+router.post('/users/:userId/extend-trial', authenticateToken, requireAdmin, [
+  param('userId').isUUID().withMessage('ID utilisateur invalide'),
+], async (req: express.Request, res: express.Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Données invalides',
+        errors: errors.array() 
+      });
+    }
+
+    const admin = (req as any).user;
+    const { userId } = req.params;
+
+    // Vérifier que l'utilisateur existe
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { subscriptions: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    // Trouver l'abonnement actif (TRIAL ou autre)
+    let subscription = user.subscriptions.find(s => s.status === 'ACTIVE');
+    
+    if (!subscription) {
+      // Si pas d'abonnement actif, chercher un expiré
+      subscription = user.subscriptions.find(s => s.status === 'EXPIRED' && s.plan === 'TRIAL');
+    }
+
+    if (subscription) {
+      // Prolonger l'abonnement existant
+      const currentEndDate = subscription.endDate ? new Date(subscription.endDate) : new Date();
+      const newEndDate = new Date(Math.max(currentEndDate.getTime(), Date.now()));
+      newEndDate.setDate(newEndDate.getDate() + 14);
+
+      await prisma.subscription.update({
+        where: { id: subscription.id },
+        data: {
+          status: 'ACTIVE',
+          endDate: newEndDate,
+          trialDaysLeft: 14,
+          plan: 'TRIAL'
+        }
+      });
+    } else {
+      // Créer un nouvel abonnement trial
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + 14);
+
+      await prisma.subscription.create({
+        data: {
+          userId: userId,
+          plan: 'TRIAL',
+          status: 'ACTIVE',
+          startDate: new Date(),
+          endDate: endDate,
+          trialDaysLeft: 14
+        }
+      });
+    }
+
+    logAdminAction(
+      admin.id,
+      admin.email,
+      'EXTEND_TRIAL',
+      { 
+        targetUserId: userId,
+        targetUserEmail: user.email,
+        extraDays: 14
+      },
+      req
+    );
+
+    res.json({
+      message: `14 jours d'essai supplémentaires accordés à ${user.email}`
+    });
+  } catch (error: any) {
+    console.error('Error extending trial:', error);
+    res.status(500).json({ 
+      message: 'Erreur lors de la prolongation de l\'essai',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
 router.delete('/users/:userId', authenticateToken, requireAdmin, validateCsrfToken, [
   param('userId').notEmpty().withMessage('L\'ID utilisateur est requis').isUUID().withMessage('L\'ID utilisateur doit être un UUID valide'),
 ], async (req: express.Request, res: express.Response) => {
