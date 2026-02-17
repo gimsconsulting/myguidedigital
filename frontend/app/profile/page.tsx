@@ -260,7 +260,6 @@ export default function ProfilePage() {
 
   const sections = [
     { id: 'info', label: 'Informations', icon: '👤' },
-    { id: 'accommodation', label: 'Hébergement', icon: '🏡' },
     { id: 'photo', label: 'Photo', icon: '📷' },
     { id: 'password', label: 'Sécurité', icon: '🔒' },
   ];
@@ -641,6 +640,76 @@ export default function ProfilePage() {
                 )}
               </div>
 
+              {/* ── Type d'hébergement intégré ── */}
+              <div className="p-6 border-t border-gray-100">
+                <div className="p-5 bg-gradient-to-br from-emerald-50/50 to-teal-50/50 rounded-xl border border-emerald-200/50">
+                  <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2 mb-1">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+                      <span className="text-white text-xs">🏡</span>
+                    </div>
+                    Type d&apos;hébergement
+                  </h3>
+                  <p className="text-xs text-gray-500 mb-4 ml-9">Sélectionnez un ou plusieurs types d&apos;hébergement que vous proposez</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {accommodationTypes.map((type) => {
+                      const isChecked = formData.accommodationType.includes(type.value);
+                      return (
+                        <label
+                          key={type.value}
+                          className={`relative group cursor-pointer rounded-xl border-2 p-4 transition-all duration-300 ${
+                            isChecked
+                              ? 'border-primary bg-gradient-to-br from-primary/5 to-pink-500/5 shadow-md shadow-primary/10'
+                              : 'border-gray-200 hover:border-primary/40 bg-white hover:shadow-md'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => {
+                              const newTypes = e.target.checked
+                                ? [...formData.accommodationType, type.value]
+                                : formData.accommodationType.filter((t) => t !== type.value);
+                              setFormData({ ...formData, accommodationType: newTypes });
+                            }}
+                            className="sr-only"
+                          />
+                          <div className={`absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${
+                            isChecked
+                              ? 'bg-gradient-to-r from-primary to-pink-500 scale-100'
+                              : 'bg-gray-100 scale-90'
+                          }`}>
+                            {isChecked && (
+                              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </div>
+                          <span className="text-3xl block mb-2">{type.emoji}</span>
+                          <p className={`font-bold text-xs ${isChecked ? 'text-primary' : 'text-gray-900'}`}>
+                            {type.label}
+                          </p>
+                          <p className="text-[10px] text-gray-400 mt-0.5">{type.desc}</p>
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  {formData.accommodationType.length > 0 && (
+                    <div className="mt-4 p-3 bg-gradient-to-r from-primary/5 to-pink-500/5 rounded-lg border border-primary/10">
+                      <p className="text-xs text-gray-700">
+                        <span className="font-semibold text-primary">{formData.accommodationType.length}</span> type{formData.accommodationType.length > 1 ? 's' : ''} sélectionné{formData.accommodationType.length > 1 ? 's' : ''} :
+                        {' '}
+                        {formData.accommodationType.map(v => {
+                          const t = accommodationTypes.find(at => at.value === v);
+                          return t ? `${t.emoji} ${t.label}` : v;
+                        }).join(' • ')}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Bouton save */}
               <div className="p-6 border-t border-gray-100 bg-gray-50/50">
                 <button
@@ -658,7 +727,7 @@ export default function ProfilePage() {
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      Créer mon compte
+                      Enregistrer mon profil
                     </>
                   )}
                 </button>
@@ -667,108 +736,7 @@ export default function ProfilePage() {
           </form>
         )}
 
-        {/* ══════════════════════════════════════ */}
-        {/* SECTION: TYPE D'HÉBERGEMENT */}
-        {/* ══════════════════════════════════════ */}
-        {activeSection === 'accommodation' && (
-          <form onSubmit={handleUpdateProfile} className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-emerald-50/50 to-teal-50/50">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-                    <span className="text-white">🏡</span>
-                  </div>
-                  Type d&apos;hébergement
-                </h2>
-                <p className="text-sm text-gray-500 mt-1 ml-13">Sélectionnez un ou plusieurs types d&apos;hébergement que vous proposez</p>
-              </div>
-
-              <div className="p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {accommodationTypes.map((type) => {
-                    const isChecked = formData.accommodationType.includes(type.value);
-                    return (
-                      <label
-                        key={type.value}
-                        className={`relative group cursor-pointer rounded-2xl border-2 p-5 transition-all duration-300 ${
-                          isChecked
-                            ? 'border-primary bg-gradient-to-br from-primary/5 to-pink-500/5 shadow-lg shadow-primary/10'
-                            : 'border-gray-200 hover:border-primary/40 bg-white hover:shadow-md'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(e) => {
-                            const newTypes = e.target.checked
-                              ? [...formData.accommodationType, type.value]
-                              : formData.accommodationType.filter((t) => t !== type.value);
-                            setFormData({ ...formData, accommodationType: newTypes });
-                          }}
-                          className="sr-only"
-                        />
-                        {/* Checkmark */}
-                        <div className={`absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                          isChecked
-                            ? 'bg-gradient-to-r from-primary to-pink-500 scale-100'
-                            : 'bg-gray-100 scale-90'
-                        }`}>
-                          {isChecked && (
-                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                        </div>
-
-                        <span className="text-4xl block mb-3">{type.emoji}</span>
-                        <p className={`font-bold text-sm ${isChecked ? 'text-primary' : 'text-gray-900'}`}>
-                          {type.label}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">{type.desc}</p>
-                      </label>
-                    );
-                  })}
-                </div>
-
-                {/* Résumé sélection */}
-                {formData.accommodationType.length > 0 && (
-                  <div className="mt-6 p-4 bg-gradient-to-r from-primary/5 to-pink-500/5 rounded-xl border border-primary/10">
-                    <p className="text-sm text-gray-700">
-                      <span className="font-semibold text-primary">{formData.accommodationType.length}</span> type{formData.accommodationType.length > 1 ? 's' : ''} sélectionné{formData.accommodationType.length > 1 ? 's' : ''} :
-                      {' '}
-                      {formData.accommodationType.map(v => {
-                        const t = accommodationTypes.find(at => at.value === v);
-                        return t ? `${t.emoji} ${t.label}` : v;
-                      }).join(' • ')}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="p-6 border-t border-gray-100 bg-gray-50/50">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 transition-all duration-300 shadow-lg shadow-pink-200 disabled:opacity-50 flex items-center gap-2"
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Enregistrement...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Enregistrer mes choix
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </form>
-        )}
+        {/* Section accommodation supprimée - intégrée dans la section Informations */}
 
         {/* ══════════════════════════════════════ */}
         {/* SECTION: PHOTO DE PROFIL */}
