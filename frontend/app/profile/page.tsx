@@ -160,13 +160,10 @@ export default function ProfilePage() {
   const completionPercent = Math.round((completionCount / completionFields.length) * 100);
 
   const accommodationTypes = [
-    { value: 'CAMPING', label: 'Camping', emoji: '⛺', desc: 'Campings & aires de plein air' },
-    { value: 'CHAMBRE_HOTES', label: "Chambre d'hôtes", emoji: '🏠', desc: 'Chambres chez l\'habitant' },
+    { value: 'LOCATION_COURTE_DUREE', label: 'Location courte durée', emoji: '🏠', desc: 'Airbnb, Booking, chambres d\'hôtes, gîtes, particulier' },
     { value: 'CONCIERGERIE', label: 'Conciergerie', emoji: '🔑', desc: 'Services de conciergerie' },
-    { value: 'GESTIONNAIRE', label: 'Gestionnaire', emoji: '🏢', desc: 'Gestion multi-locations' },
-    { value: 'PARTICULIER', label: 'Particulier', emoji: '👤', desc: 'Location saisonnière privée' },
-    { value: 'GITE', label: 'Gîte', emoji: '🏡', desc: 'Gîtes ruraux & de charme' },
     { value: 'HOTEL', label: 'Hôtel', emoji: '🏨', desc: 'Hôtels & résidences' },
+    { value: 'CAMPING', label: 'Camping', emoji: '⛺', desc: 'Campings & centres de vacances' },
   ];
 
   const sections = [
