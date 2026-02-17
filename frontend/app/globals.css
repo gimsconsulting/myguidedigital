@@ -6,16 +6,10 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
+/* Forcer le mode clair — l'app n'a pas de dark mode */
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -24,6 +18,12 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Empêcher les navigateurs mobiles d'appliquer le dark mode natif aux inputs */
+input, select, textarea, button {
+  color-scheme: light;
 }
 
 /* Animations personnalisées */

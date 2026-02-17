@@ -127,8 +127,8 @@ export default function ForgotPasswordPage() {
   // Si on est à l'étape 2 (avec token), afficher le formulaire de réinitialisation
   if (isResetStep) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary/5 px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="min-h-[100dvh] min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary/5 px-4 py-8 overflow-y-auto">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-6 sm:p-8">
           <div className="text-center mb-8">
             <Link href="/login" className="inline-block mb-4 text-primary hover:text-primary/80 transition-colors">
               <svg className="w-6 h-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,7 +144,7 @@ export default function ForgotPasswordPage() {
             </p>
           </div>
 
-          <form onSubmit={handleResetPassword} className="space-y-6" autoComplete="off">
+          <form onSubmit={handleResetPassword} className="space-y-6" autoComplete="on">
             {resetError && (
               <div className="bg-red-50 border-2 border-red-300 text-red-800 px-4 py-3 rounded-lg">
                 <div className="flex items-center">
@@ -169,7 +169,7 @@ export default function ForgotPasswordPage() {
                   autoComplete="new-password"
                   name="new-password"
                   id="new-password"
-                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400"
+                  className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400 text-base"
                 />
                 <button
                   type="button"
@@ -209,7 +209,7 @@ export default function ForgotPasswordPage() {
                   autoComplete="new-password"
                   name="confirm-password"
                   id="confirm-password"
-                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400"
+                  className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400 text-base"
                 />
                 <button
                   type="button"
@@ -257,8 +257,8 @@ export default function ForgotPasswordPage() {
 
   // Étape 1: Demander la réinitialisation
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary/5 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-[100dvh] min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary/5 px-4 py-8 overflow-y-auto">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-6 sm:p-8">
         <div className="text-center mb-8">
           <Link href="/login" className="inline-block mb-4 text-primary hover:text-primary/80 transition-colors">
             <svg className="w-6 h-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,7 +300,7 @@ export default function ForgotPasswordPage() {
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleRequestReset} className="space-y-6" autoComplete="off">
+          <form onSubmit={handleRequestReset} className="space-y-6" autoComplete="on">
             {requestError && (
               <div className="bg-red-50 border-2 border-red-300 text-red-800 px-4 py-3 rounded-lg">
                 <div className="flex items-center">
@@ -317,8 +317,8 @@ export default function ForgotPasswordPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="votre@email.com"
-              autoComplete="off"
-              name="forgot-email"
+              autoComplete="email"
+              name="email"
               id="forgot-email"
             />
 

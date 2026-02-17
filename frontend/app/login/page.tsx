@@ -80,6 +80,7 @@ export default function LoginPage() {
         window.google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: handleGoogleSuccess,
+          ux_mode: 'popup',
         });
         const container = document.getElementById('google-signin-btn-login');
         if (container) {
@@ -87,9 +88,9 @@ export default function LoginPage() {
           window.google.accounts.id.renderButton(container, {
             theme: 'outline',
             size: 'large',
-            width: '100%',
+            width: container.offsetWidth || 320,
             text: 'signin_with',
-            shape: 'pill',
+            shape: 'rectangular',
             logo_alignment: 'center',
           });
         }
@@ -152,8 +153,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary/5 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-[100dvh] min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary/5 px-4 py-8 overflow-y-auto">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-6 sm:p-8">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4 text-primary hover:text-primary/80 transition-colors">
             <svg className="w-6 h-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,7 +200,7 @@ export default function LoginPage() {
           </>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
+        <form onSubmit={handleSubmit} className="space-y-5" autoComplete="on">
           {error && (
             <div 
               key={error} 
@@ -220,9 +221,10 @@ export default function LoginPage() {
             onChange={handleEmailChange}
             required
             placeholder="votre@email.com"
-            autoComplete="off"
-            name="login-email"
+            autoComplete="email"
+            name="email"
             id="login-email"
+            className="text-base"
           />
 
           <div className="w-full">
@@ -236,10 +238,10 @@ export default function LoginPage() {
                 onChange={handlePasswordChange}
                 required
                 placeholder="••••••••"
-                autoComplete="new-password"
-                name="login-password"
+                autoComplete="current-password"
+                name="password"
                 id="login-password"
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400"
+                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400 text-base"
               />
               <button
                 type="button"

@@ -76,6 +76,7 @@ export default function RegisterPage() {
         window.google.accounts.id.initialize({
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
           callback: handleGoogleSuccess,
+          ux_mode: 'popup',
         });
         const container = document.getElementById('google-signin-btn-register');
         if (container) {
@@ -83,9 +84,9 @@ export default function RegisterPage() {
           window.google.accounts.id.renderButton(container, {
             theme: 'outline',
             size: 'large',
-            width: '100%',
+            width: container.offsetWidth || 320,
             text: 'signup_with',
-            shape: 'pill',
+            shape: 'rectangular',
             logo_alignment: 'center',
           });
         }
@@ -167,8 +168,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary/5 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-[100dvh] min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary/5 px-4 py-8 overflow-y-auto">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-6 sm:p-8">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4 text-primary hover:text-primary/80 transition-colors">
             <svg className="w-6 h-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,6 +224,8 @@ export default function RegisterPage() {
               value={formData.firstName}
               onChange={handleChange}
               placeholder="Jean"
+              autoComplete="given-name"
+              className="text-base"
             />
 
             <Input
@@ -232,6 +235,8 @@ export default function RegisterPage() {
               value={formData.lastName}
               onChange={handleChange}
               placeholder="Dupont"
+              autoComplete="family-name"
+              className="text-base"
             />
           </div>
 
@@ -243,6 +248,8 @@ export default function RegisterPage() {
             onChange={handleChange}
             required
             placeholder="votre@email.com"
+            autoComplete="email"
+            className="text-base"
           />
 
           <div className="w-full">
@@ -256,9 +263,10 @@ export default function RegisterPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                placeholder="Minimum 8 caractères, majuscule, minuscule, chiffre"
+                placeholder="Min. 8 car., maj., min., chiffre"
                 minLength={8}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400"
+                autoComplete="new-password"
+                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400 text-base"
               />
               <button
                 type="button"

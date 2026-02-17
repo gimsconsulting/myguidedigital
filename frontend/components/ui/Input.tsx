@@ -19,7 +19,7 @@ export const Input: React.FC<InputProps> = ({
         </label>
       )}
       <input
-        className={`w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400 ${
+        className={`w-full px-4 py-2.5 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-gray-400 text-base ${
           error ? 'border-red-500' : 'border-gray-300'
         } ${className}`}
         {...props}
