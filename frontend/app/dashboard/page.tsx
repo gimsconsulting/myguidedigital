@@ -425,6 +425,37 @@ export default function DashboardPage() {
         )}
 
         {/* ══════════════════════════════════════ */}
+        {/* ACTIONS RAPIDES */}
+        {/* ══════════════════════════════════════ */}
+        <div className="mb-8">
+          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-6 bg-gradient-to-b from-primary to-pink-500 rounded-full"></span>
+            Actions rapides
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { action: handleCreateLivret, emoji: '✏️', gradient: 'from-primary to-purple-600', title: 'Créer un livret', desc: 'Nouveau livret d\'accueil', hoverBorder: 'hover:border-primary/30' },
+              { href: '/subscription', emoji: '💎', gradient: 'from-pink-500 to-rose-500', title: 'Abonnement', desc: 'Gérer ou upgrader', hoverBorder: 'hover:border-pink-300' },
+              { href: '/invoices', emoji: '🧾', gradient: 'from-violet-500 to-indigo-600', title: 'Factures', desc: 'Historique et PDF', hoverBorder: 'hover:border-violet-300' },
+              { href: '/profile', emoji: '⚙️', gradient: 'from-emerald-500 to-teal-600', title: 'Mon profil', desc: 'Infos et paramètres', hoverBorder: 'hover:border-emerald-300' },
+            ].map((item, idx) => {
+              const content = (
+                <div className={`group relative bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md ${item.hoverBorder} transition-all duration-300 text-left h-full`}>
+                  <div className={`absolute -inset-0.5 bg-gradient-to-r ${item.gradient} rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-500`}></div>
+                  <div className="relative">
+                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center text-white text-lg mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>{item.emoji}</div>
+                    <p className="font-semibold text-gray-900 text-sm">{item.title}</p>
+                    <p className="text-xs text-gray-400 mt-1">{item.desc}</p>
+                  </div>
+                </div>
+              );
+              if (item.href) return <Link key={idx} href={item.href}>{content}</Link>;
+              return <button key={idx} onClick={item.action} className="text-left">{content}</button>;
+            })}
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════ */}
         {/* VOS LIVRETS — Compteurs en haut */}
         {/* ══════════════════════════════════════ */}
         <div className="mb-6">
@@ -731,37 +762,6 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
-
-        {/* ══════════════════════════════════════ */}
-        {/* ACTIONS RAPIDES */}
-        {/* ══════════════════════════════════════ */}
-        <div className="mt-8 mb-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-6 bg-gradient-to-b from-primary to-pink-500 rounded-full"></span>
-            Actions rapides
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { action: handleCreateLivret, emoji: '✏️', gradient: 'from-primary to-purple-600', title: 'Créer un livret', desc: 'Nouveau livret d\'accueil', hoverBorder: 'hover:border-primary/30' },
-              { href: '/subscription', emoji: '💎', gradient: 'from-pink-500 to-rose-500', title: 'Abonnement', desc: 'Gérer ou upgrader', hoverBorder: 'hover:border-pink-300' },
-              { href: '/invoices', emoji: '🧾', gradient: 'from-violet-500 to-indigo-600', title: 'Factures', desc: 'Historique et PDF', hoverBorder: 'hover:border-violet-300' },
-              { href: '/profile', emoji: '⚙️', gradient: 'from-emerald-500 to-teal-600', title: 'Mon profil', desc: 'Infos et paramètres', hoverBorder: 'hover:border-emerald-300' },
-            ].map((item, idx) => {
-              const content = (
-                <div className={`group relative bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md ${item.hoverBorder} transition-all duration-300 text-left h-full`}>
-                  <div className={`absolute -inset-0.5 bg-gradient-to-r ${item.gradient} rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-500`}></div>
-                  <div className="relative">
-                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center text-white text-lg mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>{item.emoji}</div>
-                    <p className="font-semibold text-gray-900 text-sm">{item.title}</p>
-                    <p className="text-xs text-gray-400 mt-1">{item.desc}</p>
-                  </div>
-                </div>
-              );
-              if (item.href) return <Link key={idx} href={item.href}>{content}</Link>;
-              return <button key={idx} onClick={item.action} className="text-left">{content}</button>;
-            })}
-          </div>
-        </div>
 
         {/* ══════════════════════════════════════ */}
         {/* FOOTER AIDE */}
