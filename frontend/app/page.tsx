@@ -155,7 +155,7 @@ export default function Home() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-5 py-2 bg-white/5 rounded-full border border-white/10 mb-8">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-white/60 text-sm font-medium">{t('home.badge.platform', 'Plateforme N°1 des livrets d\'accueil digitaux')}</span>
+              <span className="text-white/60 text-sm font-medium">{t('home.badge.platform', 'Dites STOP aux livrets papiers et passez aux livrets digitaux')}</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
