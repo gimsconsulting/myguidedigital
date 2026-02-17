@@ -406,10 +406,23 @@ export const chatDocumentsApi = {
   delete: (documentId: string) => api.delete(`/chat-documents/${documentId}`),
 };
 
-// API pour le chatbot IA
+// API pour le chatbot IA (livret)
 export const chatApi = {
   sendMessage: (livretId: string, data: { message: string; conversationHistory?: Array<{ role: string; content: string }> }) =>
     api.post(`/chat/${livretId}`, data),
+};
+
+// API pour le chatbot de l'application (prospect)
+export const appChatApi = {
+  sendMessage: (data: { message: string; conversationHistory?: Array<{ role: string; content: string }> }) =>
+    api.post('/app-chat', data),
+};
+
+// API pour la config du chatbot app (admin)
+export const appChatConfigApi = {
+  get: () => api.get('/admin/chatbot-config'),
+  update: (data: { context?: string; isActive?: boolean }) =>
+    api.put('/admin/chatbot-config', data),
 };
 
 // Affiliates

@@ -896,4 +896,83 @@ router.get('/invoices', authenticateToken, requireAdmin, [
   }
 });
 
+// ═══════════════════════════════════════════════════════
+// CHATBOT APPLICATION — Configuration du contexte
+// ═══════════════════════════════════════════════════════
+
+// GET /api/admin/chatbot-config — Récupérer la config du chatbot
+router.get('/chatbot-config', authenticateToken, async (req: any, res: express.Response) => {
+  try {
+    // Vérifier que l'utilisateur est admin
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user || user.role !== 'ADMIN') {
+      return res.status(403).json({ message: 'Accès non autorisé' });
+    }
+
+    // Récupérer la config (il n'y en a qu'une seule)
+    let config = await prisma.appChatbotConfig.findFirst();
+    
+    if (!config) {
+      // Créer une config par défaut si elle n'existe pas
+      config = await prisma.appChatbotConfig.create({
+        data: {
+          context: '',
+          isActive: true,
+        }
+      });
+    }
+
+    res.json({ config });
+  } catch (error: any) {
+    console.error('Get chatbot config error:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération de la configuration du chatbot' });
+  }
+});
+
+// PUT /api/admin/chatbot-config — Mettre à jour la config du chatbot
+router.put('/chatbot-config', authenticateToken, async (req: any, res: express.Response) => {
+  try {
+    // Vérifier que l'utilisateur est admin
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user || user.role !== 'ADMIN') {
+      return res.status(403).json({ message: 'Accès non autorisé' });
+    }
+
+    const { context, isActive } = req.body;
+
+    // Récupérer ou créer la config
+    let config = await prisma.appChatbotConfig.findFirst();
+    
+    if (config) {
+      config = await prisma.appChatbotConfig.update({
+        where: { id: config.id },
+        data: {
+          ...(context !== undefined && { context }),
+          ...(isActive !== undefined && { isActive }),
+        }
+      });
+    } else {
+      config = await prisma.appChatbotConfig.create({
+        data: {
+          context: context || '',
+          isActive: isActive !== undefined ? isActive : true,
+        }
+      });
+    }
+
+    logAdminAction(req.userId, user.email, 'UPDATE_CHATBOT_CONFIG', {
+      contextLength: config.context.length,
+      isActive: config.isActive,
+    }, req);
+
+    res.json({ 
+      message: 'Configuration du chatbot mise à jour',
+      config 
+    });
+  } catch (error: any) {
+    console.error('Update chatbot config error:', error);
+    res.status(500).json({ message: 'Erreur lors de la mise à jour de la configuration du chatbot' });
+  }
+});
+
 export default router;

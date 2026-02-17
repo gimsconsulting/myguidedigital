@@ -9,6 +9,7 @@ import LanguageSelector from './LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import AuthLayout from './AuthLayout';
 import TrialExpiredModal from './TrialExpiredModal';
+import AppChatWidget from './AppChatWidget';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -339,6 +340,9 @@ function AuthenticatedLayout({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
+
+      {/* Chatbot de l'application */}
+      <AppChatWidget />
     </div>
   );
 }

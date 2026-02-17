@@ -229,6 +229,16 @@ model BlogArticle {
   @@map("blog_articles")
 }
 
+model AppChatbotConfig {
+  id        String   @id @default(uuid())
+  context   String   @db.LongText // Texte de contexte pour alimenter le chatbot de l'application
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("app_chatbot_config")
+}
+
 model BlogCategory {
   id        String   @id @default(uuid())
   slug      String   @unique            // identifiant unique (ex: "conseils")

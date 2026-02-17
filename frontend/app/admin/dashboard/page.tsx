@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/lib/store';
-import { adminApi, authApi, affiliatesApi } from '@/lib/api';
+import { adminApi, authApi, affiliatesApi, appChatConfigApi } from '@/lib/api';
 import Link from 'next/link';
 
 interface OverviewData {
@@ -108,6 +108,13 @@ export default function AdminDashboardPage() {
   const [mounted, setMounted] = useState(false);
   const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
+  // Chatbot config state
+  const [chatbotContext, setChatbotContext] = useState('');
+  const [chatbotIsActive, setChatbotIsActive] = useState(true);
+  const [chatbotSaving, setChatbotSaving] = useState(false);
+  const [chatbotLoaded, setChatbotLoaded] = useState(false);
+  const [chatbotMessage, setChatbotMessage] = useState('');
+
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
@@ -166,6 +173,46 @@ export default function AdminDashboardPage() {
       console.error('Erreur lors de la mise à jour du statut affilié:', err);
     }
   };
+
+  // Charger la config du chatbot
+  const loadChatbotConfig = async () => {
+    try {
+      const res = await appChatConfigApi.get();
+      if (res.data.config) {
+        setChatbotContext(res.data.config.context || '');
+        setChatbotIsActive(res.data.config.isActive);
+      }
+      setChatbotLoaded(true);
+    } catch (err) {
+      console.error('Erreur chargement config chatbot:', err);
+      setChatbotLoaded(true);
+    }
+  };
+
+  // Sauvegarder la config du chatbot
+  const saveChatbotConfig = async () => {
+    setChatbotSaving(true);
+    setChatbotMessage('');
+    try {
+      await appChatConfigApi.update({ context: chatbotContext, isActive: chatbotIsActive });
+      setChatbotMessage('✅ Configuration du chatbot sauvegardée !');
+      setTimeout(() => setChatbotMessage(''), 3000);
+    } catch (err) {
+      console.error('Erreur sauvegarde config chatbot:', err);
+      setChatbotMessage('❌ Erreur lors de la sauvegarde');
+      setTimeout(() => setChatbotMessage(''), 3000);
+    } finally {
+      setChatbotSaving(false);
+    }
+  };
+
+  // Charger la config du chatbot au montage
+  useEffect(() => {
+    if (hasCheckedAuth && isAuthenticated && user?.role === 'ADMIN' && !chatbotLoaded) {
+      loadChatbotConfig();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasCheckedAuth, isAuthenticated, user?.role]);
 
   if (!mounted || !hasHydrated) return null;
   if (!isAuthenticated) return null;
@@ -924,6 +971,98 @@ export default function AdminDashboardPage() {
             <p className="text-white/70 text-xs mb-1">Campings</p>
             <p className="text-3xl font-bold">{subCat.campings}</p>
             <p className="text-white/50 text-[10px] mt-2">abonnés</p>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════ */}
+        {/* CHATBOT APPLICATION — Configuration */}
+        {/* ═══════════════════════════════════════ */}
+        <div className="mb-8">
+          <h2 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-5 bg-gradient-to-b from-primary to-pink-500 rounded-full"></span>
+            Chatbot de l&apos;application
+          </h2>
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-pink-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-300"></div>
+            <div className="relative bg-white rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span className="text-white text-lg">🤖</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Contexte du Chatbot</h3>
+                    <p className="text-xs text-gray-400">Ce texte sera utilisé par ChatGPT pour répondre aux prospects</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <span className={`text-xs font-semibold ${chatbotIsActive ? 'text-emerald-600' : 'text-gray-400'}`}>
+                      {chatbotIsActive ? 'Actif' : 'Inactif'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setChatbotIsActive(!chatbotIsActive)}
+                      className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
+                        chatbotIsActive ? 'bg-emerald-500' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                          chatbotIsActive ? 'translate-x-5' : ''
+                        }`}
+                      ></span>
+                    </button>
+                  </label>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-primary/5 to-pink-500/5 rounded-xl p-4 mb-4 border border-primary/10">
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  <span className="font-bold text-primary">💡 Comment ça marche :</span> Écrivez ci-dessous toutes les informations sur My Guide Digital que le chatbot doit connaître (fonctionnalités, prix, avantages, comment demander une démo, contact, etc.). Le chatbot utilisera ces informations pour répondre aux prospects. Une question principale est affichée au départ : <span className="font-semibold">&quot;Demander une démo de l&apos;application&quot;</span>.
+                </p>
+              </div>
+
+              <textarea
+                value={chatbotContext}
+                onChange={(e) => setChatbotContext(e.target.value)}
+                placeholder="Exemple : My Guide Digital est une plateforme de création de livrets d'accueil digitaux pour les professionnels du tourisme...&#10;&#10;Nos offres :&#10;- Hôtes & locations : 59€ HT/an (illimité)&#10;- Offres courtes durées : à partir de 9,90€ HT&#10;- Hôtels : à partir de 5€ HT/chambre/an&#10;- Campings : à partir de 10€ HT/emplacement/an&#10;&#10;Pour demander une démo, contactez-nous à info@gims-consulting.be ou visitez myguidedigital.com"
+                rows={12}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-y text-sm leading-relaxed"
+              />
+
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-xs text-gray-400">
+                  {chatbotContext.length > 0 ? `${chatbotContext.length} caractères` : 'Aucun contenu'}
+                </div>
+                <div className="flex items-center gap-3">
+                  {chatbotMessage && (
+                    <span className={`text-sm font-medium ${chatbotMessage.startsWith('✅') ? 'text-emerald-600' : 'text-red-500'}`}>
+                      {chatbotMessage}
+                    </span>
+                  )}
+                  <button
+                    onClick={saveChatbotConfig}
+                    disabled={chatbotSaving}
+                    className="px-6 py-2.5 bg-gradient-to-r from-primary to-pink-500 text-white rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {chatbotSaving ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Sauvegarde...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Sauvegarder
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
