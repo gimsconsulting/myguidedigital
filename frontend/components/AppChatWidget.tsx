@@ -9,6 +9,83 @@ interface ChatMessage {
   isLoading?: boolean;
 }
 
+// Fonction pour rendre les liens cliquables dans les messages du bot
+function renderMessageWithLinks(text: string, isUser: boolean) {
+  // D'abord traiter les liens markdown [texte](url)
+  // Puis les URLs brutes
+  const parts: Array<{ type: 'text' | 'link'; content: string; url?: string }> = [];
+  
+  // Regex pour les liens markdown [texte](url) et les URLs brutes
+  const markdownLinkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  const urlRegex = /(https?:\/\/[^\s<>\"'\])\},]+)/g;
+  
+  // Étape 1 : Remplacer les liens markdown par des placeholders
+  let processed = text;
+  const markdownLinks: Array<{ placeholder: string; label: string; url: string }> = [];
+  let mdMatch;
+  let mdIndex = 0;
+  
+  while ((mdMatch = markdownLinkRegex.exec(text)) !== null) {
+    const placeholder = `__MD_LINK_${mdIndex}__`;
+    markdownLinks.push({ placeholder, label: mdMatch[1], url: mdMatch[2] });
+    processed = processed.replace(mdMatch[0], placeholder);
+    mdIndex++;
+  }
+  
+  // Étape 2 : Découper par URLs brutes
+  const urlParts = processed.split(urlRegex);
+  
+  for (let i = 0; i < urlParts.length; i++) {
+    let part = urlParts[i];
+    
+    if (!part) continue;
+    
+    // Vérifier si c'est une URL brute
+    if (/^https?:\/\//.test(part)) {
+      parts.push({ type: 'link', content: part, url: part });
+    } else {
+      // Vérifier si le texte contient des placeholders markdown
+      let remaining = part;
+      for (const mdLink of markdownLinks) {
+        if (remaining.includes(mdLink.placeholder)) {
+          const segments = remaining.split(mdLink.placeholder);
+          if (segments[0]) parts.push({ type: 'text', content: segments[0] });
+          parts.push({ type: 'link', content: mdLink.label, url: mdLink.url });
+          remaining = segments.slice(1).join(mdLink.placeholder);
+        }
+      }
+      if (remaining) parts.push({ type: 'text', content: remaining });
+    }
+  }
+  
+  if (parts.length === 0) {
+    return <span>{text}</span>;
+  }
+  
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.type === 'link') {
+          return (
+            <a
+              key={i}
+              href={part.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`underline font-medium hover:opacity-80 transition-opacity ${
+                isUser ? 'text-white/90' : 'text-primary'
+              }`}
+            >
+              {part.content}
+            </a>
+          );
+        }
+        return <span key={i}>{part.content}</span>;
+      })}
+    </>
+  );
+}
+
 export default function AppChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -204,7 +281,9 @@ export default function AppChatWidget() {
                           : 'bg-white text-gray-900 shadow-sm border border-gray-100 rounded-bl-md'
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+                      <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                        {renderMessageWithLinks(msg.text, msg.sender === 'user')}
+                      </p>
                     </div>
                   </div>
                 ))}
