@@ -268,14 +268,18 @@ router.post('/checkout', authenticateToken, async (req: any, res) => {
       return res.status(400).json({ message: 'Catégorie invalide. Utilisez: hotes, hotel, camping' });
     }
 
+    // URL du frontend (DOIT être configurée en production)
+    const frontendUrl = process.env.FRONTEND_URL || 'https://app.myguidedigital.com';
+
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
-      payment_method_types: ['card'],
+      // Ne PAS spécifier payment_method_types pour laisser Stripe gérer automatiquement
+      // le 3D Secure (SCA) et tous les moyens de paiement activés dans le dashboard
       line_items: lineItems,
       mode,
-      success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription`,
+      success_url: `${frontendUrl}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${frontendUrl}/subscription`,
       metadata: {
         userId: req.userId,
         planId: planId,
@@ -286,6 +290,8 @@ router.post('/checkout', authenticateToken, async (req: any, res) => {
         priceHT: String(priceHT),
         durationDays: String(durationDays),
       },
+      // Activer la collecte automatique de la TVA (optionnel)
+      // automatic_tax: { enabled: true },
     });
 
     res.json({ sessionId: session.id, url: session.url });
@@ -392,13 +398,14 @@ router.post('/upgrade', authenticateToken, async (req: any, res) => {
       return res.status(400).json({ message: 'Catégorie invalide' });
     }
 
+    const frontendUrl = process.env.FRONTEND_URL || 'https://app.myguidedigital.com';
+
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
-      payment_method_types: ['card'],
       line_items: lineItems,
       mode,
-      success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription`,
+      success_url: `${frontendUrl}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${frontendUrl}/subscription`,
       metadata: {
         userId: req.userId,
         planId,
@@ -463,14 +470,15 @@ router.post('/seasonal-duplicate-checkout', authenticateToken, async (req: any, 
     const bonusDays = 14; // +14 jours offerts
     const totalDays = plan.days + bonusDays;
 
+    const frontendUrl = process.env.FRONTEND_URL || 'https://app.myguidedigital.com';
+
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
-      payment_method_types: ['card'],
       line_items: [{
         price_data: {
           currency: 'eur',
           product_data: {
-            name: `My Guide Digital — Saisonnier ${plan.name}`,
+            name: `My Guide Digital — Offre courte durée ${plan.name}`,
             description: `Duplication de livret — ${plan.name} (${plan.days} jours + ${bonusDays} jours offerts = ${totalDays} jours)`,
           },
           unit_amount: Math.round(plan.price * 100),
@@ -478,8 +486,8 @@ router.post('/seasonal-duplicate-checkout', authenticateToken, async (req: any, 
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription/success?session_id={CHECKOUT_SESSION_ID}&type=seasonal`,
-      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`,
+      success_url: `${frontendUrl}/subscription/success?session_id={CHECKOUT_SESSION_ID}&type=seasonal`,
+      cancel_url: `${frontendUrl}/dashboard`,
       metadata: {
         userId: req.userId,
         type: 'seasonal_duplication',
