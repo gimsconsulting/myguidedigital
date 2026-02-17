@@ -298,7 +298,7 @@ export default function SubscriptionPage() {
               </div>
             </div>
 
-            {/* Toggle Annuel / Saisonnier */}
+            {/* Toggle Annuel / Offres courtes durées */}
             <div className="flex justify-center">
               <div className="bg-white rounded-full p-1.5 flex border border-gray-200 shadow-sm">
                 <button
@@ -320,7 +320,7 @@ export default function SubscriptionPage() {
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
-                  ☀️ Saisonnier
+                  ☀️ Offres courtes durées
                 </button>
               </div>
             </div>

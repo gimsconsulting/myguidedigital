@@ -56,7 +56,7 @@ export default function SeasonalPaymentModal({ isOpen, livretId, onClose }: Seas
       <div className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 overflow-hidden">
         {/* Header */}
         <div className="p-6 sm:p-8 text-center border-b border-gray-100">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Paiement saisonnier</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Offres courtes durées</h2>
           <p className="text-gray-500 mt-2">Choisissez l&apos;offre souhaitée</p>
           {/* Close button */}
           <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">

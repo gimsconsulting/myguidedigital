@@ -232,7 +232,7 @@ export default function TarifsHotesPage() {
       <section className="py-12 sm:py-16 bg-dark relative overflow-hidden">
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Toggle Annuel / Saisonnier */}
+          {/* Toggle Annuel / Offres courtes durées */}
           <div className="flex justify-center mb-12 animate-fade-in">
             <div className="glass-dark rounded-full p-1.5 border border-primary/30 inline-flex">
               <button
@@ -253,7 +253,7 @@ export default function TarifsHotesPage() {
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                Saisonnier
+                Offres courtes durées
               </button>
             </div>
           </div>

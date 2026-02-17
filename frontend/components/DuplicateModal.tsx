@@ -134,8 +134,9 @@ export default function DuplicateModal({
               )}
             </div>
 
-            {/* ── Colonne Saisonnier ── */}
+            {/* ── Colonne Offres courtes durées ── */}
             <div className="bg-white border-2 border-gray-100 rounded-2xl p-6 text-center hover:border-amber-300 transition-all duration-300 flex flex-col">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Offres courtes durées</h3>
               <p className="text-gray-400 text-sm mb-1">À partir de</p>
               <div className="mb-2">
                 <span className="text-5xl font-bold text-gray-900">9,90€</span>
@@ -155,7 +156,7 @@ export default function DuplicateModal({
                 }}
                 className="w-full py-3 rounded-xl font-semibold text-gray-900 bg-amber-400 hover:bg-amber-500 transition-all duration-300 shadow-sm hover:shadow-md mt-auto"
               >
-                Paiement saisonnier
+                Offres courtes durées
               </button>
             </div>
           </div>

@@ -290,7 +290,7 @@ export default function DashboardPage() {
     );
     if (t === 'SEASONAL') return (
       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200">
-        Saisonnier
+        Courte durée
       </span>
     );
     return (
@@ -300,12 +300,29 @@ export default function DashboardPage() {
     );
   };
 
-  // Langue flags (supporte minuscules et majuscules)
-  const languageFlags: Record<string, string> = {
-    fr: '🇫🇷', en: '🇬🇧', de: '🇩🇪', it: '🇮🇹', es: '🇪🇸', pt: '🇵🇹', zh: '🇨🇳', ru: '🇷🇺', nl: '🇳🇱',
-    FR: '🇫🇷', EN: '🇬🇧', GB: '🇬🇧', DE: '🇩🇪', IT: '🇮🇹', ES: '🇪🇸', PT: '🇵🇹', ZH: '🇨🇳', CN: '🇨🇳', RU: '🇷🇺', NL: '🇳🇱',
+  // Langue badges — couleurs par langue (compatible Windows, pas d'emoji drapeaux)
+  const langStyles: Record<string, { bg: string; text: string; label: string }> = {
+    fr: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'FR' },
+    en: { bg: 'bg-red-100', text: 'text-red-700', label: 'EN' },
+    gb: { bg: 'bg-red-100', text: 'text-red-700', label: 'EN' },
+    de: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'DE' },
+    it: { bg: 'bg-green-100', text: 'text-green-700', label: 'IT' },
+    es: { bg: 'bg-orange-100', text: 'text-orange-700', label: 'ES' },
+    pt: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'PT' },
+    zh: { bg: 'bg-rose-100', text: 'text-rose-700', label: 'ZH' },
+    cn: { bg: 'bg-rose-100', text: 'text-rose-700', label: 'ZH' },
+    ru: { bg: 'bg-sky-100', text: 'text-sky-700', label: 'RU' },
+    nl: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'NL' },
   };
-  const getFlag = (lang: string) => languageFlags[lang] || languageFlags[lang.toLowerCase()] || lang;
+  const LangBadge = ({ lang }: { lang: string }) => {
+    const key = lang.toLowerCase();
+    const style = langStyles[key] || { bg: 'bg-gray-100', text: 'text-gray-600', label: lang.toUpperCase() };
+    return (
+      <span className={`inline-flex items-center justify-center w-7 h-7 rounded-md text-[10px] font-bold ${style.bg} ${style.text}`}>
+        {style.label}
+      </span>
+    );
+  };
 
   // Sort icon
   const SortIcon = ({ field }: { field: string }) => (
@@ -480,13 +497,13 @@ export default function DashboardPage() {
               <span className="text-lg text-violet-400">{slotsInfo?.annual.max ?? 0}</span>
               <span className="text-violet-600 text-sm font-medium ml-1">Annuel(s)</span>
             </div>
-            {/* Saisonnier */}
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl border-2 border-amber-200 shadow-sm">
-              <span className="text-2xl font-bold text-amber-600">{slotsInfo?.seasonal.used ?? 0}</span>
-              <span className="text-amber-300 text-lg font-light">/</span>
-              <span className="text-lg text-amber-400">{slotsInfo?.seasonal.used ?? 0}</span>
-              <span className="text-amber-600 text-sm font-medium ml-1">Saisonnier(s)</span>
-            </div>
+            {/* Courte durée */}
+                   <div className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl border-2 border-amber-200 shadow-sm">
+                     <span className="text-2xl font-bold text-amber-600">{slotsInfo?.seasonal.used ?? 0}</span>
+                     <span className="text-amber-300 text-lg font-light">/</span>
+                     <span className="text-lg text-amber-400">{slotsInfo?.seasonal.used ?? 0}</span>
+                     <span className="text-amber-600 text-sm font-medium ml-1">Courte(s) durée(s)</span>
+                   </div>
           </div>
 
           {/* Barre de recherche + actions groupées */}
@@ -631,9 +648,9 @@ export default function DashboardPage() {
                         </td>
                         {/* Langues */}
                         <td className="px-4 py-4 text-center">
-                          <div className="flex flex-wrap items-center justify-center gap-0.5">
+                          <div className="flex flex-wrap items-center justify-center gap-1">
                             {langs.map(lang => (
-                              <span key={lang} className="text-lg" title={lang}>{getFlag(lang)}</span>
+                              <LangBadge key={lang} lang={lang} />
                             ))}
                           </div>
                         </td>
@@ -720,8 +737,8 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     {/* Langues */}
-                    <div className="flex items-center gap-1 mb-3">
-                      {langs.map(lang => <span key={lang} className="text-lg">{getFlag(lang)}</span>)}
+                    <div className="flex flex-wrap items-center gap-1 mb-3">
+                      {langs.map(lang => <LangBadge key={lang} lang={lang} />)}
                     </div>
                     {/* Actions mobile */}
                     <div className="flex flex-wrap gap-2">
