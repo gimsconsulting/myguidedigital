@@ -494,42 +494,36 @@ export default function EditLivretPage() {
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 {t('livret.languages', 'Langues du livret')}
               </label>
-              <div className="flex flex-wrap gap-4 mb-2">
-                {availableLanguages.map((lang) => (
-                  <label
-                    key={lang.code}
-                    className="flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity p-3 rounded-lg border-2 border-transparent hover:border-primary/30 bg-primary/5"
-                  >
-                    <div className="w-8 h-6 flex items-center justify-center bg-primary/10 rounded overflow-hidden shadow-sm">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-2">
+                {availableLanguages.map((lang) => {
+                  const isSelected = formData.languages.includes(lang.code);
+                  return (
+                    <label
+                      key={lang.code}
+                      className={`flex flex-col items-center gap-2 cursor-pointer p-3 rounded-xl border-2 transition-all duration-200 ${
+                        isSelected
+                          ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
+                          : 'border-gray-200 hover:border-primary/30 bg-white hover:shadow-sm'
+                      }`}
+                    >
                       <img
-                        src={`https://flagcdn.com/w40/${lang.countryCode}.png`}
+                        src={`https://flagcdn.com/48x36/${lang.countryCode}.png`}
+                        srcSet={`https://flagcdn.com/96x72/${lang.countryCode}.png 2x`}
                         alt={lang.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // Fallback vers emoji si l'image ne charge pas
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            const emojiSpan = document.createElement('span');
-                            emojiSpan.className = 'text-4xl';
-                            emojiSpan.textContent = lang.flag;
-                            parent.appendChild(emojiSpan);
-                          }
-                        }}
+                        className="w-10 h-7 object-cover rounded shadow-sm"
                       />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={formData.languages.includes(lang.code)}
-                        onChange={() => handleLanguageToggle(lang.code)}
-                        className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2"
-                      />
-                      <span className="text-sm font-medium text-gray-700">{lang.code.toUpperCase()}</span>
-                    </div>
-                  </label>
-                ))}
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleLanguageToggle(lang.code)}
+                          className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2"
+                        />
+                        <span className={`text-xs font-bold ${isSelected ? 'text-primary' : 'text-gray-600'}`}>{lang.name}</span>
+                      </div>
+                    </label>
+                  );
+                })}
               </div>
               <p className="text-sm text-gray-500 mt-2">
                 {t('livret.autoTranslationInfo', 'Nous vous offrons la possibilité de traduire automatiquement chaque champ dans les langues que vous aurez sélectionnées.')}
