@@ -21,6 +21,9 @@ model User {
   companyName       String?
   vatNumber         String?
   address           String?           @db.Text
+  street            String?
+  postalCode        String?
+  city              String?
   country           String?
   accommodationType String?           @db.Text // JSON array of accommodation types
   createdAt         DateTime          @default(now())

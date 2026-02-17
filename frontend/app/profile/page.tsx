@@ -18,6 +18,9 @@ export default function ProfilePage() {
     companyName: '',
     vatNumber: '',
     address: '',
+    street: '',
+    postalCode: '',
+    city: '',
     country: '',
     accommodationType: [] as string[],
   });
@@ -44,6 +47,9 @@ export default function ProfilePage() {
       companyName: user.companyName || '',
       vatNumber: user.vatNumber || '',
       address: user.address || '',
+      street: user.street || '',
+      postalCode: user.postalCode || '',
+      city: user.city || '',
       country: user.country || '',
       accommodationType: user.accommodationType || [],
     });
@@ -151,7 +157,7 @@ export default function ProfilePage() {
     { label: 'Nom', done: !!formData.lastName },
     { label: 'Email', done: !!formData.email },
     { label: 'Téléphone', done: !!formData.phone },
-    { label: 'Adresse', done: !!formData.address },
+    { label: 'Adresse', done: !!formData.street },
     { label: 'Pays', done: !!formData.country },
     { label: 'Hébergement', done: formData.accommodationType.length > 0 },
     { label: 'Photo', done: !!formData.profilePhoto },
@@ -456,14 +462,36 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Adresse complète</label>
-                      <textarea
-                        value={formData.address}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        placeholder="Rue, numéro, code postal, ville"
-                        rows={2}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Rue et numéro</label>
+                      <input
+                        type="text"
+                        value={formData.street}
+                        onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+                        placeholder="Rue, numéro"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                       />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Code postal</label>
+                        <input
+                          type="text"
+                          value={formData.postalCode}
+                          onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                          placeholder="Code postal"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+                        <input
+                          type="text"
+                          value={formData.city}
+                          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                          placeholder="Ville"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                        />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
@@ -473,14 +501,19 @@ export default function ProfilePage() {
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                       >
                         <option value="">Sélectionnez un pays</option>
-                        <option value="Belgique">🇧🇪 Belgique</option>
-                        <option value="France">🇫🇷 France</option>
-                        <option value="Luxembourg">🇱🇺 Luxembourg</option>
-                        <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
                         <option value="Allemagne">🇩🇪 Allemagne</option>
-                        <option value="Suisse">🇨🇭 Suisse</option>
+                        <option value="Belgique">🇧🇪 Belgique</option>
+                        <option value="Croatie">🇭🇷 Croatie</option>
                         <option value="Espagne">🇪🇸 Espagne</option>
+                        <option value="France">🇫🇷 France</option>
+                        <option value="Irlande">🇮🇪 Irlande</option>
+                        <option value="Italie">🇮🇹 Italie</option>
+                        <option value="Luxembourg">🇱🇺 Luxembourg</option>
+                        <option value="Monaco">🇲🇨 Monaco</option>
+                        <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
                         <option value="Portugal">🇵🇹 Portugal</option>
+                        <option value="Royaume-Uni">🇬🇧 Royaume-Uni</option>
+                        <option value="Suisse">🇨🇭 Suisse</option>
                       </select>
                     </div>
                   </div>
@@ -496,14 +529,36 @@ export default function ProfilePage() {
                       Vos coordonnées
                     </h3>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Adresse complète</label>
-                      <textarea
-                        value={formData.address}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        placeholder="Rue, numéro, code postal, ville"
-                        rows={2}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Rue et numéro</label>
+                      <input
+                        type="text"
+                        value={formData.street}
+                        onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+                        placeholder="Rue, numéro"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                       />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Code postal</label>
+                        <input
+                          type="text"
+                          value={formData.postalCode}
+                          onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                          placeholder="Code postal"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+                        <input
+                          type="text"
+                          value={formData.city}
+                          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                          placeholder="Ville"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                        />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
@@ -513,14 +568,19 @@ export default function ProfilePage() {
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                       >
                         <option value="">Sélectionnez un pays</option>
-                        <option value="Belgique">🇧🇪 Belgique</option>
-                        <option value="France">🇫🇷 France</option>
-                        <option value="Luxembourg">🇱🇺 Luxembourg</option>
-                        <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
                         <option value="Allemagne">🇩🇪 Allemagne</option>
-                        <option value="Suisse">🇨🇭 Suisse</option>
+                        <option value="Belgique">🇧🇪 Belgique</option>
+                        <option value="Croatie">🇭🇷 Croatie</option>
                         <option value="Espagne">🇪🇸 Espagne</option>
+                        <option value="France">🇫🇷 France</option>
+                        <option value="Irlande">🇮🇪 Irlande</option>
+                        <option value="Italie">🇮🇹 Italie</option>
+                        <option value="Luxembourg">🇱🇺 Luxembourg</option>
+                        <option value="Monaco">🇲🇨 Monaco</option>
+                        <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
                         <option value="Portugal">🇵🇹 Portugal</option>
+                        <option value="Royaume-Uni">🇬🇧 Royaume-Uni</option>
+                        <option value="Suisse">🇨🇭 Suisse</option>
                       </select>
                     </div>
                   </div>

@@ -13,6 +13,9 @@ interface User {
   companyName?: string;
   vatNumber?: string;
   address?: string;
+  street?: string;
+  postalCode?: string;
+  city?: string;
   country?: string;
   accommodationType?: string[];
   subscription?: any;
