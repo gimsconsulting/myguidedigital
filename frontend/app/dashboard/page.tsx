@@ -300,10 +300,12 @@ export default function DashboardPage() {
     );
   };
 
-  // Langue flags
+  // Langue flags (supporte minuscules et majuscules)
   const languageFlags: Record<string, string> = {
     fr: '🇫🇷', en: '🇬🇧', de: '🇩🇪', it: '🇮🇹', es: '🇪🇸', pt: '🇵🇹', zh: '🇨🇳', ru: '🇷🇺', nl: '🇳🇱',
+    FR: '🇫🇷', EN: '🇬🇧', GB: '🇬🇧', DE: '🇩🇪', IT: '🇮🇹', ES: '🇪🇸', PT: '🇵🇹', ZH: '🇨🇳', CN: '🇨🇳', RU: '🇷🇺', NL: '🇳🇱',
   };
+  const getFlag = (lang: string) => languageFlags[lang] || languageFlags[lang.toLowerCase()] || lang;
 
   // Sort icon
   const SortIcon = ({ field }: { field: string }) => (
@@ -594,7 +596,7 @@ export default function DashboardPage() {
                         <td className="px-4 py-4 text-center">
                           <div className="flex flex-wrap items-center justify-center gap-0.5">
                             {langs.map(lang => (
-                              <span key={lang} className="text-lg" title={lang}>{languageFlags[lang] || lang}</span>
+                              <span key={lang} className="text-lg" title={lang}>{getFlag(lang)}</span>
                             ))}
                           </div>
                         </td>
@@ -607,40 +609,40 @@ export default function DashboardPage() {
                             </Link>
                           )}
                         </td>
-                        {/* Actions */}
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex flex-col items-end gap-1">
-                            <Link href={`/dashboard/livrets/${livret.id}`} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-primary transition">
+                        {/* Actions — ligne horizontale d'icônes */}
+                        <td className="px-4 py-4">
+                          <div className="flex items-center justify-end gap-1">
+                            {/* Modifier */}
+                            <Link href={`/dashboard/livrets/${livret.id}`} title="Modifier" className="p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-primary/5 transition">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                              Modifier
                             </Link>
-                            <Link href={`/dashboard/livrets/${livret.id}`} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-primary transition">
+                            {/* Paramètres */}
+                            <Link href={`/dashboard/livrets/${livret.id}`} title="Paramètres" className="p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-primary/5 transition">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                              Paramètres
                             </Link>
+                            {/* Dupliquer (pas pour Essai) */}
                             {!isTrial && (
-                              <button onClick={() => handleDuplicate(livret)} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-blue-600 transition">
+                              <button onClick={() => handleDuplicate(livret)} title="Dupliquer" className="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                                Dupliquer
                               </button>
                             )}
+                            {/* Consulter */}
                             {livret.qrCode && (
-                              <a href={livret.qrCode} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-emerald-600 transition">
+                              <a href={livret.qrCode} target="_blank" rel="noopener noreferrer" title="Consulter" className="p-2 rounded-lg text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 transition">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                Consulter
                               </a>
                             )}
-                            <button onClick={() => handleCopyLink(livret)} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-violet-600 transition">
+                            {/* Copier le lien */}
+                            <button onClick={() => handleCopyLink(livret)} title="Copier le lien" className="p-2 rounded-lg text-gray-500 hover:text-violet-600 hover:bg-violet-50 transition">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                              Copier le lien
                             </button>
-                            <button onClick={() => handleShare(livret)} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-pink-600 transition">
+                            {/* Partager */}
+                            <button onClick={() => handleShare(livret)} title="Partager" className="p-2 rounded-lg text-gray-500 hover:text-pink-600 hover:bg-pink-50 transition">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                              Partager
                             </button>
-                            <button onClick={() => handleDelete(livret.id)} className="flex items-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition">
+                            {/* Supprimer */}
+                            <button onClick={() => handleDelete(livret.id)} title="Supprimer" className="p-2 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                              Supprimer
                             </button>
                           </div>
                         </td>
@@ -678,7 +680,7 @@ export default function DashboardPage() {
                     </div>
                     {/* Langues */}
                     <div className="flex items-center gap-1 mb-3">
-                      {langs.map(lang => <span key={lang} className="text-lg">{languageFlags[lang] || lang}</span>)}
+                      {langs.map(lang => <span key={lang} className="text-lg">{getFlag(lang)}</span>)}
                     </div>
                     {/* Actions mobile */}
                     <div className="flex flex-wrap gap-2">
