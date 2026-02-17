@@ -26,9 +26,17 @@ export default function Layout({ children }: LayoutProps) {
   const isHomePage = pathname === '/';
   const isPublicPage = pathname === '/hote-airbnb' || pathname === '/blog' || pathname?.startsWith('/blog/') || pathname === '/contact' || pathname === '/tarifs' || pathname?.startsWith('/tarifs/') || pathname === '/affiliation' || pathname === '/mentions-legales' || pathname === '/confidentialite' || pathname === '/cgvu' || pathname === '/cookies';
   
+  // Pages du site vitrine où afficher le chatbot prospect
+  const showPublicChatbot = isHomePage || isPublicPage;
+  
   // Pour les pages publiques et d'authentification, utiliser un Layout simplifié SANS i18n
   if (isAuthPage || isPublicRoute || isHomePage || isPublicPage) {
-    return <AuthLayout>{children}</AuthLayout>;
+    return (
+      <AuthLayout>
+        {children}
+        {showPublicChatbot && <AppChatWidget />}
+      </AuthLayout>
+    );
   }
   
   // Pour les autres pages, utiliser le Layout complet avec i18n
@@ -340,9 +348,6 @@ function AuthenticatedLayout({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
-
-      {/* Chatbot de l'application */}
-      <AppChatWidget />
     </div>
   );
 }
