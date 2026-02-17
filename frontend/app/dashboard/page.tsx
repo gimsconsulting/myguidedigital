@@ -589,7 +589,13 @@ export default function DashboardPage() {
                 <tbody>
                   {paginatedLivrets.map((livret) => {
                     const isTrial = (livret.type || 'TRIAL') === 'TRIAL';
-                    const langs = Array.isArray(livret.languages) ? livret.languages : ['fr'];
+                    // Parsing robuste des langues (string JSON ou tableau)
+                    let langs: string[] = ['fr'];
+                    if (Array.isArray(livret.languages)) {
+                      langs = livret.languages;
+                    } else if (typeof livret.languages === 'string') {
+                      try { const parsed = JSON.parse(livret.languages); if (Array.isArray(parsed)) langs = parsed; } catch { /* fallback fr */ }
+                    }
                     const refId = livret.qrCode?.split('/').pop()?.substring(0, 16) || livret.id.substring(0, 8);
                     return (
                       <tr key={livret.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition group/row">
@@ -651,12 +657,10 @@ export default function DashboardPage() {
                             <Link href={`/dashboard/livrets/${livret.id}`} title="Paramètres" className="p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-primary/5 transition">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                             </Link>
-                            {/* Dupliquer (pas pour Essai) */}
-                            {!isTrial && (
-                              <button onClick={() => handleDuplicate(livret)} title="Dupliquer" className="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                              </button>
-                            )}
+                            {/* Dupliquer */}
+                            <button onClick={() => handleDuplicate(livret)} title="Dupliquer" className="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            </button>
                             {/* Consulter */}
                             {livret.qrCode && (
                               <a href={livret.qrCode} target="_blank" rel="noopener noreferrer" title="Consulter" className="p-2 rounded-lg text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 transition">
@@ -688,7 +692,13 @@ export default function DashboardPage() {
             <div className="lg:hidden divide-y divide-gray-50">
               {paginatedLivrets.map((livret) => {
                 const isTrial = (livret.type || 'TRIAL') === 'TRIAL';
-                const langs = Array.isArray(livret.languages) ? livret.languages : ['fr'];
+                // Parsing robuste des langues (string JSON ou tableau)
+                let langs: string[] = ['fr'];
+                if (Array.isArray(livret.languages)) {
+                  langs = livret.languages;
+                } else if (typeof livret.languages === 'string') {
+                  try { const parsed = JSON.parse(livret.languages); if (Array.isArray(parsed)) langs = parsed; } catch { /* fallback fr */ }
+                }
                 return (
                   <div key={livret.id} className="p-5">
                     <div className="flex items-start gap-4 mb-3">
@@ -716,9 +726,7 @@ export default function DashboardPage() {
                     {/* Actions mobile */}
                     <div className="flex flex-wrap gap-2">
                       <Link href={`/dashboard/livrets/${livret.id}`} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary">Modifier</Link>
-                      {!isTrial && (
-                        <button onClick={() => handleDuplicate(livret)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-600">Dupliquer</button>
-                      )}
+                      <button onClick={() => handleDuplicate(livret)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-600">Dupliquer</button>
                       <button onClick={() => handleCopyLink(livret)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-violet-50 text-violet-600">Copier le lien</button>
                       <button onClick={() => handleShare(livret)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-pink-50 text-pink-600">Partager</button>
                       <button onClick={() => handleDelete(livret.id)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-600">Supprimer</button>
