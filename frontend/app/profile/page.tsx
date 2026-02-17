@@ -6,6 +6,92 @@ import { useAuthStore } from '@/lib/store';
 import { toast } from '@/components/ui/Toast';
 import Link from 'next/link';
 
+const profileCountries = [
+  { code: 'DE', value: 'Allemagne', name: 'Allemagne' },
+  { code: 'BE', value: 'Belgique', name: 'Belgique' },
+  { code: 'HR', value: 'Croatie', name: 'Croatie' },
+  { code: 'ES', value: 'Espagne', name: 'Espagne' },
+  { code: 'FR', value: 'France', name: 'France' },
+  { code: 'IE', value: 'Irlande', name: 'Irlande' },
+  { code: 'IT', value: 'Italie', name: 'Italie' },
+  { code: 'LU', value: 'Luxembourg', name: 'Luxembourg' },
+  { code: 'MC', value: 'Monaco', name: 'Monaco' },
+  { code: 'NL', value: 'Pays-Bas', name: 'Pays-Bas' },
+  { code: 'PT', value: 'Portugal', name: 'Portugal' },
+  { code: 'GB', value: 'Royaume-Uni', name: 'Royaume-Uni' },
+  { code: 'CH', value: 'Suisse', name: 'Suisse' },
+];
+
+function CountrySelect({ value, onChange }: { value: string; onChange: (val: string) => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const selected = profileCountries.find(c => c.value === value);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all text-left"
+      >
+        {selected ? (
+          <>
+            <img
+              src={`https://flagcdn.com/w40/${selected.code.toLowerCase()}.png`}
+              alt={selected.name}
+              className="w-6 h-4 rounded-[2px] shadow-sm object-cover"
+            />
+            <span className="font-medium">{selected.name}</span>
+          </>
+        ) : (
+          <span className="text-gray-400">Sélectionnez un pays</span>
+        )}
+        <svg className="w-4 h-4 ml-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isOpen ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+          <button
+            type="button"
+            onClick={() => { onChange(''); setIsOpen(false); }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-gray-400 hover:bg-gray-50 transition-colors"
+          >
+            Sélectionnez un pays
+          </button>
+          {profileCountries.map(c => (
+            <button
+              type="button"
+              key={c.code}
+              onClick={() => { onChange(c.value); setIsOpen(false); }}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-primary/5 transition-colors ${
+                value === c.value ? 'bg-primary/10 font-semibold text-primary' : 'text-gray-700'
+              }`}
+            >
+              <img
+                src={`https://flagcdn.com/w40/${c.code.toLowerCase()}.png`}
+                alt={c.name}
+                className="w-6 h-4 rounded-[2px] shadow-sm object-cover"
+              />
+              <span>{c.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ProfilePage() {
   const { user, updateUser } = useAuthStore();
   const [formData, setFormData] = useState({
@@ -495,26 +581,10 @@ export default function ProfilePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
-                      <select
+                      <CountrySelect
                         value={formData.country}
-                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                      >
-                        <option value="">Sélectionnez un pays</option>
-                        <option value="Allemagne">🇩🇪 Allemagne</option>
-                        <option value="Belgique">🇧🇪 Belgique</option>
-                        <option value="Croatie">🇭🇷 Croatie</option>
-                        <option value="Espagne">🇪🇸 Espagne</option>
-                        <option value="France">🇫🇷 France</option>
-                        <option value="Irlande">🇮🇪 Irlande</option>
-                        <option value="Italie">🇮🇹 Italie</option>
-                        <option value="Luxembourg">🇱🇺 Luxembourg</option>
-                        <option value="Monaco">🇲🇨 Monaco</option>
-                        <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
-                        <option value="Portugal">🇵🇹 Portugal</option>
-                        <option value="Royaume-Uni">🇬🇧 Royaume-Uni</option>
-                        <option value="Suisse">🇨🇭 Suisse</option>
-                      </select>
+                        onChange={(val) => setFormData({ ...formData, country: val })}
+                      />
                     </div>
                   </div>
                 )}
@@ -562,26 +632,10 @@ export default function ProfilePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
-                      <select
+                      <CountrySelect
                         value={formData.country}
-                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                      >
-                        <option value="">Sélectionnez un pays</option>
-                        <option value="Allemagne">🇩🇪 Allemagne</option>
-                        <option value="Belgique">🇧🇪 Belgique</option>
-                        <option value="Croatie">🇭🇷 Croatie</option>
-                        <option value="Espagne">🇪🇸 Espagne</option>
-                        <option value="France">🇫🇷 France</option>
-                        <option value="Irlande">🇮🇪 Irlande</option>
-                        <option value="Italie">🇮🇹 Italie</option>
-                        <option value="Luxembourg">🇱🇺 Luxembourg</option>
-                        <option value="Monaco">🇲🇨 Monaco</option>
-                        <option value="Pays-Bas">🇳🇱 Pays-Bas</option>
-                        <option value="Portugal">🇵🇹 Portugal</option>
-                        <option value="Royaume-Uni">🇬🇧 Royaume-Uni</option>
-                        <option value="Suisse">🇨🇭 Suisse</option>
-                      </select>
+                        onChange={(val) => setFormData({ ...formData, country: val })}
+                      />
                     </div>
                   </div>
                 )}
