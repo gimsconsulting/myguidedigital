@@ -173,10 +173,10 @@ export default function AdminDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
-          <p className="mt-6 text-gray-500 font-medium">Chargement du tableau de bord...</p>
+          <div className="w-16 h-16 mx-auto rounded-full border-4 border-primary/30 border-t-primary animate-spin"></div>
+          <p className="mt-6 text-gray-400 font-medium">Chargement du tableau de bord...</p>
         </div>
       </div>
     );
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
 
   if (error && !data) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center border border-red-100">
           <div className="w-16 h-16 mx-auto rounded-full bg-red-50 flex items-center justify-center mb-4"><span className="text-3xl">⚠️</span></div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Erreur</h2>
@@ -238,7 +238,7 @@ export default function AdminDashboardPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* ═══════════════════════════════════════ */}
@@ -288,7 +288,7 @@ export default function AdminDashboardPage() {
         {(data.subscriptions.expiringSoon > 0 || (data.subscriptions.recentlyExpired || 0) > 0) && (
           <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
             {data.subscriptions.expiringSoon > 0 && (
-              <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-5 shadow-sm">
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-5 shadow-lg shadow-black/10">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white flex-shrink-0 shadow-lg shadow-amber-200">
                     <span className="text-xl">⚠️</span>
@@ -306,7 +306,7 @@ export default function AdminDashboardPage() {
               </div>
             )}
             {(data.subscriptions.recentlyExpired || 0) > 0 && (
-              <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-2xl p-5 shadow-sm">
+              <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-2xl p-5 shadow-lg shadow-black/10">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-pink-500 flex items-center justify-center text-white flex-shrink-0 shadow-lg shadow-red-200">
                     <span className="text-xl">🔴</span>
@@ -335,7 +335,7 @@ export default function AdminDashboardPage() {
           ].map((kpi, i) => (
             <div key={i} className="relative group">
               <div className={`absolute -inset-0.5 bg-gradient-to-r ${kpi.gradient} rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300`}></div>
-              <div className="relative bg-white rounded-2xl p-5 shadow-sm border border-gray-100 h-full">
+              <div className="relative bg-white rounded-2xl p-5 shadow-lg shadow-black/10 border border-white/20 h-full">
                 <div className="flex items-center justify-between mb-3">
                   <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${kpi.gradient} flex items-center justify-center shadow-lg ${kpi.shadow}`}>
                     <span className="text-white text-lg">{kpi.icon}</span>
@@ -353,7 +353,7 @@ export default function AdminDashboardPage() {
         {/* NAVIGATION RAPIDE */}
         {/* ═══════════════════════════════════════ */}
         <div className="mb-8">
-          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <h2 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2">
             <span className="w-1.5 h-5 bg-gradient-to-b from-primary to-pink-500 rounded-full"></span>
             Navigation rapide
           </h2>
@@ -366,7 +366,7 @@ export default function AdminDashboardPage() {
               { href: '/admin/invoices', icon: '🧾', label: 'Factures', gradient: 'from-amber-400 to-orange-500', shadow: 'shadow-amber-200' },
               { href: '/admin/blog', icon: '📝', label: 'Blog', gradient: 'from-cyan-400 to-blue-500', shadow: 'shadow-cyan-200' },
             ].map((item, i) => (
-              <Link key={i} href={item.href} className="group relative overflow-hidden bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 text-center">
+              <Link key={i} href={item.href} className="group relative overflow-hidden bg-white/95 rounded-xl p-4 shadow-lg shadow-black/10 border border-white/20 hover:shadow-xl hover:bg-white transition-all duration-300 text-center">
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
                 <div className={`w-12 h-12 mx-auto rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center text-white text-xl mb-2 group-hover:scale-110 transition-transform duration-300 shadow-lg ${item.shadow}`}>
                   {item.icon}
@@ -381,7 +381,7 @@ export default function AdminDashboardPage() {
         {/* ABONNEMENTS PAR CATÉGORIE — LE CŒUR   */}
         {/* ═══════════════════════════════════════ */}
         <div className="mb-8">
-          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <h2 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2">
             <span className="w-1.5 h-5 bg-gradient-to-b from-primary to-pink-500 rounded-full"></span>
             Abonnements par catégorie
           </h2>
@@ -389,7 +389,7 @@ export default function AdminDashboardPage() {
             {categoryCards.map((cat, i) => (
               <div key={i} className="relative group">
                 <div className={`absolute -inset-0.5 bg-gradient-to-r ${cat.gradient} rounded-2xl blur opacity-15 group-hover:opacity-30 transition duration-300`}></div>
-                <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 h-full">
+                <div className="relative bg-white rounded-2xl overflow-hidden shadow-lg shadow-black/10 border border-white/20 h-full">
                   <div className={`h-1.5 bg-gradient-to-r ${cat.gradient}`}></div>
                   <div className="p-6">
                     <div className="flex items-center gap-3 mb-4">
@@ -419,7 +419,7 @@ export default function AdminDashboardPage() {
 
           {/* Sous-détail Hôtes */}
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-2xl p-5 shadow-lg shadow-black/10 border border-white/20">
               <p className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-[10px] text-white">🏠</span>
                 Détail Hôtes & Locations
@@ -435,7 +435,7 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-2xl p-5 shadow-lg shadow-black/10 border border-white/20">
               <p className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-[10px] text-white">📊</span>
                 Répartition globale
@@ -464,7 +464,7 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
           {/* — Donut répartition abonnements — */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
@@ -519,7 +519,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* — Revenus par catégorie — */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center">
@@ -575,7 +575,7 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
           {/* — Livrets — */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
@@ -631,7 +631,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* — Performance — */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20">
             <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 mb-6">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
                 <span className="text-white text-sm">📊</span>
@@ -676,7 +676,7 @@ export default function AdminDashboardPage() {
         {/* DERNIÈRES INSCRIPTIONS */}
         {/* ═══════════════════════════════════════ */}
         {data.recentUsers && data.recentUsers.length > 0 && (
-          <div className="mb-8 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="mb-8 bg-white rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
@@ -726,7 +726,7 @@ export default function AdminDashboardPage() {
         {/* PROGRAMME D'AFFILIATION */}
         {/* ═══════════════════════════════════════ */}
         <div className="mb-8">
-          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <h2 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2">
             <span className="w-1.5 h-5 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full"></span>
             Programme d&apos;affiliation
           </h2>
@@ -741,7 +741,7 @@ export default function AdminDashboardPage() {
             ].map((kpi, i) => (
               <div key={i} className="relative group">
                 <div className={`absolute -inset-0.5 bg-gradient-to-r ${kpi.gradient} rounded-2xl blur opacity-15 group-hover:opacity-30 transition duration-300`}></div>
-                <div className="relative bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                <div className="relative bg-white rounded-2xl p-4 shadow-lg shadow-black/10 border border-white/20">
                   <div className="flex items-center gap-3 mb-2">
                     <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${kpi.gradient} flex items-center justify-center shadow-lg ${kpi.shadow}`}>
                       <span className="text-white text-sm">{kpi.emoji}</span>
@@ -759,7 +759,7 @@ export default function AdminDashboardPage() {
             {/* Mois en cours */}
             <div className="relative group">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl blur opacity-10 group-hover:opacity-25 transition duration-300"></div>
-              <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 h-full">
+              <div className="relative bg-white rounded-2xl overflow-hidden shadow-lg shadow-black/10 border border-white/20 h-full">
                 <div className="h-1.5 bg-gradient-to-r from-amber-400 to-orange-500"></div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-5">
@@ -806,7 +806,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Top affiliés */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 h-full">
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg shadow-black/10 border border-white/20 h-full">
               <div className="h-1.5 bg-gradient-to-r from-primary to-purple-600"></div>
               <div className="p-6">
                 <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 mb-5">
@@ -855,7 +855,7 @@ export default function AdminDashboardPage() {
 
           {/* Demandes en attente */}
           {pendingAffiliates.length > 0 && (
-            <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="mt-6 bg-white rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-amber-50 to-orange-50">
                 <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
@@ -931,7 +931,7 @@ export default function AdminDashboardPage() {
         {/* FOOTER ADMIN */}
         {/* ═══════════════════════════════════════ */}
         <div className="text-center py-4">
-          <p className="text-gray-300 text-xs">
+          <p className="text-gray-500 text-xs">
             My Guide Digital — Administration • Données actualisées en temps réel
           </p>
         </div>
