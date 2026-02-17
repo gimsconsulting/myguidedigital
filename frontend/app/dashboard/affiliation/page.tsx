@@ -84,7 +84,7 @@ export default function AffiliationDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
         <div className="max-w-7xl mx-auto px-4 py-16 flex items-center justify-center">
           <div className="relative">
             <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
@@ -96,11 +96,11 @@ export default function AffiliationDashboardPage() {
 
   if (notAffiliate) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
         <div className="max-w-3xl mx-auto px-4 py-16">
           <div className="relative group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-pink-500 rounded-2xl blur opacity-20"></div>
-            <div className="relative bg-white rounded-2xl p-10 text-center shadow-sm border border-gray-100">
+            <div className="relative bg-white rounded-2xl p-10 text-center shadow-lg shadow-black/10 border border-white/20">
               <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
                 <span className="text-4xl">🤝</span>
               </div>
@@ -126,7 +126,7 @@ export default function AffiliationDashboardPage() {
   const statusBadge = getStatusBadge(affiliate.status);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* HEADER PREMIUM */}
@@ -158,7 +158,7 @@ export default function AffiliationDashboardPage() {
         {affiliate.status === 'APPROVED' && (
           <div className="mb-8 relative group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div className="relative bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <div className="relative bg-white rounded-2xl p-5 shadow-lg shadow-black/10 border border-white/20">
               <div className="flex flex-col md:flex-row items-center gap-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-lg flex-shrink-0">
@@ -194,7 +194,7 @@ export default function AffiliationDashboardPage() {
           ].map((card, idx) => (
             <div key={idx} className="relative group">
               <div className={`absolute -inset-0.5 bg-gradient-to-r ${card.gradient} rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500`}></div>
-              <div className="relative bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+              <div className="relative bg-white rounded-2xl p-5 shadow-lg shadow-black/10 border border-white/20 hover:shadow-md transition-all duration-300">
                 <div className="flex items-center justify-between mb-2">
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${card.bgLight} flex items-center justify-center`}>
                     <span className="text-lg">{card.emoji}</span>
@@ -215,15 +215,15 @@ export default function AffiliationDashboardPage() {
               Ce mois-ci — {stats.monthlyStats[0].label}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-2xl p-5 shadow-lg shadow-black/10 border border-white/20">
                 <p className="text-sm text-gray-400 mb-1">Ventes réalisées</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.monthlyStats[0].referralCount}</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-2xl p-5 shadow-lg shadow-black/10 border border-white/20">
                 <p className="text-sm text-gray-400 mb-1">Chiffre d&apos;affaires généré</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.monthlyStats[0].totalSales.toFixed(2)}€</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-2xl p-5 shadow-lg shadow-black/10 border border-white/20">
                 <p className="text-sm text-gray-400 mb-1">Commissions (30%)</p>
                 <p className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">{stats.monthlyStats[0].totalCommission.toFixed(2)}€</p>
               </div>
@@ -239,7 +239,7 @@ export default function AffiliationDashboardPage() {
           </h2>
           
           {affiliate.referrals && affiliate.referrals.length > 0 ? (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -286,7 +286,7 @@ export default function AffiliationDashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-lg shadow-black/10 border border-white/20 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center">
                 <span className="text-3xl">📊</span>
               </div>
@@ -299,7 +299,7 @@ export default function AffiliationDashboardPage() {
         {/* INFOS FACTURATION */}
         <div className="relative group">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-pink-500 rounded-2xl blur opacity-0 group-hover:opacity-15 transition duration-500"></div>
-          <div className="relative bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="relative bg-white rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20">
             <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
               <span className="text-lg">🧾</span> Informations de facturation
             </h3>

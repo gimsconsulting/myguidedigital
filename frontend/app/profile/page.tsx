@@ -265,7 +265,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* ══════════════════════════════════════ */}
@@ -388,7 +388,7 @@ export default function ProfilePage() {
               className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all duration-300 whitespace-nowrap ${
                 activeSection === section.id
                   ? 'bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg shadow-primary/20'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 hover:border-primary/30'
+                  : 'bg-white/10 text-white/70 hover:bg-white/20 border border-white/10 hover:border-primary/30'
               }`}
             >
               <span>{section.icon}</span>
@@ -402,7 +402,7 @@ export default function ProfilePage() {
         {/* ══════════════════════════════════════ */}
         {activeSection === 'info' && (
           <form onSubmit={handleUpdateProfile} className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden">
               <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-primary/5 to-pink-500/5">
                 <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
@@ -742,7 +742,7 @@ export default function ProfilePage() {
         {/* SECTION: PHOTO DE PROFIL */}
         {/* ══════════════════════════════════════ */}
         {activeSection === 'photo' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden">
             <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-violet-50/50 to-indigo-50/50">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
@@ -822,7 +822,7 @@ export default function ProfilePage() {
         {/* ══════════════════════════════════════ */}
         {activeSection === 'password' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden">
               <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-amber-50/50 to-orange-50/50">
                 <h2 className="text-lg font-bold text-gray-900 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">

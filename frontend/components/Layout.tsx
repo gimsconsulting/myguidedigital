@@ -100,10 +100,10 @@ function AuthenticatedLayout({
   // Attendre l'hydratation du store
   if (!hasHydrated) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-500">Chargement...</p>
+          <p className="mt-4 text-white/60">Chargement...</p>
         </div>
       </div>
     );
@@ -112,10 +112,10 @@ function AuthenticatedLayout({
   // Attendre que i18n soit prêt
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-500">Chargement...</p>
+          <p className="mt-4 text-white/60">Chargement...</p>
         </div>
       </div>
     );
@@ -124,10 +124,10 @@ function AuthenticatedLayout({
   // Rediriger si non authentifié
   if (!isAuthenticated) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-gray-500">Redirection...</p>
+          <p className="mt-4 text-white/60">Redirection...</p>
         </div>
       </div>
     );
@@ -174,7 +174,7 @@ function AuthenticatedLayout({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
       {/* Popup blocage trial expiré */}
       <TrialExpiredModal isOpen={showTrialExpiredModal} />
 

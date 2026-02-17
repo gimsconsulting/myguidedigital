@@ -328,13 +328,13 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="flex flex-col items-center justify-center">
             <div className="relative">
               <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
             </div>
-            <p className="mt-6 text-gray-500 font-medium">{t('common.loading', 'Chargement...')}</p>
+            <p className="mt-6 text-white/60 font-medium">{t('common.loading', 'Chargement...')}</p>
           </div>
         </div>
       </div>
@@ -349,7 +349,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* ══════════════════════════════════════ */}
@@ -397,7 +397,7 @@ export default function DashboardPage() {
         {subscriptionInfo && (
           <div className="mb-8 relative group">
             <div className={`absolute -inset-0.5 bg-gradient-to-r ${getPlanColor(subscriptionInfo.plan)} rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500`}></div>
-            <div className="relative bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="relative bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden">
               <div className={`h-1 bg-gradient-to-r ${getPlanColor(subscriptionInfo.plan)}`}></div>
               <div className="p-5">
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -451,7 +451,7 @@ export default function DashboardPage() {
               { href: '/profile', emoji: '⚙️', gradient: 'from-emerald-500 to-teal-600', title: 'Mon profil', desc: 'Infos et paramètres', hoverBorder: 'hover:border-emerald-300' },
             ].map((item, idx) => {
               const content = (
-                <div className={`group relative bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md ${item.hoverBorder} transition-all duration-300 text-left h-full`}>
+                <div className={`group relative bg-white/95 rounded-xl p-5 shadow-lg shadow-black/10 border border-white/20 hover:shadow-xl ${item.hoverBorder} transition-all duration-300 text-left h-full`}>
                   <div className={`absolute -inset-0.5 bg-gradient-to-r ${item.gradient} rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-500`}></div>
                   <div className="relative">
                     <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center text-white text-lg mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>{item.emoji}</div>
@@ -478,21 +478,21 @@ export default function DashboardPage() {
           {/* Compteurs */}
           <div className="flex flex-wrap gap-3 mb-5">
             {/* Total */}
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-white/95 rounded-xl border border-white/20 shadow-lg shadow-black/10">
               <span className="text-2xl font-bold text-gray-900">{slotsInfo?.total.used ?? stats.total}</span>
               <span className="text-gray-400 text-lg font-light">/</span>
               <span className="text-lg text-gray-400">{slotsInfo?.total.max ?? stats.total}</span>
               <span className="text-gray-500 text-sm font-medium ml-1">Livret(s)</span>
             </div>
             {/* Annuel */}
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl border-2 border-violet-200 shadow-sm">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-white/95 rounded-xl border-2 border-violet-200/50 shadow-lg shadow-black/10">
               <span className="text-2xl font-bold text-violet-600">{slotsInfo?.annual.used ?? 0}</span>
               <span className="text-violet-300 text-lg font-light">/</span>
               <span className="text-lg text-violet-400">{slotsInfo?.annual.max ?? 0}</span>
               <span className="text-violet-600 text-sm font-medium ml-1">Annuel(s)</span>
             </div>
             {/* Courte durée */}
-                   <div className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl border-2 border-amber-200 shadow-sm">
+                   <div className="flex items-center gap-2 px-4 py-2.5 bg-white/95 rounded-xl border-2 border-amber-200/50 shadow-lg shadow-black/10">
                      <span className="text-2xl font-bold text-amber-600">{slotsInfo?.seasonal.used ?? 0}</span>
                      <span className="text-amber-300 text-lg font-light">/</span>
                      <span className="text-lg text-amber-400">{slotsInfo?.seasonal.used ?? 0}</span>
@@ -563,7 +563,7 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden">
             {/* ── Desktop Table ── */}
             <div className="hidden lg:block overflow-x-auto" ref={dropdownRef}>
               <table className="w-full">
@@ -787,7 +787,7 @@ export default function DashboardPage() {
         {/* ══════════════════════════════════════ */}
         <div className="relative group">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-pink-500 rounded-2xl blur opacity-0 group-hover:opacity-15 transition duration-500"></div>
-          <div className="relative bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+          <div className="relative bg-white/95 rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20 text-center">
             <p className="text-gray-400 text-sm">
               Besoin d&apos;aide ou d&apos;une démonstration personnalisée ?{' '}
               <Link href="/contact" className="text-primary hover:text-pink-500 font-semibold transition-colors">

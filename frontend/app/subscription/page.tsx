@@ -122,10 +122,10 @@ export default function SubscriptionPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
-          <p className="mt-6 text-gray-500 font-medium">Chargement des offres...</p>
+          <p className="mt-6 text-white/60 font-medium">Chargement des offres...</p>
         </div>
       </div>
     );
@@ -147,7 +147,7 @@ export default function SubscriptionPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* ══════════════════════════════════════ */}
@@ -209,7 +209,7 @@ export default function SubscriptionPage() {
         {/* ══════════════════════════════════════ */}
         {/* CODE PROMO */}
         {/* ══════════════════════════════════════ */}
-        <div className="mb-8 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <div className="mb-8 bg-white rounded-2xl p-5 shadow-lg shadow-black/10 border border-white/20">
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0">
               <span className="text-white">🏷️</span>
@@ -247,11 +247,11 @@ export default function SubscriptionPage() {
                 className={`relative group rounded-2xl p-4 md:p-5 text-center transition-all duration-300 ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-br from-primary to-pink-500 text-white shadow-xl shadow-primary/20 scale-[1.02]'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:border-primary/30 hover:shadow-md'
+                    : 'bg-white/10 text-white/70 border border-white/10 hover:border-primary/30 hover:bg-white/15 hover:shadow-md'
                 }`}
               >
                 <span className="text-2xl md:text-3xl block mb-2">{tab.emoji}</span>
-                <p className={`font-bold text-sm md:text-base ${activeTab === tab.id ? 'text-white' : 'text-gray-900'}`}>
+                <p className={`font-bold text-sm md:text-base ${activeTab === tab.id ? 'text-white' : 'text-white'}`}>
                   {tab.title}
                 </p>
                 <p className={`text-xs mt-1 hidden md:block ${activeTab === tab.id ? 'text-white/70' : 'text-gray-400'}`}>
@@ -271,7 +271,7 @@ export default function SubscriptionPage() {
         {activeTab === 'hotes' && (
           <div className="space-y-8">
             {/* Sélecteur quantité */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-bold text-gray-900">Combien de locations possédez-vous ?</h3>
                 <p className="text-sm text-gray-400 mt-1">1 abonnement = 1 location avec son propre livret d&apos;accueil</p>
@@ -300,7 +300,7 @@ export default function SubscriptionPage() {
 
             {/* Toggle Annuel / Offres courtes durées */}
             <div className="flex justify-center">
-              <div className="bg-white rounded-full p-1.5 flex border border-gray-200 shadow-sm">
+              <div className="bg-white/95 rounded-full p-1.5 flex border border-white/20 shadow-lg shadow-black/10">
                 <button
                   onClick={() => setHostBilling('annual')}
                   className={`px-8 py-3 rounded-full text-sm font-bold transition-all duration-300 ${
@@ -528,7 +528,7 @@ export default function SubscriptionPage() {
         {activeTab === 'hotels' && (
           <div className="space-y-8 max-w-3xl mx-auto">
             {/* Sélecteur nombre d'hôtels */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+            <div className="bg-white rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20 text-center">
               <h3 className="text-lg font-bold text-gray-900 mb-1">Combien d&apos;hôtels possédez-vous ?</h3>
               <p className="text-sm text-gray-400 mb-4">1 abonnement = 1 hôtel</p>
               <div className="flex items-center justify-center gap-4">
@@ -639,7 +639,7 @@ export default function SubscriptionPage() {
         {activeTab === 'campings' && (
           <div className="space-y-8 max-w-3xl mx-auto">
             {/* Sélecteur nombre de campings */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+            <div className="bg-white rounded-2xl p-6 shadow-lg shadow-black/10 border border-white/20 text-center">
               <h3 className="text-lg font-bold text-gray-900 mb-1">Combien de campings possédez-vous ?</h3>
               <p className="text-sm text-gray-400 mb-4">1 abonnement = 1 camping</p>
               <div className="flex items-center justify-center gap-4">
@@ -757,7 +757,7 @@ export default function SubscriptionPage() {
         {/* ══════════════════════════════════════ */}
         <div className="mt-12 mb-8">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Tout est inclus, sans surprise</h2>
+            <h2 className="text-2xl font-bold text-white">Tout est inclus, sans surprise</h2>
             <p className="text-gray-400 mt-2">Chaque abonnement comprend l&apos;accès à toutes nos fonctionnalités</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -781,7 +781,7 @@ export default function SubscriptionPage() {
         {/* ══════════════════════════════════════ */}
         <div className="mb-8">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Ils nous font confiance</h2>
+            <h2 className="text-2xl font-bold text-white">Ils nous font confiance</h2>
             <p className="text-gray-400 mt-2">Découvrez ce que nos clients pensent de My Guide Digital</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -113,14 +113,14 @@ export default function InvoicesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="flex flex-col items-center justify-center">
             <div className="relative">
               <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
               <div className="absolute inset-0 w-16 h-16 rounded-full bg-gradient-to-r from-primary/10 to-pink-500/10 animate-pulse"></div>
             </div>
-            <p className="mt-6 text-gray-500 font-medium">{t('common.loading', 'Chargement...')}</p>
+            <p className="mt-6 text-white/60 font-medium">{t('common.loading', 'Chargement...')}</p>
           </div>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function InvoicesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* ══════════════════════════════════════ */}
@@ -219,7 +219,7 @@ export default function InvoicesPage() {
                 className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
                   filterStatus === filter.key
                     ? 'bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg shadow-primary/20'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5'
+                    : 'bg-white/10 border border-white/10 text-white/70 hover:border-primary/30 hover:bg-white/15 hover:shadow-md'
                 }`}
               >
                 <span>{filter.icon}</span>
@@ -242,7 +242,7 @@ export default function InvoicesPage() {
         {invoices.length === 0 ? (
           <div className="relative group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-pink-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
-            <div className="relative bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+            <div className="relative bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 p-12 text-center">
               <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/10 to-pink-500/10 border border-primary/10 flex items-center justify-center">
                 <span className="text-4xl">🧾</span>
               </div>
@@ -269,7 +269,7 @@ export default function InvoicesPage() {
             <div className="hidden md:block">
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/10 to-pink-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-700"></div>
-                <div className="relative bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div className="relative bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="min-w-full">
                       <thead>
@@ -366,7 +366,7 @@ export default function InvoicesPage() {
                 return (
                   <div key={invoice.id} className="relative group">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/10 to-pink-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                    <div className="relative bg-white rounded-2xl shadow-md border border-gray-100 p-5 hover:shadow-lg transition-all duration-300">
+                    <div className="relative bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 p-5 hover:shadow-xl transition-all duration-300">
                       {/* Header de la card */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
@@ -439,7 +439,7 @@ export default function InvoicesPage() {
               <div className="mt-6">
                 <div className="relative group">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/10 to-pink-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                  <div className="relative bg-white rounded-2xl shadow-md border border-gray-100 p-5">
+                  <div className="relative bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 p-5">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/10 flex items-center justify-center">
