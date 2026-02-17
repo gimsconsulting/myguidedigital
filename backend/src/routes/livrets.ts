@@ -571,97 +571,176 @@ router.delete('/:id', authenticateToken, async (req: any, res: express.Response)
   }
 });
 
-// Duplicate livret
-router.post('/:id/duplicate', authenticateToken, async (req: any, res: express.Response) => {
-  try {
-    const originalLivret = await prisma.livret.findFirst({
-      where: {
-        id: req.params.id,
-        userId: req.userId
-      },
-      include: {
-        modules: true
+// ── Helper : générer une URL QR code unique ──
+function generateQrCodeUrl(): string {
+  let qrBaseUrl = process.env.QR_CODE_BASE_URL;
+  if (!qrBaseUrl) {
+    qrBaseUrl = process.env.NODE_ENV === 'production'
+      ? 'https://app.myguidedigital.com/guide'
+      : 'http://192.168.0.126:3000/guide';
+  }
+  return `${qrBaseUrl}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// ── Helper : dupliquer un livret en base de données ──
+async function performDuplication(originalLivretId: string, userId: string, type: string, seasonalEndDate?: Date) {
+  const originalLivret = await prisma.livret.findFirst({
+    where: { id: originalLivretId, userId },
+    include: { modules: true, chatDocuments: true }
+  });
+
+  if (!originalLivret) {
+    throw new Error('Livret non trouvé');
+  }
+
+  const qrCodeUrl = generateQrCodeUrl();
+
+  const duplicatedLivret = await prisma.livret.create({
+    data: {
+      name: `${originalLivret.name} (Copie)`,
+      address: originalLivret.address,
+      userId,
+      welcomeTitle: originalLivret.welcomeTitle,
+      welcomeSubtitle: originalLivret.welcomeSubtitle,
+      backgroundImage: originalLivret.backgroundImage,
+      showProfilePhoto: originalLivret.showProfilePhoto,
+      titleFont: originalLivret.titleFont,
+      titleColor: originalLivret.titleColor,
+      subtitleColor: originalLivret.subtitleColor,
+      tileColor: originalLivret.tileColor,
+      iconColor: originalLivret.iconColor,
+      languages: originalLivret.languages || JSON.stringify(['fr']),
+      translations: originalLivret.translations || null,
+      qrCode: qrCodeUrl,
+      type,
+      seasonalEndDate: seasonalEndDate || null,
+      duplicatedFromId: originalLivretId,
+      modules: {
+        create: originalLivret.modules.map(module => ({
+          type: module.type,
+          name: module.name,
+          isActive: module.isActive,
+          order: module.order,
+          content: module.content,
+          translations: module.translations,
+        }))
       }
+    },
+    include: { modules: true }
+  });
+
+  // Parser les données JSON
+  let parsedLanguages = ['fr'];
+  let parsedTranslations = {};
+  try { parsedLanguages = duplicatedLivret.languages ? JSON.parse(duplicatedLivret.languages as string) : ['fr']; } catch (e) { /* */ }
+  try { parsedTranslations = duplicatedLivret.translations ? JSON.parse(duplicatedLivret.translations as string) : {}; } catch (e) { /* */ }
+
+  return { ...duplicatedLivret, languages: parsedLanguages, translations: parsedTranslations };
+}
+
+// ══════════════════════════════════════
+// GET /livrets/slots — Infos sur les slots disponibles
+// ══════════════════════════════════════
+router.get('/slots', authenticateToken, async (req: any, res: express.Response) => {
+  try {
+    // Récupérer l'abonnement actif
+    const subscription = await prisma.subscription.findFirst({
+      where: { userId: req.userId, status: 'ACTIVE' },
+      orderBy: { createdAt: 'desc' }
     });
 
+    // Compter les livrets par type
+    const allLivrets = await prisma.livret.findMany({
+      where: { userId: req.userId },
+      select: { id: true, type: true, seasonalEndDate: true }
+    });
+
+    const totalLivrets = allLivrets.length;
+    const annualLivrets = allLivrets.filter(l => l.type === 'ANNUAL').length;
+    const seasonalLivrets = allLivrets.filter(l => l.type === 'SEASONAL').length;
+    const trialLivrets = allLivrets.filter(l => l.type === 'TRIAL').length;
+
+    // Déterminer le plan et les slots
+    const plan = subscription?.plan || 'TRIAL';
+    const isTrial = plan === 'TRIAL';
+    const maxAnnualSlots = subscription?.quantity || (isTrial ? 0 : 1);
+    const availableAnnualSlots = Math.max(0, maxAnnualSlots - annualLivrets);
+
+    // Vérifier si le user a un abonnement payant (non TRIAL)
+    const hasPaidSubscription = subscription && subscription.plan !== 'TRIAL' && subscription.status === 'ACTIVE';
+
+    res.json({
+      plan,
+      isTrial,
+      hasPaidSubscription: !!hasPaidSubscription,
+      total: {
+        used: totalLivrets,
+        max: maxAnnualSlots + seasonalLivrets + (isTrial ? 1 : 0), // Total = annual slots + seasonal (illimités) + 1 trial
+      },
+      annual: {
+        used: annualLivrets,
+        max: maxAnnualSlots,
+        available: availableAnnualSlots,
+      },
+      seasonal: {
+        used: seasonalLivrets,
+      },
+      trial: {
+        used: trialLivrets,
+      },
+    });
+  } catch (error: any) {
+    console.error('Get slots error:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des slots' });
+  }
+});
+
+// ══════════════════════════════════════
+// POST /livrets/:id/duplicate — Duplication améliorée avec type
+// ══════════════════════════════════════
+router.post('/:id/duplicate', authenticateToken, async (req: any, res: express.Response) => {
+  try {
+    const { type: requestedType } = req.body; // 'annual' | undefined (pour une duplication simple via slot annuel)
+
+    // Vérifier que le livret source existe
+    const originalLivret = await prisma.livret.findFirst({
+      where: { id: req.params.id, userId: req.userId }
+    });
     if (!originalLivret) {
       return res.status(404).json({ message: 'Livret non trouvé' });
     }
 
-    // Generate new QR code
-    // Déterminer l'URL de base pour le QR code selon l'environnement
-    let qrBaseUrl = process.env.QR_CODE_BASE_URL;
-    if (!qrBaseUrl) {
-      // En production, utiliser le domaine de production
-      if (process.env.NODE_ENV === 'production') {
-        qrBaseUrl = 'https://app.myguidedigital.com/guide';
-      } else {
-        // En développement, utiliser l'IP locale par défaut
-        qrBaseUrl = 'http://192.168.0.126:3000/guide';
+    // Si type = 'annual', vérifier les slots disponibles
+    if (requestedType === 'annual') {
+      const subscription = await prisma.subscription.findFirst({
+        where: { userId: req.userId, status: 'ACTIVE' },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      if (!subscription || subscription.plan === 'TRIAL') {
+        return res.status(403).json({ message: 'Vous devez avoir un abonnement actif pour utiliser un slot annuel' });
       }
-    }
-    const qrCodeUrl = `${qrBaseUrl}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Les langues sont déjà en JSON string, on peut les réutiliser directement
-    const duplicatedLivret = await prisma.livret.create({
-      data: {
-        name: `${originalLivret.name} (Copie)`,
-        address: originalLivret.address,
-        userId: req.userId,
-        welcomeTitle: originalLivret.welcomeTitle,
-        welcomeSubtitle: originalLivret.welcomeSubtitle,
-        backgroundImage: originalLivret.backgroundImage,
-        showProfilePhoto: originalLivret.showProfilePhoto,
-        titleFont: originalLivret.titleFont,
-        titleColor: originalLivret.titleColor,
-        subtitleColor: originalLivret.subtitleColor,
-        tileColor: originalLivret.tileColor,
-        iconColor: originalLivret.iconColor,
-        languages: originalLivret.languages || JSON.stringify(['fr']),
-        translations: originalLivret.translations || null,
-        qrCode: qrCodeUrl,
-        modules: {
-          create: originalLivret.modules.map(module => ({
-            type: module.type,
-            name: module.name,
-            isActive: module.isActive,
-            order: module.order,
-            content: module.content,
-            translations: module.translations,
-          }))
-        }
-      },
-      include: {
-        modules: true
+      const annualCount = await prisma.livret.count({
+        where: { userId: req.userId, type: 'ANNUAL' }
+      });
+
+      const maxSlots = subscription.quantity || 1;
+      if (annualCount >= maxSlots) {
+        return res.status(403).json({ message: 'Aucun slot annuel disponible. Augmentez votre abonnement.' });
       }
-    });
 
-    // Convertir les langues et traductions JSON string en objets
-    let parsedLanguages = ['fr'];
-    let parsedTranslations = {};
-    
-    try {
-      parsedLanguages = duplicatedLivret.languages ? JSON.parse(duplicatedLivret.languages as string) : ['fr'];
-    } catch (e) {
-      parsedLanguages = ['fr'];
-    }
-    
-    try {
-      parsedTranslations = duplicatedLivret.translations ? JSON.parse(duplicatedLivret.translations as string) : {};
-    } catch (e) {
-      parsedTranslations = {};
+      // Dupliquer avec type ANNUAL
+      const duplicated = await performDuplication(req.params.id, req.userId, 'ANNUAL');
+      return res.status(201).json(duplicated);
     }
 
-    const duplicatedLivretWithParsedData = {
-      ...duplicatedLivret,
-      languages: parsedLanguages,
-      translations: parsedTranslations,
-    };
-
-    res.status(201).json(duplicatedLivretWithParsedData);
+    // Duplication simple (héritage de type, pour compatibilité)
+    const duplicated = await performDuplication(req.params.id, req.userId, 'TRIAL');
+    res.status(201).json(duplicated);
   } catch (error: any) {
     console.error('Duplicate livret error:', error);
-    res.status(500).json({ message: 'Erreur lors de la duplication du livret' });
+    res.status(500).json({ message: error.message || 'Erreur lors de la duplication du livret' });
   }
 });
 

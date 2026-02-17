@@ -423,6 +423,84 @@ router.post('/upgrade', authenticateToken, async (req: any, res) => {
   }
 });
 
+// ══════════════════════════════════════
+// Seasonal duplicate checkout — Paiement one-shot pour duplication saisonnière
+// ══════════════════════════════════════
+router.post('/seasonal-duplicate-checkout', authenticateToken, async (req: any, res) => {
+  try {
+    const { livretId, seasonalOffer } = req.body;
+    // seasonalOffer: 1 | 2 | 3 (mois)
+
+    if (!livretId || ![1, 2, 3].includes(Number(seasonalOffer))) {
+      return res.status(400).json({ message: 'Paramètres invalides. livretId et seasonalOffer (1, 2 ou 3) requis.' });
+    }
+
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return res.status(500).json({ message: 'Stripe n\'est pas configuré' });
+    }
+
+    // Vérifier que le livret appartient à l'utilisateur
+    const livret = await prisma.livret.findFirst({
+      where: { id: livretId, userId: req.userId }
+    });
+    if (!livret) {
+      return res.status(404).json({ message: 'Livret non trouvé' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    // Tarifs saisonniers
+    const seasonalPlans: Record<number, { price: number; days: number; name: string }> = {
+      1: { price: 9.90, days: 30, name: '1 Mois' },
+      2: { price: 14.90, days: 60, name: '2 Mois' },
+      3: { price: 19.90, days: 90, name: '3 Mois' },
+    };
+
+    const plan = seasonalPlans[Number(seasonalOffer)];
+    const bonusDays = 14; // +14 jours offerts
+    const totalDays = plan.days + bonusDays;
+
+    const session = await stripe.checkout.sessions.create({
+      customer_email: user.email,
+      payment_method_types: ['card'],
+      line_items: [{
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: `My Guide Digital — Saisonnier ${plan.name}`,
+            description: `Duplication de livret — ${plan.name} (${plan.days} jours + ${bonusDays} jours offerts = ${totalDays} jours)`,
+          },
+          unit_amount: Math.round(plan.price * 100),
+        },
+        quantity: 1,
+      }],
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/subscription/success?session_id={CHECKOUT_SESSION_ID}&type=seasonal`,
+      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard`,
+      metadata: {
+        userId: req.userId,
+        type: 'seasonal_duplication',
+        originalLivretId: livretId,
+        seasonalOffer: String(seasonalOffer),
+        durationDays: String(totalDays),
+        priceHT: String(plan.price),
+        planType: `HOTES_SAISON_${seasonalOffer}`,
+      },
+    });
+
+    res.json({ sessionId: session.id, url: session.url });
+  } catch (error: any) {
+    console.error('Seasonal duplicate checkout error:', error);
+    res.status(500).json({
+      message: 'Erreur lors de la création du paiement saisonnier',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
 // Apply promo code
 router.post('/promo', authenticateToken, async (req: any, res) => {
   try {
@@ -470,11 +548,102 @@ router.post('/webhook', async (req: any, res) => {
         const durationDays = parseInt(session.metadata?.durationDays || '365', 10);
         const metaPriceHT = parseFloat(session.metadata?.priceHT || '0');
         const unitCount = session.metadata?.unitCount || '';
+        const metaType = session.metadata?.type; // 'seasonal_duplication' pour les duplications
 
         if (!userId || !planType) {
           console.error('Metadata manquante dans la session Stripe');
           break;
         }
+
+        // ── CAS SPÉCIAL : Duplication saisonnière ──
+        if (metaType === 'seasonal_duplication') {
+          const originalLivretId = session.metadata?.originalLivretId;
+          const seasonalOffer = session.metadata?.seasonalOffer;
+
+          if (!originalLivretId) {
+            console.error('originalLivretId manquant pour la duplication saisonnière');
+            break;
+          }
+
+          // Calculer la date de fin du livret saisonnier
+          const seasonalEndDate = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000);
+
+          // Dupliquer le livret avec type SEASONAL
+          try {
+            const originalLivret = await prisma.livret.findFirst({
+              where: { id: originalLivretId, userId },
+              include: { modules: true }
+            });
+
+            if (originalLivret) {
+              let qrBaseUrl = process.env.QR_CODE_BASE_URL;
+              if (!qrBaseUrl) {
+                qrBaseUrl = process.env.NODE_ENV === 'production'
+                  ? 'https://app.myguidedigital.com/guide'
+                  : 'http://192.168.0.126:3000/guide';
+              }
+              const qrCodeUrl = `${qrBaseUrl}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+              await prisma.livret.create({
+                data: {
+                  name: `${originalLivret.name} (Saisonnier)`,
+                  address: originalLivret.address,
+                  userId,
+                  welcomeTitle: originalLivret.welcomeTitle,
+                  welcomeSubtitle: originalLivret.welcomeSubtitle,
+                  backgroundImage: originalLivret.backgroundImage,
+                  showProfilePhoto: originalLivret.showProfilePhoto,
+                  titleFont: originalLivret.titleFont,
+                  titleColor: originalLivret.titleColor,
+                  subtitleColor: originalLivret.subtitleColor,
+                  tileColor: originalLivret.tileColor,
+                  iconColor: originalLivret.iconColor,
+                  languages: originalLivret.languages || JSON.stringify(['fr']),
+                  translations: originalLivret.translations || null,
+                  qrCode: qrCodeUrl,
+                  type: 'SEASONAL',
+                  seasonalEndDate,
+                  duplicatedFromId: originalLivretId,
+                  modules: {
+                    create: originalLivret.modules.map(module => ({
+                      type: module.type,
+                      name: module.name,
+                      isActive: module.isActive,
+                      order: module.order,
+                      content: module.content,
+                      translations: module.translations,
+                    }))
+                  }
+                }
+              });
+
+              console.log(`✅ Livret saisonnier créé (offre ${seasonalOffer} mois) pour l'utilisateur ${userId}`);
+            }
+          } catch (dupErr) {
+            console.error('Erreur duplication saisonnière dans webhook:', dupErr);
+          }
+
+          // Créer la facture pour le paiement saisonnier
+          const invoiceAmountSeasonal = session.amount_total ? session.amount_total / 100 : metaPriceHT;
+          const invoiceNumberSeasonal = await generateInvoiceNumber();
+          await prisma.invoice.create({
+            data: {
+              invoiceNumber: invoiceNumberSeasonal,
+              userId,
+              amount: invoiceAmountSeasonal,
+              currency: session.currency?.toUpperCase() || 'EUR',
+              status: 'PAID',
+              stripePaymentIntentId: session.payment_intent as string || null,
+              stripeInvoiceId: session.invoice as string || null,
+              paidAt: new Date(),
+            }
+          });
+
+          console.log(`Facture saisonnière créée pour l'utilisateur ${userId}`);
+          break; // Sortir du case, pas besoin de créer un abonnement
+        }
+
+        // ── CAS STANDARD : Abonnement ──
 
         // Désactiver l'ancien abonnement
         await prisma.subscription.updateMany({
@@ -489,6 +658,7 @@ router.post('/webhook', async (req: any, res) => {
 
         // Calculer la date de fin en fonction de la durée du plan
         const endDate = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000);
+        const checkoutQuantity = parseInt(session.metadata?.quantity || '1', 10);
 
         // Créer le nouvel abonnement
         const subscription = await prisma.subscription.create({
@@ -500,7 +670,14 @@ router.post('/webhook', async (req: any, res) => {
             stripeSubscriptionId: session.subscription as string || null,
             startDate: new Date(),
             endDate: endDate,
+            quantity: checkoutQuantity,
           }
+        });
+
+        // Mettre à jour les livrets existants de type TRIAL vers ANNUAL si c'est un nouvel abonnement
+        await prisma.livret.updateMany({
+          where: { userId, type: 'TRIAL' },
+          data: { type: 'ANNUAL' }
         });
 
         // Créer la facture avec numéro séquentiel

@@ -324,8 +324,9 @@ export const livretsApi = {
   create: (data: any) => api.post('/livrets', data),
   update: (id: string, data: any) => api.put(`/livrets/${id}`, data),
   delete: (id: string) => api.delete(`/livrets/${id}`),
-  duplicate: (id: string) => api.post(`/livrets/${id}/duplicate`),
+  duplicate: (id: string, data?: { type?: string }) => api.post(`/livrets/${id}/duplicate`, data || {}),
   getPublic: (qrCode: string) => api.get(`/livrets/public/${qrCode}`),
+  getSlots: () => api.get('/livrets/slots'),
 };
 
 // Modules
@@ -360,6 +361,7 @@ export const subscriptionsApi = {
   checkout: (data: { planId: string; category: string; unitCount?: number; quantity?: number }) => api.post('/subscriptions/checkout', data),
   upgrade: (data: { planId: string; category: string; unitCount?: number }) => api.post('/subscriptions/upgrade', data),
   applyPromo: (data: { code: string }) => api.post('/subscriptions/promo', data),
+  seasonalDuplicateCheckout: (data: { livretId: string; seasonalOffer: number }) => api.post('/subscriptions/seasonal-duplicate-checkout', data),
 };
 
 // Invoices

@@ -56,6 +56,9 @@ model Livret {
   languages        String?
   qrCode           String?        @unique
   translations     String?         @db.Text
+  type             String         @default("TRIAL")    // TRIAL, ANNUAL, SEASONAL
+  seasonalEndDate  DateTime?                            // Date d'expiration pour les livrets saisonniers
+  duplicatedFromId String?                              // ID du livret source de la duplication
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   modules          Module[]
   statistics       Statistic[]
@@ -105,6 +108,7 @@ model Subscription {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
   stripeSessionId      String?
+  quantity             Int       @default(1)   // Nombre de livrets inclus dans l'abonnement
   invoices             Invoice[]
   user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
