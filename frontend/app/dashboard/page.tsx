@@ -300,27 +300,21 @@ export default function DashboardPage() {
     );
   };
 
-  // Langue badges — couleurs par langue (compatible Windows, pas d'emoji drapeaux)
-  const langStyles: Record<string, { bg: string; text: string; label: string }> = {
-    fr: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'FR' },
-    en: { bg: 'bg-red-100', text: 'text-red-700', label: 'EN' },
-    gb: { bg: 'bg-red-100', text: 'text-red-700', label: 'EN' },
-    de: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'DE' },
-    it: { bg: 'bg-green-100', text: 'text-green-700', label: 'IT' },
-    es: { bg: 'bg-orange-100', text: 'text-orange-700', label: 'ES' },
-    pt: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'PT' },
-    zh: { bg: 'bg-rose-100', text: 'text-rose-700', label: 'ZH' },
-    cn: { bg: 'bg-rose-100', text: 'text-rose-700', label: 'ZH' },
-    ru: { bg: 'bg-sky-100', text: 'text-sky-700', label: 'RU' },
-    nl: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'NL' },
+  // Langue → code pays pour les drapeaux flagcdn
+  const langToCountry: Record<string, string> = {
+    fr: 'fr', en: 'gb', de: 'de', it: 'it', es: 'es', pt: 'pt', zh: 'cn', cn: 'cn', ru: 'ru', nl: 'nl',
+    FR: 'fr', EN: 'gb', GB: 'gb', DE: 'de', IT: 'it', ES: 'es', PT: 'pt', ZH: 'cn', CN: 'cn', RU: 'ru', NL: 'nl',
   };
   const LangBadge = ({ lang }: { lang: string }) => {
-    const key = lang.toLowerCase();
-    const style = langStyles[key] || { bg: 'bg-gray-100', text: 'text-gray-600', label: lang.toUpperCase() };
+    const countryCode = langToCountry[lang] || langToCountry[lang.toLowerCase()] || lang.toLowerCase();
     return (
-      <span className={`inline-flex items-center justify-center w-7 h-7 rounded-md text-[10px] font-bold ${style.bg} ${style.text}`}>
-        {style.label}
-      </span>
+      <img
+        src={`https://flagcdn.com/28x21/${countryCode}.png`}
+        srcSet={`https://flagcdn.com/56x42/${countryCode}.png 2x`}
+        alt={lang.toUpperCase()}
+        title={lang.toUpperCase()}
+        className="w-7 h-5 object-cover rounded shadow-sm"
+      />
     );
   };
 
