@@ -107,7 +107,7 @@ export default function AppChatWidget() {
       {/* Bouton flottant du chat — style premium */}
       <button
         onClick={handleToggle}
-        className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-primary to-pink-500 hover:from-primary/90 hover:to-pink-500/90 text-white rounded-full p-4 shadow-2xl shadow-primary/30 transition-all transform hover:scale-110 group"
+        className="fixed bottom-20 right-6 z-50 bg-gradient-to-br from-primary to-pink-500 hover:from-primary/90 hover:to-pink-500/90 text-white rounded-full p-4 shadow-2xl shadow-primary/30 transition-all transform hover:scale-110 group"
         aria-label="Ouvrir le chat"
       >
         {isOpen ? (
@@ -127,7 +127,7 @@ export default function AppChatWidget() {
 
       {/* Fenêtre de chat */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[340px] sm:w-96 h-[520px] bg-white rounded-2xl shadow-2xl flex flex-col border border-gray-200 overflow-hidden animate-in slide-in-from-bottom-4">
+        <div className="fixed bottom-36 right-6 z-50 w-[340px] sm:w-96 h-[520px] bg-white rounded-2xl shadow-2xl flex flex-col border border-gray-200 overflow-hidden animate-in slide-in-from-bottom-4">
           {/* En-tête premium */}
           <div className="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white p-4 flex items-center justify-between relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl"></div>
