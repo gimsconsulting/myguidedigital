@@ -376,7 +376,7 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             { icon: '👥', label: 'Utilisateurs', value: data.users.total, sub: `${data.users.active} actifs`, tag: 'USERS', gradient: 'from-primary to-purple-600', shadow: 'shadow-primary/20', tagBg: 'bg-primary/10 text-primary' },
-            { icon: '💰', label: 'Revenus HT', value: `${totalRevenue.toFixed(0)}€`, sub: `${data.revenue.monthly.toFixed(0)}€ ce mois`, tag: 'REVENUS', gradient: 'from-pink-500 to-rose-500', shadow: 'shadow-pink-200', tagBg: 'bg-pink-50 text-pink-600' },
+            { icon: '💰', label: 'Revenus HT', value: `${totalRevenue.toFixed(2)}€`, sub: `${data.revenue.monthly.toFixed(2)}€ ce mois`, tag: 'REVENUS', gradient: 'from-pink-500 to-rose-500', shadow: 'shadow-pink-200', tagBg: 'bg-pink-50 text-pink-600' },
             { icon: '📚', label: 'Livrets', value: data.livrets.total, sub: `${data.livrets.active} actifs (${livretPercent}%)`, tag: 'LIVRETS', gradient: 'from-emerald-400 to-teal-500', shadow: 'shadow-emerald-200', tagBg: 'bg-emerald-50 text-emerald-600' },
             { icon: '🔄', label: 'Conversion', value: `${data.conversionRate}%`, sub: 'Essai → Payant', tag: 'TAUX', gradient: 'from-violet-500 to-indigo-500', shadow: 'shadow-violet-200', tagBg: 'bg-violet-50 text-violet-600' },
           ].map((kpi, i) => (
@@ -454,7 +454,7 @@ export default function AdminDashboardPage() {
                         <p className="text-[10px] text-gray-500 font-medium">ABONNÉS</p>
                       </div>
                       <div className="bg-gray-50 rounded-xl p-3 text-center">
-                        <p className="text-2xl font-bold text-gray-900">{cat.revenue.toFixed(0)}€</p>
+                        <p className="text-2xl font-bold text-gray-900">{cat.revenue.toFixed(2)}€</p>
                         <p className="text-[10px] text-gray-500 font-medium">REVENUS HT</p>
                       </div>
                     </div>
@@ -583,11 +583,11 @@ export default function AdminDashboardPage() {
             <div className="mb-6 p-4 bg-gradient-to-r from-slate-900 to-purple-900 rounded-xl text-white">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm text-white/60">Revenu total HT</span>
-                <span className="text-2xl font-bold">{totalRevenue.toFixed(0)}€</span>
+                <span className="text-2xl font-bold">{totalRevenue.toFixed(2)}€</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-white/40">Ce mois-ci</span>
-                <span className="text-sm font-semibold text-amber-400">{data.revenue.monthly.toFixed(0)}€</span>
+                <span className="text-sm font-semibold text-amber-400">{data.revenue.monthly.toFixed(2)}€</span>
               </div>
             </div>
 
@@ -602,7 +602,7 @@ export default function AdminDashboardPage() {
                 <div key={i}>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-xs text-gray-600 font-medium">{part.label}</span>
-                    <span className="text-sm font-bold text-gray-900">{part.value.toFixed(0)}€</span>
+                    <span className="text-sm font-bold text-gray-900">{part.value.toFixed(2)}€</span>
                   </div>
                   <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
                     <div
@@ -711,7 +711,7 @@ export default function AdminDashboardPage() {
                     <p className="text-[10px] text-gray-400">Factures payées</p>
                   </div>
                   <p className="text-2xl font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
-                    {data.revenue.monthly.toFixed(0)}€
+                    {data.revenue.monthly.toFixed(2)}€
                   </p>
                 </div>
               </div>
@@ -783,8 +783,8 @@ export default function AdminDashboardPage() {
             {[
               { emoji: '🤝', label: 'Affiliés approuvés', value: affiliateData?.approvedAffiliates || 0, gradient: 'from-amber-400 to-orange-500', shadow: 'shadow-amber-200', tagBg: 'bg-amber-50 text-amber-600' },
               { emoji: '👥', label: 'Filleuls total', value: affiliateData?.totalReferrals || 0, gradient: 'from-primary to-purple-600', shadow: 'shadow-primary/20', tagBg: 'bg-primary/10 text-primary' },
-              { emoji: '💰', label: 'Commissions totales', value: `${(affiliateData?.totalCommissions || 0).toFixed(0)}€`, gradient: 'from-pink-500 to-rose-500', shadow: 'shadow-pink-200', tagBg: 'bg-pink-50 text-pink-600' },
-              { emoji: '⏳', label: 'À payer', value: `${(affiliateData?.pendingCommissions || 0).toFixed(0)}€`, gradient: 'from-emerald-400 to-teal-500', shadow: 'shadow-emerald-200', tagBg: 'bg-emerald-50 text-emerald-600' },
+              { emoji: '💰', label: 'Commissions totales', value: `${(affiliateData?.totalCommissions || 0).toFixed(2)}€`, gradient: 'from-pink-500 to-rose-500', shadow: 'shadow-pink-200', tagBg: 'bg-pink-50 text-pink-600' },
+              { emoji: '⏳', label: 'À payer', value: `${(affiliateData?.pendingCommissions || 0).toFixed(2)}€`, gradient: 'from-emerald-400 to-teal-500', shadow: 'shadow-emerald-200', tagBg: 'bg-emerald-50 text-emerald-600' },
             ].map((kpi, i) => (
               <div key={i} className="relative group">
                 <div className={`absolute -inset-0.5 bg-gradient-to-r ${kpi.gradient} rounded-2xl blur opacity-15 group-hover:opacity-30 transition duration-300`}></div>
@@ -826,11 +826,11 @@ export default function AdminDashboardPage() {
                       <p className="text-[10px] text-gray-500 font-medium mt-1">VENTES</p>
                     </div>
                     <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/10">
-                      <p className="text-2xl font-bold text-gray-900">{(affiliateData?.currentMonth?.sales || 0).toFixed(0)}€</p>
+                      <p className="text-2xl font-bold text-gray-900">{(affiliateData?.currentMonth?.sales || 0).toFixed(2)}€</p>
                       <p className="text-[10px] text-gray-500 font-medium mt-1">CA GÉNÉRÉ</p>
                     </div>
                     <div className="bg-pink-50 rounded-xl p-4 text-center border border-pink-100">
-                      <p className="text-2xl font-bold text-gray-900">{(affiliateData?.currentMonth?.commissions || 0).toFixed(0)}€</p>
+                      <p className="text-2xl font-bold text-gray-900">{(affiliateData?.currentMonth?.commissions || 0).toFixed(2)}€</p>
                       <p className="text-[10px] text-gray-500 font-medium mt-1">COMMISSIONS</p>
                     </div>
                   </div>
@@ -840,11 +840,11 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs text-white/50">Total payé aux affiliés</p>
-                        <p className="text-xl font-bold">{(affiliateData?.totalPaidCommissions || 0).toFixed(0)}€</p>
+                        <p className="text-xl font-bold">{(affiliateData?.totalPaidCommissions || 0).toFixed(2)}€</p>
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-white/50">Restant à payer</p>
-                        <p className="text-xl font-bold text-amber-400">{(affiliateData?.pendingCommissions || 0).toFixed(0)}€</p>
+                        <p className="text-xl font-bold text-amber-400">{(affiliateData?.pendingCommissions || 0).toFixed(2)}€</p>
                       </div>
                     </div>
                   </div>
@@ -882,7 +882,7 @@ export default function AdminDashboardPage() {
                           </p>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <p className="text-sm font-bold text-amber-600">{aff.totalEarnings.toFixed(0)}€</p>
+                          <p className="text-sm font-bold text-amber-600">{aff.totalEarnings.toFixed(2)}€</p>
                           <p className="text-[10px] text-gray-400">gagnés</p>
                         </div>
                       </div>
