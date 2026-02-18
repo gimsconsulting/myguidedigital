@@ -53,12 +53,15 @@ export default function InvoicesPage() {
     }
   };
 
-  // Stats calculées
+  // Stats calculées (les notes de crédit sont soustraites)
   const stats = useMemo(() => {
     const total = invoices.length;
     const paid = invoices.filter(i => i.status === 'PAID').length;
     const pending = invoices.filter(i => i.status === 'PENDING').length;
-    const totalAmount = invoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.amount, 0);
+    const totalAmount = invoices.filter(i => i.status === 'PAID').reduce((sum, i) => {
+      if (i.type === 'CREDIT_NOTE') return sum - i.amount;
+      return sum + i.amount;
+    }, 0);
     return { total, paid, pending, totalAmount };
   }, [invoices]);
 
@@ -574,21 +577,29 @@ export default function InvoicesPage() {
                         <div className="text-center">
                           <p className="text-xs text-gray-400 uppercase tracking-wider">Total HT</p>
                           <p className="text-lg font-bold text-gray-700">
-                            {filteredInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.amount / 1.21, 0).toFixed(2)}€
+                            {filteredInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => {
+                              const ht = i.amount / 1.21;
+                              return i.type === 'CREDIT_NOTE' ? sum - ht : sum + ht;
+                            }, 0).toFixed(2)}€
                           </p>
                         </div>
                         <div className="w-px h-10 bg-gray-200"></div>
                         <div className="text-center">
                           <p className="text-xs text-gray-400 uppercase tracking-wider">TVA</p>
                           <p className="text-lg font-bold text-gray-700">
-                            {filteredInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + (i.amount - i.amount / 1.21), 0).toFixed(2)}€
+                            {filteredInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => {
+                              const tva = i.amount - i.amount / 1.21;
+                              return i.type === 'CREDIT_NOTE' ? sum - tva : sum + tva;
+                            }, 0).toFixed(2)}€
                           </p>
                         </div>
                         <div className="w-px h-10 bg-gray-200"></div>
                         <div className="text-center">
                           <p className="text-xs text-primary/60 uppercase tracking-wider font-medium">Total TTC</p>
                           <p className="text-lg font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
-                            {filteredInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => sum + i.amount, 0).toFixed(2)}€
+                            {filteredInvoices.filter(i => i.status === 'PAID').reduce((sum, i) => {
+                              return i.type === 'CREDIT_NOTE' ? sum - i.amount : sum + i.amount;
+                            }, 0).toFixed(2)}€
                           </p>
                         </div>
                       </div>
