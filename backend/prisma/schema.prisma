@@ -126,6 +126,8 @@ model Invoice {
   amount                Float
   currency              String        @default("EUR")
   status                String        @default("PENDING")
+  type                  String        @default("INVOICE")  // INVOICE ou CREDIT_NOTE
+  parentInvoiceId       String?                             // Lien vers la facture d'origine (pour les notes de crédit)
   stripeInvoiceId       String?       @unique
   stripePaymentIntentId String?
   pdfUrl                String?
@@ -133,6 +135,8 @@ model Invoice {
   paidAt                DateTime?
   subscription          Subscription? @relation(fields: [subscriptionId], references: [id])
   user                  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentInvoice         Invoice?      @relation("CreditNoteRelation", fields: [parentInvoiceId], references: [id])
+  creditNotes           Invoice[]     @relation("CreditNoteRelation")
 
   @@map("invoices")
 }

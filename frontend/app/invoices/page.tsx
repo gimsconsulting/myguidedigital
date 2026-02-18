@@ -13,11 +13,14 @@ interface Invoice {
   amount: number;
   currency: string;
   status: string;
+  type?: string;
+  parentInvoiceId?: string;
   createdAt: string;
   paidAt?: string;
   subscription?: {
     plan?: string;
   };
+  creditNotes?: Invoice[];
 }
 
 export default function InvoicesPage() {
@@ -29,6 +32,7 @@ export default function InvoicesPage() {
   const [error, setError] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [creatingCreditNote, setCreatingCreditNote] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -64,23 +68,20 @@ export default function InvoicesPage() {
     return invoices.filter(i => i.status === filterStatus);
   }, [invoices, filterStatus]);
 
+  const getApiBase = () => {
+    if (typeof window === 'undefined') return '';
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') return 'http://localhost:3001';
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) return `${protocol}//${hostname}:3001`;
+    return `${protocol}//${hostname}`;
+  };
+
   const handleDownloadPDF = async (invoiceId: string) => {
     setDownloadingId(invoiceId);
     try {
       const token = localStorage.getItem('token');
-      let apiBase = '';
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const protocol = window.location.protocol;
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-          apiBase = 'http://localhost:3001';
-        } else if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
-          apiBase = `${protocol}//${hostname}:3001`;
-        } else {
-          apiBase = `${protocol}//${hostname}`;
-        }
-      }
-      const url = `${apiBase}/api/invoices/${invoiceId}/pdf`;
+      const url = `${getApiBase()}/api/invoices/${invoiceId}/pdf`;
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -102,7 +103,54 @@ export default function InvoicesPage() {
     }
   };
 
-  const getStatusInfo = (status: string) => {
+  const handlePreviewPDF = async (invoiceId: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const url = `${getApiBase()}/api/invoices/${invoiceId}/pdf?preview=true`;
+      const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Erreur lors de l\'aperçu');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank');
+    } catch (err: any) {
+      alert('Erreur lors de l\'aperçu du PDF');
+      console.error(err);
+    }
+  };
+
+  const handleCreateCreditNote = async (invoiceId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir créer une note de crédit pour cette facture ?')) return;
+    setCreatingCreditNote(invoiceId);
+    try {
+      const token = localStorage.getItem('token');
+      const url = `${getApiBase()}/api/invoices/${invoiceId}/credit-note`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Erreur lors de la création');
+      }
+      // Recharger les factures
+      await loadInvoices();
+    } catch (err: any) {
+      alert(err.message || 'Erreur lors de la création de la note de crédit');
+      console.error(err);
+    } finally {
+      setCreatingCreditNote(null);
+    }
+  };
+
+  const getStatusInfo = (status: string, type?: string) => {
+    if (type === 'CREDIT_NOTE') {
+      return { text: 'Note de crédit', gradient: 'from-red-400 to-rose-500', bg: 'bg-red-500/10 border-red-500/20', icon: '📝' };
+    }
     const statusMap: Record<string, { text: string; gradient: string; bg: string; icon: string }> = {
       PAID: { text: 'Payée', gradient: 'from-emerald-400 to-teal-500', bg: 'bg-emerald-500/10 border-emerald-500/20', icon: '✅' },
       PENDING: { text: 'En attente', gradient: 'from-amber-400 to-orange-500', bg: 'bg-amber-500/10 border-amber-500/20', icon: '⏳' },
@@ -285,15 +333,17 @@ export default function InvoicesPage() {
                       </thead>
                       <tbody className="divide-y divide-gray-100">
                         {filteredInvoices.map((invoice, idx) => {
-                          const statusInfo = getStatusInfo(invoice.status);
+                          const statusInfo = getStatusInfo(invoice.status, invoice.type);
+                          const isCreditNote = invoice.type === 'CREDIT_NOTE';
+                          const hasCreditNote = invoice.creditNotes && invoice.creditNotes.length > 0;
                           const ht = invoice.amount / 1.21;
                           const tva = invoice.amount - ht;
                           return (
-                            <tr key={invoice.id} className="group/row hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 transition-all duration-300">
+                            <tr key={invoice.id} className={`group/row hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 transition-all duration-300 ${isCreditNote ? 'bg-red-50/30' : ''}`}>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/10 to-pink-500/10 border border-primary/10 flex items-center justify-center text-sm">
-                                    📄
+                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm ${isCreditNote ? 'bg-gradient-to-br from-red-500/10 to-rose-500/10 border border-red-500/10' : 'bg-gradient-to-br from-primary/10 to-pink-500/10 border border-primary/10'}`}>
+                                    {isCreditNote ? '📝' : '📄'}
                                   </div>
                                   <span className="text-sm font-semibold text-gray-900">
                                     {invoice.invoiceNumber || `#${invoice.id.substring(0, 8)}`}
@@ -310,14 +360,14 @@ export default function InvoicesPage() {
                                 </span>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="text-sm text-gray-600">{ht.toFixed(2)} €</span>
+                                <span className={`text-sm ${isCreditNote ? 'text-red-600' : 'text-gray-600'}`}>{isCreditNote ? '-' : ''}{ht.toFixed(2)} €</span>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="text-sm text-gray-600">{tva.toFixed(2)} €</span>
+                                <span className={`text-sm ${isCreditNote ? 'text-red-600' : 'text-gray-600'}`}>{isCreditNote ? '-' : ''}{tva.toFixed(2)} €</span>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="text-sm font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
-                                  {invoice.amount.toFixed(2)} €
+                                <span className={`text-sm font-bold bg-gradient-to-r ${isCreditNote ? 'from-red-500 to-rose-500' : 'from-primary to-pink-500'} bg-clip-text text-transparent`}>
+                                  {isCreditNote ? '-' : ''}{invoice.amount.toFixed(2)} €
                                 </span>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
@@ -326,26 +376,58 @@ export default function InvoicesPage() {
                                   <span className={`bg-gradient-to-r ${statusInfo.gradient} bg-clip-text text-transparent`}>{statusInfo.text}</span>
                                 </span>
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-center">
-                                <button
-                                  onClick={() => handleDownloadPDF(invoice.id)}
-                                  disabled={downloadingId === invoice.id}
-                                  className="group/btn inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-primary/5 to-pink-500/5 border border-primary/10 text-primary hover:from-primary hover:to-pink-500 hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {downloadingId === invoice.id ? (
-                                    <>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center justify-center gap-2">
+                                  {/* Bouton Aperçu (œil) */}
+                                  <button
+                                    onClick={() => handlePreviewPDF(invoice.id)}
+                                    title="Aperçu de la facture"
+                                    className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-600 hover:bg-blue-500 hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-blue-500/20 hover:-translate-y-0.5 transition-all duration-300"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                  </button>
+
+                                  {/* Bouton Télécharger PDF */}
+                                  <button
+                                    onClick={() => handleDownloadPDF(invoice.id)}
+                                    disabled={downloadingId === invoice.id}
+                                    title="Télécharger le PDF"
+                                    className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-r from-primary/10 to-pink-500/10 border border-primary/20 text-primary hover:from-primary hover:to-pink-500 hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    {downloadingId === invoice.id ? (
                                       <div className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin"></div>
-                                      <span>Téléchargement...</span>
-                                    </>
-                                  ) : (
-                                    <>
+                                    ) : (
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                       </svg>
-                                      <span>PDF</span>
-                                    </>
+                                    )}
+                                  </button>
+
+                                  {/* Bouton Note de Crédit */}
+                                  {!isCreditNote && (
+                                    <button
+                                      onClick={() => handleCreateCreditNote(invoice.id)}
+                                      disabled={creatingCreditNote === invoice.id || hasCreditNote}
+                                      title={hasCreditNote ? 'Note de crédit déjà émise' : 'Émettre une note de crédit'}
+                                      className={`inline-flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-300 ${
+                                        hasCreditNote
+                                          ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed'
+                                          : 'bg-amber-500/10 border border-amber-500/20 text-amber-600 hover:bg-amber-500 hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5'
+                                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                    >
+                                      {creatingCreditNote === invoice.id ? (
+                                        <div className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin"></div>
+                                      ) : (
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                                        </svg>
+                                      )}
+                                    </button>
                                   )}
-                                </button>
+                                </div>
                               </td>
                             </tr>
                           );
@@ -360,18 +442,20 @@ export default function InvoicesPage() {
             {/* Version Mobile (cards) */}
             <div className="md:hidden space-y-4">
               {filteredInvoices.map((invoice) => {
-                const statusInfo = getStatusInfo(invoice.status);
+                const statusInfo = getStatusInfo(invoice.status, invoice.type);
+                const isCreditNote = invoice.type === 'CREDIT_NOTE';
+                const hasCreditNote = invoice.creditNotes && invoice.creditNotes.length > 0;
                 const ht = invoice.amount / 1.21;
                 const tva = invoice.amount - ht;
                 return (
                   <div key={invoice.id} className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/10 to-pink-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div className={`absolute -inset-0.5 bg-gradient-to-r ${isCreditNote ? 'from-red-500/10 to-rose-500/10' : 'from-primary/10 to-pink-500/10'} rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500`}></div>
                     <div className="relative bg-white/95 rounded-2xl shadow-lg shadow-black/10 border border-white/20 p-5 hover:shadow-xl transition-all duration-300">
                       {/* Header de la card */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-pink-500/10 border border-primary/10 flex items-center justify-center text-lg">
-                            📄
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${isCreditNote ? 'bg-gradient-to-br from-red-500/10 to-rose-500/10 border border-red-500/10' : 'bg-gradient-to-br from-primary/10 to-pink-500/10 border border-primary/10'}`}>
+                            {isCreditNote ? '📝' : '📄'}
                           </div>
                           <div>
                             <p className="text-sm font-bold text-gray-900">
@@ -396,38 +480,74 @@ export default function InvoicesPage() {
                       <div className="grid grid-cols-3 gap-3 mb-4">
                         <div className="bg-gray-50 rounded-lg p-2.5 text-center">
                           <p className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">HT</p>
-                          <p className="text-sm font-semibold text-gray-700">{ht.toFixed(2)}€</p>
+                          <p className={`text-sm font-semibold ${isCreditNote ? 'text-red-600' : 'text-gray-700'}`}>{isCreditNote ? '-' : ''}{ht.toFixed(2)}€</p>
                         </div>
                         <div className="bg-gray-50 rounded-lg p-2.5 text-center">
                           <p className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">TVA 21%</p>
-                          <p className="text-sm font-semibold text-gray-700">{tva.toFixed(2)}€</p>
+                          <p className={`text-sm font-semibold ${isCreditNote ? 'text-red-600' : 'text-gray-700'}`}>{isCreditNote ? '-' : ''}{tva.toFixed(2)}€</p>
                         </div>
-                        <div className="bg-gradient-to-br from-primary/5 to-pink-500/5 border border-primary/10 rounded-lg p-2.5 text-center">
-                          <p className="text-[10px] text-primary/60 uppercase tracking-wider font-medium">TTC</p>
-                          <p className="text-sm font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">{invoice.amount.toFixed(2)}€</p>
+                        <div className={`rounded-lg p-2.5 text-center ${isCreditNote ? 'bg-gradient-to-br from-red-500/5 to-rose-500/5 border border-red-500/10' : 'bg-gradient-to-br from-primary/5 to-pink-500/5 border border-primary/10'}`}>
+                          <p className={`text-[10px] uppercase tracking-wider font-medium ${isCreditNote ? 'text-red-500/60' : 'text-primary/60'}`}>TTC</p>
+                          <p className={`text-sm font-bold bg-gradient-to-r ${isCreditNote ? 'from-red-500 to-rose-500' : 'from-primary to-pink-500'} bg-clip-text text-transparent`}>{isCreditNote ? '-' : ''}{invoice.amount.toFixed(2)}€</p>
                         </div>
                       </div>
 
-                      {/* Bouton télécharger */}
-                      <button
-                        onClick={() => handleDownloadPDF(invoice.id)}
-                        disabled={downloadingId === invoice.id}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-pink-500 text-white font-medium text-sm shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {downloadingId === invoice.id ? (
-                          <>
+                      {/* Boutons d'actions */}
+                      <div className="flex gap-2">
+                        {/* Aperçu */}
+                        <button
+                          onClick={() => handlePreviewPDF(invoice.id)}
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 font-medium text-sm hover:bg-blue-500 hover:text-white hover:border-transparent transition-all duration-300"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          <span>Aperçu</span>
+                        </button>
+
+                        {/* Télécharger */}
+                        <button
+                          onClick={() => handleDownloadPDF(invoice.id)}
+                          disabled={downloadingId === invoice.id}
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-primary to-pink-500 text-white font-medium text-sm shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {downloadingId === invoice.id ? (
                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            <span>Téléchargement...</span>
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span>Télécharger le PDF</span>
-                          </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              <span>PDF</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Note de crédit */}
+                        {!isCreditNote && (
+                          <button
+                            onClick={() => handleCreateCreditNote(invoice.id)}
+                            disabled={creatingCreditNote === invoice.id || hasCreditNote}
+                            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-300 ${
+                              hasCreditNote
+                                ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed'
+                                : 'bg-amber-500/10 border border-amber-500/20 text-amber-600 hover:bg-amber-500 hover:text-white hover:border-transparent'
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                          >
+                            {creatingCreditNote === invoice.id ? (
+                              <div className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin"></div>
+                            ) : (
+                              <>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                                </svg>
+                                <span>{hasCreditNote ? 'NC émise' : 'NC'}</span>
+                              </>
+                            )}
+                          </button>
                         )}
-                      </button>
+                      </div>
                     </div>
                   </div>
                 );

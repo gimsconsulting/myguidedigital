@@ -11,6 +11,7 @@ router.get('/', authenticateToken, async (req: any, res) => {
   try {
     const invoices = await prisma.invoice.findMany({
       where: { userId: req.userId },
+      include: { creditNotes: true },
       orderBy: { createdAt: 'desc' }
     });
 
@@ -101,15 +102,20 @@ router.get('/:id/pdf', authenticateToken, async (req: any, res) => {
     const doc = new PDFDocument({ margin: 50, size: 'A4' });
     
     // Set response headers
+    const isPreview = req.query.preview === 'true';
+    const isCredit = (invoice as any).type === 'CREDIT_NOTE';
+    const prefix = isCredit ? 'note-credit' : 'facture';
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="facture-${invoiceNumber}.pdf"`);
+    res.setHeader('Content-Disposition', `${isPreview ? 'inline' : 'attachment'}; filename="${prefix}-${invoiceNumber}.pdf"`);
 
     // Pipe PDF to response
     doc.pipe(res);
 
     // ===== HEADER =====
-    // Titre FACTURE en gras + numéro
-    doc.fontSize(24).font('Helvetica-Bold').fillColor('#6366f1').text('FACTURE', 50, 50);
+    // Titre FACTURE ou NOTE DE CRÉDIT en gras + numéro
+    const docTitle = isCredit ? 'NOTE DE CRÉDIT' : 'FACTURE';
+    const titleColor = isCredit ? '#ef4444' : '#6366f1';
+    doc.fontSize(isCredit ? 20 : 24).font('Helvetica-Bold').fillColor(titleColor).text(docTitle, 50, 50);
     doc.fontSize(10).font('Helvetica').fillColor('#666666').text(`N° ${invoiceNumber}`, 50, 78);
 
     // Statut en haut à droite
@@ -221,13 +227,21 @@ router.get('/:id/pdf', authenticateToken, async (req: any, res) => {
     yPos += 20;
 
     // Ligne séparateur total
-    doc.moveTo(360, yPos).lineTo(545, yPos).strokeColor('#6366f1').lineWidth(2).stroke();
+    doc.moveTo(360, yPos).lineTo(545, yPos).strokeColor(isCredit ? '#ef4444' : '#6366f1').lineWidth(2).stroke();
     yPos += 12;
 
     // Total TTC
-    doc.fontSize(13).font('Helvetica-Bold').fillColor('#6366f1');
+    const totalColor = isCredit ? '#ef4444' : '#6366f1';
+    doc.fontSize(13).font('Helvetica-Bold').fillColor(totalColor);
     doc.text('Total TTC', 370, yPos);
-    doc.text(`${amountTTC.toFixed(2)} €`, 475, yPos);
+    doc.text(`${isCredit ? '-' : ''}${amountTTC.toFixed(2)} €`, 475, yPos);
+
+    // Référence facture d'origine pour les notes de crédit
+    if (isCredit && (invoice as any).parentInvoiceId) {
+      yPos += 30;
+      doc.fontSize(9).font('Helvetica').fillColor('#6b7280');
+      doc.text(`Note de crédit relative à la facture d'origine`, 50, yPos);
+    }
 
     // ===== FOOTER =====
     const footerY = 750;
@@ -243,6 +257,74 @@ router.get('/:id/pdf', authenticateToken, async (req: any, res) => {
   } catch (error: any) {
     console.error('Generate PDF error:', error);
     res.status(500).json({ message: 'Erreur lors de la génération du PDF' });
+  }
+});
+
+// ═══════════════════════════════════════════
+// Créer une note de crédit à partir d'une facture
+// ═══════════════════════════════════════════
+router.post('/:id/credit-note', authenticateToken, async (req: any, res) => {
+  try {
+    // Vérifier que la facture existe et appartient à l'utilisateur
+    const invoice = await prisma.invoice.findFirst({
+      where: {
+        id: req.params.id,
+        userId: req.userId,
+      }
+    });
+
+    if (!invoice) {
+      return res.status(404).json({ message: 'Facture non trouvée' });
+    }
+
+    if ((invoice as any).type === 'CREDIT_NOTE') {
+      return res.status(400).json({ message: 'Impossible de créer une note de crédit sur une note de crédit' });
+    }
+
+    // Vérifier qu'il n'y a pas déjà une note de crédit pour cette facture
+    const existingCreditNote = await prisma.invoice.findFirst({
+      where: {
+        parentInvoiceId: invoice.id,
+        type: 'CREDIT_NOTE',
+      }
+    });
+
+    if (existingCreditNote) {
+      return res.status(400).json({ message: 'Une note de crédit existe déjà pour cette facture' });
+    }
+
+    // Générer le numéro de note de crédit
+    const year = new Date().getFullYear();
+    const countCN = await prisma.invoice.count({
+      where: {
+        type: 'CREDIT_NOTE',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lt: new Date(`${year + 1}-01-01`),
+        }
+      }
+    });
+    const creditNoteNumber = `CN-${year}-${String(countCN + 1).padStart(5, '0')}`;
+
+    // Créer la note de crédit
+    const creditNote = await prisma.invoice.create({
+      data: {
+        invoiceNumber: creditNoteNumber,
+        userId: req.userId,
+        subscriptionId: invoice.subscriptionId,
+        amount: invoice.amount,
+        currency: invoice.currency,
+        status: 'PAID',
+        type: 'CREDIT_NOTE',
+        parentInvoiceId: invoice.id,
+        paidAt: new Date(),
+      }
+    });
+
+    res.json(creditNote);
+  } catch (error: any) {
+    console.error('Create credit note error:', error);
+    res.status(500).json({ message: 'Erreur lors de la création de la note de crédit' });
   }
 });
 
