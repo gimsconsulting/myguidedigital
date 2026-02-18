@@ -131,31 +131,40 @@ router.get('/overview', authenticateToken, requireAdmin, async (req: express.Req
       where: { subscriptions: { some: { plan: { in: PAID_PLANS }, status: 'ACTIVE' } } }
     });
 
-    // Toutes les factures payées
+    // Toutes les factures payées (incluant les notes de crédit)
     const invoices = await prisma.invoice.findMany({
       where: { status: 'PAID' },
       include: { subscription: true }
     });
-    const totalRevenue = invoices.reduce((sum, inv) => sum + inv.amount, 0);
+
+    // Fonction utilitaire : montant HT avec prise en compte des notes de crédit
+    // Les notes de crédit (type=CREDIT_NOTE) sont soustraites, les factures normales sont ajoutées
+    // Montant stocké = TTC, on divise par 1.21 pour obtenir le HT
+    const getInvoiceHT = (inv: any): number => {
+      const ht = inv.amount / 1.21;
+      return (inv.type === 'CREDIT_NOTE') ? -ht : ht;
+    };
+
+    const totalRevenue = invoices.reduce((sum, inv) => sum + getInvoiceHT(inv), 0);
 
     const currentMonth = new Date();
     currentMonth.setDate(1);
     currentMonth.setHours(0, 0, 0, 0);
     const monthlyRevenue = invoices
       .filter(inv => inv.paidAt && new Date(inv.paidAt) >= currentMonth)
-      .reduce((sum, inv) => sum + inv.amount, 0);
+      .reduce((sum, inv) => sum + getInvoiceHT(inv), 0);
 
-    // Revenus par catégorie
+    // Revenus HT par catégorie (notes de crédit soustraites)
     const hotesPlanTypes = ['HOTES_ANNUEL', 'HOTES_SAISON_1', 'HOTES_SAISON_2', 'HOTES_SAISON_3'];
     const hotelPlanTypes = ['HOTEL_ANNUEL'];
     const campingPlanTypes = ['CAMPING_ANNUEL'];
     const legacyPlanTypes = ['MONTHLY', 'YEARLY'];
 
     const revenueByCategory = {
-      hotes: invoices.filter(inv => inv.subscription && hotesPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + inv.amount, 0),
-      hotels: invoices.filter(inv => inv.subscription && hotelPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + inv.amount, 0),
-      campings: invoices.filter(inv => inv.subscription && campingPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + inv.amount, 0),
-      legacy: invoices.filter(inv => inv.subscription && legacyPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + inv.amount, 0),
+      hotes: invoices.filter(inv => inv.subscription && hotesPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + getInvoiceHT(inv), 0),
+      hotels: invoices.filter(inv => inv.subscription && hotelPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + getInvoiceHT(inv), 0),
+      campings: invoices.filter(inv => inv.subscription && campingPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + getInvoiceHT(inv), 0),
+      legacy: invoices.filter(inv => inv.subscription && legacyPlanTypes.includes(inv.subscription.plan)).reduce((sum, inv) => sum + getInvoiceHT(inv), 0),
     };
 
     // Abonnements actifs par catégorie
@@ -634,20 +643,26 @@ router.get('/revenue', authenticateToken, requireAdmin, [
       orderBy: { paidAt: 'asc' }
     });
 
-    // Grouper par mois
+    // Fonction utilitaire : montant HT avec prise en compte des notes de crédit
+    const getRevInvHT = (inv: any): number => {
+      const ht = inv.amount / 1.21;
+      return (inv.type === 'CREDIT_NOTE') ? -ht : ht;
+    };
+
+    // Grouper par mois (en HT, notes de crédit soustraites)
     const monthlyRevenue: { [key: string]: number } = {};
     invoices.forEach(inv => {
       if (inv.paidAt) {
         const month = new Date(inv.paidAt).toISOString().slice(0, 7); // YYYY-MM
-        monthlyRevenue[month] = (monthlyRevenue[month] || 0) + inv.amount;
+        monthlyRevenue[month] = (monthlyRevenue[month] || 0) + getRevInvHT(inv);
       }
     });
 
-    // Revenus par plan
+    // Revenus HT par plan (notes de crédit soustraites)
     const revenueByPlan = {
-      monthly: invoices.filter(inv => inv.subscription?.plan === 'MONTHLY').reduce((sum, inv) => sum + inv.amount, 0),
-      yearly: invoices.filter(inv => inv.subscription?.plan === 'YEARLY').reduce((sum, inv) => sum + inv.amount, 0),
-      lifetime: invoices.filter(inv => inv.subscription?.plan === 'LIFETIME').reduce((sum, inv) => sum + inv.amount, 0)
+      monthly: invoices.filter(inv => inv.subscription?.plan === 'MONTHLY').reduce((sum, inv) => sum + getRevInvHT(inv), 0),
+      yearly: invoices.filter(inv => inv.subscription?.plan === 'YEARLY').reduce((sum, inv) => sum + getRevInvHT(inv), 0),
+      lifetime: invoices.filter(inv => inv.subscription?.plan === 'LIFETIME').reduce((sum, inv) => sum + getRevInvHT(inv), 0)
     };
 
     // Abonnements actifs par plan
@@ -672,7 +687,7 @@ router.get('/revenue', authenticateToken, requireAdmin, [
       subscriptionsByPlan,
       mrr: parseFloat(mrr.toFixed(2)),
       arr: parseFloat(arr.toFixed(2)),
-      totalRevenue: invoices.reduce((sum, inv) => sum + inv.amount, 0)
+      totalRevenue: invoices.reduce((sum, inv) => sum + getRevInvHT(inv), 0)
     });
   } catch (error: any) {
     console.error('Erreur statistiques financières:', error);
