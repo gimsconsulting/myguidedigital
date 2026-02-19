@@ -115,6 +115,13 @@ export default function AppChatWidget() {
     }
   }, [isOpen]);
 
+  // Re-focus sur l'input après la réponse du bot
+  useEffect(() => {
+    if (!isTyping && isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [isTyping, isOpen]);
+
   const sendMessage = async (text: string) => {
     const trimmedMessage = text.trim();
     if (!trimmedMessage || isTyping || conversationEnded) return;

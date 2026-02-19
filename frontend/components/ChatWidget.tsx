@@ -37,6 +37,13 @@ export default function ChatWidget({ livretId, hostName }: ChatWidgetProps) {
     }
   }, [isOpen]);
 
+  // Re-focus sur l'input après la réponse du bot
+  useEffect(() => {
+    if (!isTyping && isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [isTyping, isOpen]);
+
   const handleSend = async () => {
     const trimmedMessage = inputValue.trim();
     if (!trimmedMessage || isTyping) return;
