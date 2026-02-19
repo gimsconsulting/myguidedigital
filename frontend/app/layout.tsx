@@ -19,6 +19,16 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'My Guide Digital',
   description: 'Plateforme de création de livrets d\'accueil digitaux pour hébergements touristiques',
+  icons: {
+    icon: '/icon',
+    apple: '/apple-icon',
+  },
+  openGraph: {
+    title: 'My Guide Digital',
+    description: 'Plateforme de création de livrets d\'accueil digitaux pour hébergements touristiques',
+    siteName: 'My Guide Digital',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({
