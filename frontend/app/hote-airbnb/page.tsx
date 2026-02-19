@@ -486,6 +486,95 @@ export default function NosServicesPage() {
       </section>
 
       {/* ══════════════════════════════════════ */}
+      {/* PROGRAMME D'AFFILIATION */}
+      {/* ══════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-950/10 to-transparent"></div>
+        <div className="absolute top-10 right-10 w-80 h-80 bg-emerald-500/8 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-primary/8 rounded-full blur-3xl"></div>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="group relative">
+            <div className="absolute -inset-[1px] bg-gradient-to-r from-emerald-500/50 via-primary/50 to-pink-500/50 rounded-3xl opacity-60 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
+            <div className="relative bg-white/[0.03] backdrop-blur-sm rounded-3xl border border-white/[0.08] overflow-hidden">
+              {/* Bande supérieure dégradée */}
+              <div className="h-1.5 bg-gradient-to-r from-emerald-400 via-primary to-pink-500"></div>
+              
+              <div className="p-8 sm:p-12 lg:p-16">
+                <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+                  {/* Contenu texte */}
+                  <div className="flex-1 text-center lg:text-left">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
+                      <span className="text-emerald-400 text-sm font-semibold">🤝 {t('services.affiliation.badge', 'Programme Partenaire')}</span>
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">
+                      {t('services.affiliation.title', 'Gagnez de l\'argent en')}{' '}
+                      <span className="bg-gradient-to-r from-emerald-400 via-primary to-pink-400 bg-clip-text text-transparent">
+                        {t('services.affiliation.titleHighlight', 'recommandant My Guide Digital')}
+                      </span>
+                    </h2>
+                    <p className="text-white/50 text-lg leading-relaxed mb-8">
+                      {t('services.affiliation.desc', 'Rejoignez notre programme d\'affiliation et percevez 30% de commission sur chaque vente. Revenus récurrents sur les renouvellements, dashboard de suivi en temps réel et paiements rapides.')}
+                    </p>
+
+                    {/* Avantages clés */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                      {[
+                        { icon: '💰', label: t('services.affiliation.advantage1', '30% de commission'), sub: t('services.affiliation.advantage1Sub', 'Sur chaque vente') },
+                        { icon: '🔄', label: t('services.affiliation.advantage2', 'Revenus récurrents'), sub: t('services.affiliation.advantage2Sub', 'Sur les renouvellements') },
+                        { icon: '⚡', label: t('services.affiliation.advantage3', 'Paiement rapide'), sub: t('services.affiliation.advantage3Sub', 'Sous 7 jours') },
+                      ].map((item, i) => (
+                        <div key={i} className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06] text-center">
+                          <div className="text-2xl mb-2">{item.icon}</div>
+                          <p className="text-white font-semibold text-sm">{item.label}</p>
+                          <p className="text-white/30 text-xs mt-1">{item.sub}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                      <Link href="/affiliation">
+                        <button className="relative group/btn px-8 py-4 rounded-full font-bold text-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30 text-lg">
+                          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-500 transition-all duration-300"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-emerald-400 to-teal-500 blur-xl opacity-40 group-hover/btn:opacity-70 transition-opacity"></div>
+                          <span className="relative flex items-center gap-2">
+                            <span>🚀</span>
+                            <span>{t('services.affiliation.cta', 'Devenir partenaire affilié')}</span>
+                          </span>
+                        </button>
+                      </Link>
+                      <Link href="/affiliation">
+                        <button className="px-8 py-4 rounded-full font-semibold text-white/70 hover:text-white border border-white/10 hover:border-emerald-500/30 hover:bg-white/5 transition-all duration-300 text-lg">
+                          {t('services.affiliation.learnMore', 'En savoir plus')}
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* Illustration côté droit */}
+                  <div className="flex-shrink-0 hidden lg:block">
+                    <div className="relative w-64 h-64">
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-primary/20 to-pink-500/20 rounded-3xl blur-2xl"></div>
+                      <div className="relative bg-white/[0.05] rounded-3xl border border-white/[0.08] p-8 h-full flex flex-col items-center justify-center gap-4">
+                        <div className="text-6xl">🤝</div>
+                        <div className="text-center">
+                          <p className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">30%</p>
+                          <p className="text-white/40 text-sm mt-1">{t('services.affiliation.commissionLabel', 'de commission')}</p>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                          <span className="text-emerald-400 text-xs font-medium">{t('services.affiliation.openStatus', 'Programme ouvert')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
       {/* CTA FINAL */}
       {/* ══════════════════════════════════════ */}
       <section className="py-20 sm:py-28 relative overflow-hidden">
