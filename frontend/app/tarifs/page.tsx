@@ -111,7 +111,8 @@ export default function TarifsPage() {
                 </button>
               </Link>
             </div>
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center gap-3">
+              <LanguageSelector />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="text-white/80 hover:text-white transition-colors"
@@ -144,9 +145,6 @@ export default function TarifsPage() {
                   </span>
                 </button>
               </Link>
-              <div className="pt-2">
-                <LanguageSelector />
-              </div>
             </div>
           )}
         </div>

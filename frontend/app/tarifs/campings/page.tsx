@@ -201,7 +201,8 @@ export default function TarifsCampingsPage() {
                 </Button>
               </Link>
             </div>
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center gap-3">
+              <LanguageSelector />
               <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white hover:text-primary transition-colors" aria-label="Menu">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {isMobileMenuOpen ? (
@@ -222,7 +223,6 @@ export default function TarifsCampingsPage() {
                 <Link href="/blog" className="text-white hover:text-primary" onClick={() => setIsMobileMenuOpen(false)}>Blog</Link>
                 <Link href="/contact" className="text-white hover:text-primary" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
                 <Link href="/login" className="text-white hover:text-primary" onClick={() => setIsMobileMenuOpen(false)}>Connexion</Link>
-                <LanguageSelector />
                 <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="primary" size="sm" className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 hover:from-yellow-500 hover:to-yellow-600 px-6 py-2 rounded-full font-semibold w-full">
                     Testez gratuitement
