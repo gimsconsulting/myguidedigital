@@ -134,6 +134,14 @@ export default function Home() {
                   </span>
                 </button>
               </Link>
+              <Link href="/contact" className="block" onClick={() => setIsMobileMenuOpen(false)}>
+                <button className="w-full px-6 py-2.5 rounded-full font-semibold text-sm text-gray-900 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500">
+                  <span className="flex items-center justify-center gap-2">
+                    <span>🎥</span>
+                    <span>{t('home.hero.demo', 'Réserver une démo')}</span>
+                  </span>
+                </button>
+              </Link>
             </div>
           )}
         </div>
@@ -175,9 +183,11 @@ export default function Home() {
                   <span className="relative">{t('home.hero.cta', 'Testez gratuitement — 14 jours')}</span>
                 </button>
               </Link>
-              <Link href="/login">
-                <button className="px-8 py-4 rounded-full font-semibold text-lg text-white bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-sm">
-                  {t('home.hero.login', 'Se connecter')}
+              <Link href="/contact">
+                <button className="relative group px-8 py-4 rounded-full font-semibold text-lg text-gray-900 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-400/30">
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 blur-xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                  <span className="relative">{t('home.hero.demo', 'Réserver une démo')}</span>
                 </button>
               </Link>
             </div>
