@@ -990,4 +990,218 @@ router.put('/chatbot-config', authenticateToken, async (req: any, res: express.R
   }
 });
 
+// ═══════════════════════════════════════════════
+// GESTION DES DÉMOS (Admin)
+// ═══════════════════════════════════════════════
+
+// GET /admin/demo-bookings - Récupérer toutes les réservations de démo
+router.get('/demo-bookings', requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const { status, from, to } = req.query;
+
+    const where: any = {};
+
+    if (status && typeof status === 'string') {
+      where.status = status;
+    }
+
+    if (from && typeof from === 'string') {
+      const fromDate = new Date(from);
+      fromDate.setHours(0, 0, 0, 0);
+      where.date = { ...where.date, gte: fromDate };
+    }
+
+    if (to && typeof to === 'string') {
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999);
+      where.date = { ...where.date, lte: toDate };
+    }
+
+    const bookings = await prisma.demoBooking.findMany({
+      where,
+      orderBy: [
+        { date: 'asc' },
+        { startTime: 'asc' },
+      ],
+    });
+
+    res.json(bookings);
+  } catch (error: any) {
+    console.error('Get demo bookings error:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des réservations' });
+  }
+});
+
+// PUT /admin/demo-bookings/:id/status - Modifier le statut d'une démo
+router.put('/demo-bookings/:id/status', requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const { id } = req.params;
+    const { status, adminNotes } = req.body;
+
+    if (!['CONFIRMED', 'CANCELLED', 'COMPLETED', 'NO_SHOW'].includes(status)) {
+      return res.status(400).json({ message: 'Statut invalide' });
+    }
+
+    const booking = await prisma.demoBooking.update({
+      where: { id },
+      data: {
+        status,
+        ...(adminNotes !== undefined && { adminNotes }),
+        ...(status === 'CANCELLED' && { cancelledAt: new Date() }),
+      },
+    });
+
+    const admin = (req as any).user;
+    logAdminAction(admin.id, admin.email, 'UPDATE_DEMO_STATUS', {
+      bookingId: id,
+      newStatus: status,
+      prospectEmail: booking.email,
+    }, req);
+
+    res.json({ message: 'Statut mis à jour', booking });
+  } catch (error: any) {
+    console.error('Update demo status error:', error);
+    res.status(500).json({ message: 'Erreur lors de la mise à jour du statut' });
+  }
+});
+
+// GET /admin/demo-bookings/blocked-slots - Récupérer les créneaux bloqués
+router.get('/demo-bookings-blocked', requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const blockedSlots = await prisma.blockedSlot.findMany({
+      orderBy: [
+        { date: 'asc' },
+        { startTime: 'asc' },
+      ],
+    });
+
+    res.json(blockedSlots);
+  } catch (error: any) {
+    console.error('Get blocked slots error:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des créneaux bloqués' });
+  }
+});
+
+// POST /admin/demo-bookings/block-slot - Bloquer un créneau
+router.post('/demo-bookings-block', requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const { date, startTime, endTime, reason } = req.body;
+
+    if (!date || !startTime) {
+      return res.status(400).json({ message: 'La date et l\'heure de début sont requises' });
+    }
+
+    const targetDate = new Date(date);
+    targetDate.setHours(0, 0, 0, 0);
+
+    const blockedSlot = await prisma.blockedSlot.create({
+      data: {
+        date: targetDate,
+        startTime,
+        endTime: endTime || '',
+        reason: reason || null,
+      },
+    });
+
+    const admin = (req as any).user;
+    logAdminAction(admin.id, admin.email, 'BLOCK_DEMO_SLOT', {
+      date,
+      startTime,
+      reason,
+    }, req);
+
+    res.status(201).json({ message: 'Créneau bloqué', blockedSlot });
+  } catch (error: any) {
+    console.error('Block slot error:', error);
+    res.status(500).json({ message: 'Erreur lors du blocage du créneau' });
+  }
+});
+
+// DELETE /admin/demo-bookings/block-slot/:id - Débloquer un créneau
+router.delete('/demo-bookings-block/:id', requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.blockedSlot.delete({
+      where: { id },
+    });
+
+    const admin = (req as any).user;
+    logAdminAction(admin.id, admin.email, 'UNBLOCK_DEMO_SLOT', {
+      blockedSlotId: id,
+    }, req);
+
+    res.json({ message: 'Créneau débloqué' });
+  } catch (error: any) {
+    console.error('Unblock slot error:', error);
+    res.status(500).json({ message: 'Erreur lors du déblocage du créneau' });
+  }
+});
+
+// POST /admin/demo-bookings/block-day - Bloquer une journée entière
+router.post('/demo-bookings-block-day', requireAdmin, async (req: express.Request, res: express.Response) => {
+  try {
+    const { date, reason } = req.body;
+
+    if (!date) {
+      return res.status(400).json({ message: 'La date est requise' });
+    }
+
+    const targetDate = new Date(date);
+    targetDate.setHours(0, 0, 0, 0);
+
+    // Générer tous les créneaux de la journée et les bloquer
+    const SLOT_TOTAL = 50;
+    const START_HOUR = 10;
+    const END_HOUR = 17;
+    const DEMO_DURATION = 30;
+    const slots: { startTime: string; endTime: string }[] = [];
+    let currentMinutes = START_HOUR * 60;
+    
+    while (currentMinutes + DEMO_DURATION <= END_HOUR * 60) {
+      const startH = Math.floor(currentMinutes / 60);
+      const startM = currentMinutes % 60;
+      const endH = Math.floor((currentMinutes + DEMO_DURATION) / 60);
+      const endM = (currentMinutes + DEMO_DURATION) % 60;
+      slots.push({
+        startTime: `${startH.toString().padStart(2, '0')}:${startM.toString().padStart(2, '0')}`,
+        endTime: `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`,
+      });
+      currentMinutes += SLOT_TOTAL;
+    }
+
+    // Supprimer les éventuels blocages existants pour cette date
+    await prisma.blockedSlot.deleteMany({
+      where: {
+        date: {
+          gte: new Date(targetDate),
+          lte: new Date(targetDate.getTime() + 24 * 60 * 60 * 1000 - 1),
+        },
+      },
+    });
+
+    // Créer les blocages
+    await prisma.blockedSlot.createMany({
+      data: slots.map(slot => ({
+        date: targetDate,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        reason: reason || 'Journée bloquée',
+      })),
+    });
+
+    const admin = (req as any).user;
+    logAdminAction(admin.id, admin.email, 'BLOCK_DEMO_DAY', {
+      date,
+      reason,
+      slotsBlocked: slots.length,
+    }, req);
+
+    res.status(201).json({ message: `Journée bloquée (${slots.length} créneaux)` });
+  } catch (error: any) {
+    console.error('Block day error:', error);
+    res.status(500).json({ message: 'Erreur lors du blocage de la journée' });
+  }
+});
+
 export default router;

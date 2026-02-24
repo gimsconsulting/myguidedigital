@@ -243,6 +243,43 @@ model AppChatbotConfig {
   @@map("app_chatbot_config")
 }
 
+model DemoBooking {
+  id                String    @id @default(uuid())
+  firstName         String
+  lastName          String
+  email             String
+  phone             String?
+  companyName       String?
+  accommodationType String?                // hote, hotel, camping
+  numberOfUnits     String?                // Nombre de logements/chambres
+  message           String?   @db.Text     // Message libre du prospect
+  date              DateTime               // Date de la démo
+  startTime         String                 // Heure de début (ex: "10:00")
+  endTime           String                 // Heure de fin (ex: "10:30")
+  status            String    @default("CONFIRMED") // CONFIRMED, CANCELLED, COMPLETED, NO_SHOW
+  cancelToken       String    @unique      // Token unique pour annuler/reporter
+  reminder1hSent    Boolean   @default(false)
+  reminder10mSent   Boolean   @default(false)
+  meetingLink       String?   @db.Text     // Lien Google Meet
+  adminNotes        String?   @db.Text     // Notes internes de l'admin
+  cancelledAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("demo_bookings")
+}
+
+model BlockedSlot {
+  id        String   @id @default(uuid())
+  date      DateTime // Date du créneau bloqué
+  startTime String   // Heure de début (ex: "10:00")
+  endTime   String   // Heure de fin (ex: "10:30")
+  reason    String?  // Raison du blocage (ex: "Congé", "Réunion interne")
+  createdAt DateTime @default(now())
+
+  @@map("blocked_slots")
+}
+
 model BlogCategory {
   id        String   @id @default(uuid())
   slug      String   @unique            // identifiant unique (ex: "conseils")

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/lib/store';
-import { adminApi, authApi, affiliatesApi, appChatConfigApi } from '@/lib/api';
+import { adminApi, authApi, affiliatesApi, appChatConfigApi, demoBookingsApi } from '@/lib/api';
 import Link from 'next/link';
 
 interface OverviewData {
@@ -115,6 +115,15 @@ export default function AdminDashboardPage() {
   const [chatbotLoaded, setChatbotLoaded] = useState(false);
   const [chatbotMessage, setChatbotMessage] = useState('');
 
+  // Demo bookings state
+  const [demoBookings, setDemoBookings] = useState<any[]>([]);
+  const [demoBookingsLoaded, setDemoBookingsLoaded] = useState(false);
+  const [blockedSlots, setBlockedSlots] = useState<any[]>([]);
+  const [blockDate, setBlockDate] = useState('');
+  const [blockReason, setBlockReason] = useState('');
+  const [blockingDay, setBlockingDay] = useState(false);
+  const [demoMessage, setDemoMessage] = useState('');
+
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
@@ -206,10 +215,71 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // Charger la config du chatbot au montage
+  // Charger les démos
+  const loadDemoBookings = async () => {
+    try {
+      const res = await demoBookingsApi.adminGetAll();
+      setDemoBookings(res.data || []);
+      setDemoBookingsLoaded(true);
+    } catch (err) {
+      console.error('Erreur chargement démos:', err);
+      setDemoBookingsLoaded(true);
+    }
+  };
+
+  const loadBlockedSlots = async () => {
+    try {
+      const res = await demoBookingsApi.adminGetBlockedSlots();
+      setBlockedSlots(res.data || []);
+    } catch (err) {
+      console.error('Erreur chargement créneaux bloqués:', err);
+    }
+  };
+
+  const handleBlockDay = async () => {
+    if (!blockDate) return;
+    setBlockingDay(true);
+    try {
+      await demoBookingsApi.adminBlockDay({ date: blockDate, reason: blockReason || 'Indisponible' });
+      setDemoMessage('✅ Journée bloquée !');
+      setBlockDate('');
+      setBlockReason('');
+      loadBlockedSlots();
+      setTimeout(() => setDemoMessage(''), 3000);
+    } catch (err: any) {
+      setDemoMessage('❌ Erreur');
+      setTimeout(() => setDemoMessage(''), 3000);
+    } finally {
+      setBlockingDay(false);
+    }
+  };
+
+  const handleUnblockSlot = async (id: string) => {
+    try {
+      await demoBookingsApi.adminUnblockSlot(id);
+      loadBlockedSlots();
+    } catch (err) {
+      console.error('Erreur déblocage:', err);
+    }
+  };
+
+  const handleDemoStatusUpdate = async (id: string, status: string) => {
+    try {
+      await demoBookingsApi.adminUpdateStatus(id, { status });
+      loadDemoBookings();
+    } catch (err) {
+      console.error('Erreur mise à jour statut:', err);
+    }
+  };
+
+  // Charger la config du chatbot + démos au montage
   useEffect(() => {
     if (hasCheckedAuth && isAuthenticated && user?.role === 'ADMIN' && !chatbotLoaded) {
       loadChatbotConfig();
+    }
+    if (hasCheckedAuth && isAuthenticated && user?.role === 'ADMIN' && !demoBookingsLoaded) {
+      loadDemoBookings();
+      loadBlockedSlots();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasCheckedAuth, isAuthenticated, user?.role]);
@@ -1063,6 +1133,197 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════ */}
+        {/* GESTION DES DÉMOS */}
+        {/* ═══════════════════════════════════════ */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🎥</span>
+                <div>
+                  <h3 className="font-bold text-gray-900">Gestion des démos</h3>
+                  <p className="text-xs text-gray-500">Réservations, créneaux bloqués, calendrier</p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
+                {demoBookings.filter(b => b.status === 'CONFIRMED').length} à venir
+              </span>
+            </div>
+          </div>
+
+          <div className="p-6">
+            {/* Bloquer une journée */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <h4 className="font-semibold text-gray-800 text-sm mb-3">🚫 Bloquer une journée</h4>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="date"
+                  value={blockDate}
+                  onChange={(e) => setBlockDate(e.target.value)}
+                  className="px-3 py-2 border border-gray-200 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+                <input
+                  type="text"
+                  value={blockReason}
+                  onChange={(e) => setBlockReason(e.target.value)}
+                  placeholder="Raison (ex: Congé, Réunion...)"
+                  className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+                <button
+                  onClick={handleBlockDay}
+                  disabled={!blockDate || blockingDay}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition disabled:opacity-50"
+                >
+                  {blockingDay ? '...' : 'Bloquer'}
+                </button>
+              </div>
+              {demoMessage && (
+                <p className={`text-sm mt-2 ${demoMessage.startsWith('✅') ? 'text-emerald-600' : 'text-red-500'}`}>
+                  {demoMessage}
+                </p>
+              )}
+            </div>
+
+            {/* Journées bloquées */}
+            {blockedSlots.length > 0 && (
+              <div className="mb-6">
+                <h4 className="font-semibold text-gray-800 text-sm mb-3">📅 Créneaux bloqués</h4>
+                <div className="flex flex-wrap gap-2">
+                  {/* Grouper par date */}
+                  {Array.from(new Set(blockedSlots.map(s => new Date(s.date).toISOString().split('T')[0]))).map(dateStr => {
+                    const slotsForDate = blockedSlots.filter(s => new Date(s.date).toISOString().split('T')[0] === dateStr);
+                    const reason = slotsForDate[0]?.reason || '';
+                    return (
+                      <div key={dateStr} className="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-lg text-sm">
+                        <span className="text-gray-700 font-medium">
+                          {new Date(dateStr + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                        </span>
+                        {reason && <span className="text-gray-400 text-xs">({reason})</span>}
+                        <span className="text-gray-400 text-xs">{slotsForDate.length} créneaux</span>
+                        <button
+                          onClick={() => slotsForDate.forEach(s => handleUnblockSlot(s.id))}
+                          className="text-red-400 hover:text-red-600 text-xs font-bold"
+                          title="Débloquer"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Liste des réservations */}
+            <h4 className="font-semibold text-gray-800 text-sm mb-3">📋 Réservations de démo</h4>
+            {demoBookings.length === 0 ? (
+              <p className="text-gray-400 text-sm text-center py-6">Aucune réservation pour le moment</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-2 px-3 text-gray-500 font-medium">Date</th>
+                      <th className="text-left py-2 px-3 text-gray-500 font-medium">Heure</th>
+                      <th className="text-left py-2 px-3 text-gray-500 font-medium">Prospect</th>
+                      <th className="text-left py-2 px-3 text-gray-500 font-medium">Email</th>
+                      <th className="text-left py-2 px-3 text-gray-500 font-medium">Type</th>
+                      <th className="text-left py-2 px-3 text-gray-500 font-medium">Statut</th>
+                      <th className="text-left py-2 px-3 text-gray-500 font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {demoBookings.map((booking) => {
+                      const statusColors: Record<string, string> = {
+                        CONFIRMED: 'bg-green-100 text-green-700',
+                        CANCELLED: 'bg-red-100 text-red-700',
+                        COMPLETED: 'bg-blue-100 text-blue-700',
+                        NO_SHOW: 'bg-yellow-100 text-yellow-700',
+                      };
+                      const statusLabels: Record<string, string> = {
+                        CONFIRMED: 'Confirmée',
+                        CANCELLED: 'Annulée',
+                        COMPLETED: 'Terminée',
+                        NO_SHOW: 'Absent',
+                      };
+                      const accomLabels: Record<string, string> = {
+                        hote: '🏠 Hôte',
+                        hotel: '🏨 Hôtel',
+                        camping: '⛺ Camping',
+                      };
+
+                      return (
+                        <tr key={booking.id} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="py-2.5 px-3 text-gray-700 font-medium whitespace-nowrap">
+                            {new Date(booking.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                          </td>
+                          <td className="py-2.5 px-3 text-gray-700 whitespace-nowrap">
+                            {booking.startTime} - {booking.endTime}
+                          </td>
+                          <td className="py-2.5 px-3 text-gray-800 font-medium">
+                            {booking.firstName} {booking.lastName}
+                            {booking.companyName && <span className="text-gray-400 text-xs block">{booking.companyName}</span>}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <a href={`mailto:${booking.email}`} className="text-primary hover:underline text-xs">{booking.email}</a>
+                            {booking.phone && <span className="text-gray-400 text-xs block">{booking.phone}</span>}
+                          </td>
+                          <td className="py-2.5 px-3 text-gray-600 text-xs">
+                            {accomLabels[booking.accommodationType] || '-'}
+                            {booking.numberOfUnits && <span className="block text-gray-400">{booking.numberOfUnits} unités</span>}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusColors[booking.status] || 'bg-gray-100 text-gray-600'}`}>
+                              {statusLabels[booking.status] || booking.status}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-3">
+                            {booking.status === 'CONFIRMED' && (
+                              <div className="flex gap-1">
+                                <button
+                                  onClick={() => handleDemoStatusUpdate(booking.id, 'COMPLETED')}
+                                  className="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100"
+                                  title="Marquer comme terminée"
+                                >
+                                  ✅
+                                </button>
+                                <button
+                                  onClick={() => handleDemoStatusUpdate(booking.id, 'NO_SHOW')}
+                                  className="px-2 py-1 bg-yellow-50 text-yellow-600 rounded text-xs hover:bg-yellow-100"
+                                  title="Marquer comme absent"
+                                >
+                                  ❌
+                                </button>
+                                <button
+                                  onClick={() => handleDemoStatusUpdate(booking.id, 'CANCELLED')}
+                                  className="px-2 py-1 bg-red-50 text-red-600 rounded text-xs hover:bg-red-100"
+                                  title="Annuler"
+                                >
+                                  🚫
+                                </button>
+                                <a
+                                  href={booking.meetingLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="px-2 py-1 bg-green-50 text-green-600 rounded text-xs hover:bg-green-100"
+                                  title="Lien Meet"
+                                >
+                                  🎥
+                                </a>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
 

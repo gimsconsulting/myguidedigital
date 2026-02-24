@@ -22,6 +22,10 @@ import appChatRoutes from './routes/app-chat';
 import affiliateRoutes from './routes/affiliates';
 import contactRoutes from './routes/contact';
 import blogRoutes from './routes/blog';
+import demoBookingRoutes from './routes/demo-bookings';
+
+// Import cron pour les rappels de démo
+import { checkAndSendReminders, cleanupPastDemos } from './services/demoReminder';
 
 // Import CSRF middleware
 import { getCsrfToken, validateCsrfToken } from './middleware/csrf';
@@ -252,6 +256,7 @@ app.use('/api/app-chat', appChatRoutes);
 app.use('/api/affiliates', affiliateRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/demo-bookings', demoBookingRoutes);
 
 // Error handling middleware - Gestion améliorée des erreurs
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -364,7 +369,24 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+// ═══════════════════════════════════════════════
+// CRON JOBS - Rappels de démo automatiques
+// ═══════════════════════════════════════════════
+// Vérifier les rappels toutes les minutes
+const reminderInterval = setInterval(() => {
+  checkAndSendReminders();
+}, 60 * 1000); // Toutes les 60 secondes
+
+// Nettoyer les démos passées toutes les heures
+const cleanupInterval = setInterval(() => {
+  cleanupPastDemos();
+}, 60 * 60 * 1000); // Toutes les heures
+
+console.log('⏰ [CRON] Rappels démo activés (vérification toutes les minutes)');
+
 // Graceful shutdown
 process.on('beforeExit', async () => {
+  clearInterval(reminderInterval);
+  clearInterval(cleanupInterval);
   await prisma.$disconnect();
 });

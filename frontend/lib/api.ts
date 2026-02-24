@@ -474,4 +474,37 @@ export const blogApi = {
   adminDeleteCategory: (id: string) => api.delete(`/blog/admin/categories/${id}`),
 };
 
+// Demo Bookings API
+export const demoBookingsApi = {
+  // Public
+  getAvailableSlots: (date: string) => api.get(`/demo-bookings/available-slots?date=${date}`),
+  createBooking: (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    companyName?: string;
+    accommodationType?: string;
+    numberOfUnits?: string;
+    message?: string;
+    date: string;
+    startTime: string;
+  }) => api.post('/demo-bookings', data),
+  getBookingByToken: (token: string) => api.get(`/demo-bookings/manage/${token}`),
+  cancelBooking: (token: string) => api.put(`/demo-bookings/manage/${token}/cancel`),
+  rescheduleBooking: (token: string, data: { date: string; startTime: string }) =>
+    api.put(`/demo-bookings/manage/${token}/reschedule`, data),
+  // Admin
+  adminGetAll: (params?: { status?: string; from?: string; to?: string }) =>
+    api.get('/admin/demo-bookings', { params }),
+  adminUpdateStatus: (id: string, data: { status: string; adminNotes?: string }) =>
+    api.put(`/admin/demo-bookings/${id}/status`, data),
+  adminGetBlockedSlots: () => api.get('/admin/demo-bookings-blocked'),
+  adminBlockSlot: (data: { date: string; startTime: string; endTime?: string; reason?: string }) =>
+    api.post('/admin/demo-bookings-block', data),
+  adminUnblockSlot: (id: string) => api.delete(`/admin/demo-bookings-block/${id}`),
+  adminBlockDay: (data: { date: string; reason?: string }) =>
+    api.post('/admin/demo-bookings-block-day', data),
+};
+
 export default api;

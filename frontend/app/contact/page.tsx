@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import LanguageSelector from '@/components/LanguageSelector';
 import api from '@/lib/api';
+import DemoBookingCalendar from '@/components/DemoBookingCalendar';
 
 export default function ContactPage() {
   const { t } = useTranslation();
@@ -236,6 +237,27 @@ export default function ContactPage() {
               </a>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* RÉSERVER UNE DÉMO */}
+      {/* ══════════════════════════════════════ */}
+      <section className="pb-16 relative" id="demo">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+              <span className="text-primary text-sm font-medium">🎥 Démonstration gratuite</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+              {t('contact.demo.title', 'Réservez une démo personnalisée')}
+            </h2>
+            <p className="text-white/50 text-lg max-w-xl mx-auto">
+              {t('contact.demo.subtitle', '30 minutes pour découvrir My Guide Digital en visioconférence. Choisissez le créneau qui vous convient !')}
+            </p>
+          </div>
+          <DemoBookingCalendar />
         </div>
       </section>
 
