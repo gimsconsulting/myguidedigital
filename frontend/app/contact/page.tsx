@@ -184,23 +184,46 @@ export default function ContactPage() {
       </nav>
 
       {/* ══════════════════════════════════════ */}
-      {/* HERO */}
+      {/* RÉSERVER UNE DÉMO */}
       {/* ══════════════════════════════════════ */}
-      <section className="pt-32 pb-16 relative overflow-hidden">
+      <section className="pt-32 pb-20 relative overflow-hidden" id="demo">
         <div className="absolute top-20 left-10 w-96 h-96 bg-primary/8 rounded-full blur-3xl"></div>
         <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-pink-500/6 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-3xl"></div>
 
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+              <span className="text-primary text-sm font-medium">🎥 Démonstration gratuite</span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
+              <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                {t('contact.demo.title', 'Réservez une démo personnalisée')}
+              </span>
+            </h1>
+            <p className="text-white/50 text-lg sm:text-xl max-w-xl mx-auto">
+              {t('contact.demo.subtitle', '30 minutes pour découvrir My Guide Digital en visioconférence. Choisissez le créneau qui vous convient !')}
+            </p>
+          </div>
+          <DemoBookingCalendar />
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ */}
+      {/* HERO CONTACTEZ-NOUS */}
+      {/* ══════════════════════════════════════ */}
+      <section className="pb-16 relative">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8">
               <span className="text-white/70 text-sm font-medium">{t('contact.badge', '💬 Parlons de votre projet')}</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight">
               <span className="bg-gradient-to-r from-primary via-pink-400 to-purple-400 bg-clip-text text-transparent">
                 {t('contact.title', 'Contactez-nous')}
               </span>
-            </h1>
+            </h2>
             <p className="text-xl sm:text-2xl text-white/50 max-w-3xl mx-auto">
               {t('contact.subtitle', 'Notre équipe est à votre écoute pour répondre à toutes vos questions et vous accompagner dans votre projet.')}
             </p>
@@ -237,27 +260,6 @@ export default function ContactPage() {
               </a>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════ */}
-      {/* RÉSERVER UNE DÉMO */}
-      {/* ══════════════════════════════════════ */}
-      <section className="pb-16 relative" id="demo">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-              <span className="text-primary text-sm font-medium">🎥 Démonstration gratuite</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-              {t('contact.demo.title', 'Réservez une démo personnalisée')}
-            </h2>
-            <p className="text-white/50 text-lg max-w-xl mx-auto">
-              {t('contact.demo.subtitle', '30 minutes pour découvrir My Guide Digital en visioconférence. Choisissez le créneau qui vous convient !')}
-            </p>
-          </div>
-          <DemoBookingCalendar />
         </div>
       </section>
 
