@@ -144,7 +144,9 @@ export default function DemoBookingCalendar({ onClose }: DemoBookingCalendarProp
     : '';
 
   return (
-    <div className="bg-white/[0.05] backdrop-blur-sm rounded-2xl border border-white/[0.08] overflow-hidden">
+    <div className="group relative">
+    <div className="absolute -inset-[1px] bg-gradient-to-r from-primary/30 via-pink-500/30 to-purple-500/30 rounded-2xl opacity-60 blur-sm"></div>
+    <div className="relative bg-white/[0.03] backdrop-blur-sm rounded-2xl border border-white/[0.06] overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-primary via-pink-500 to-purple-500 p-6">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
@@ -459,6 +461,7 @@ export default function DemoBookingCalendar({ onClose }: DemoBookingCalendarProp
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
