@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
 import { authenticateToken } from './auth';
+import { validateImageMagicBytes } from '../middleware/validateFileType';
 import prisma from '../lib/prisma';
 
 const router = express.Router();
@@ -566,7 +567,7 @@ router.delete('/admin/:id', authenticateToken, requireAdmin, async (req: express
 // ═══════════════════════════════════════════════════════════
 
 // POST /api/blog/admin/upload-image - Upload image (admin)
-router.post('/admin/upload-image', authenticateToken, requireAdmin, upload.single('image'), async (req: any, res: express.Response) => {
+router.post('/admin/upload-image', authenticateToken, requireAdmin, upload.single('image'), validateImageMagicBytes, async (req: any, res: express.Response) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'Aucune image fournie' });

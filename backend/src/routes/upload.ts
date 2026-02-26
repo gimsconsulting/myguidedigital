@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { authenticateToken } from './auth';
+import { validateImageMagicBytes } from '../middleware/validateFileType';
 import prisma from '../lib/prisma';
 
 const router = express.Router();
@@ -73,7 +74,7 @@ const multerErrorHandler = (err: any, req: any, res: any, next: any) => {
 };
 
 // Upload de photo de profil
-router.post('/profile-photo', authenticateToken, upload.single('photo'), multerErrorHandler, async (req: any, res: any) => {
+router.post('/profile-photo', authenticateToken, upload.single('photo'), multerErrorHandler, validateImageMagicBytes, async (req: any, res: any) => {
   // #region agent log
   try {
     const logPath = path.join(process.cwd(), '..', '..', '.cursor', 'debug.log');
