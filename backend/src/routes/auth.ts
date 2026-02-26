@@ -688,12 +688,16 @@ router.post('/forgot-password', validateCsrfToken, [
     // Générer un token sécurisé (32 bytes aléatoires en hex)
     const resetToken = crypto.randomBytes(32).toString('hex');
 
+    // Hasher le token avant de le stocker en DB (sécurité : si la DB est compromise,
+    // les tokens ne sont pas exploitables)
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
     // Créer le token avec expiration de 30 minutes
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
 
     await prisma.passwordResetToken.create({
       data: {
-        token: resetToken,
+        token: hashedToken,
         userId: user.id,
         expiresAt: expiresAt
       }
@@ -739,9 +743,12 @@ router.post('/reset-password', validateCsrfToken, [
 
     const { token, password } = req.body;
 
+    // Hasher le token reçu pour le comparer avec celui stocké en DB
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
     // Trouver le token de réinitialisation
     const resetToken = await prisma.passwordResetToken.findUnique({
-      where: { token },
+      where: { token: hashedToken },
       include: { user: true }
     });
 
