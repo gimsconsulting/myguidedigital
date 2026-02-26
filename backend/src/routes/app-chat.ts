@@ -1,11 +1,10 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { body, validationResult } from 'express-validator';
 import { chatLimiter } from '../middleware/rateLimiter';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Interface pour les messages de chat
 interface ChatMessage {

@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { sendDemoReminderEmail } from './email';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 const MEETING_LINK = 'https://meet.google.com/fix-yryt-tuh?authuser=0&hl=fr';
 const DAYS_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];

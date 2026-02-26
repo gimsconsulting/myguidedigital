@@ -1,11 +1,10 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import { body, validationResult, query, param } from 'express-validator';
 import crypto from 'crypto';
 import { authenticateToken } from './auth';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Middleware admin — vérifie que l'utilisateur authentifié est ADMIN
 const requireAdmin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {

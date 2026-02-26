@@ -1,5 +1,4 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import rateLimit from 'express-rate-limit';
 import { body, param, query, validationResult } from 'express-validator';
@@ -8,9 +7,9 @@ import {
   sendDemoAdminNotificationEmail,
   sendDemoCancellationEmail,
 } from '../services/email';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Rate limiter pour les créneaux disponibles : max 30 requêtes par minute par IP
 const slotsLimiter = rateLimit({

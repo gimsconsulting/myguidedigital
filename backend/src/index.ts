@@ -4,8 +4,8 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import path from 'path';
 import helmet from 'helmet';
-import { PrismaClient } from '@prisma/client';
 import { globalLimiter } from './middleware/rateLimiter';
+import prisma from './lib/prisma';
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -61,7 +61,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const app = express();
-const prisma = new PrismaClient();
 
 // Configuration du proxy trust pour express-rate-limit derrière Nginx
 // IMPORTANT: Doit être configuré AVANT les middlewares de rate limiting

@@ -1,12 +1,11 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from './auth';
 import jwt from 'jsonwebtoken';
 import { query, param, body, validationResult } from 'express-validator';
 import { validateCsrfToken } from '../middleware/csrf';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Valeurs valides pour les enums
 const VALID_PLANS = ['TRIAL', 'MONTHLY', 'YEARLY', 'LIFETIME'];

@@ -3,11 +3,10 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
-import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from './auth';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // ───── Upload configuration pour les images du blog ─────
 const uploadDir = process.env.UPLOAD_DIR || './uploads';

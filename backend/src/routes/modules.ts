@@ -1,11 +1,10 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from './auth';
 import { body, validationResult } from 'express-validator';
 import axios from 'axios';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Fonction utilitaire pour traduire un texte
 // Variable pour éviter les warnings répétés

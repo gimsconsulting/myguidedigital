@@ -1,10 +1,9 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from './auth';
 import PDFDocument from 'pdfkit';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Get all invoices
 router.get('/', authenticateToken, async (req: any, res) => {

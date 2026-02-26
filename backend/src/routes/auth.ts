@@ -1,16 +1,15 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
 import { body, validationResult, CustomValidator } from 'express-validator';
 import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { loginLimiter, registerLimiter, googleAuthLimiter } from '../middleware/rateLimiter';
 import { validateCsrfToken } from '../middleware/csrf';
 import { sendWelcomeEmail, sendTrialExpiredEmail } from '../services/email';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Validation personnalisée pour la complexité du mot de passe

@@ -1,9 +1,8 @@
 import express from 'express';
 import { authenticateToken } from './auth';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Créer un document texte pour un livret
 router.post('/:livretId', authenticateToken, async (req: any, res: express.Response) => {

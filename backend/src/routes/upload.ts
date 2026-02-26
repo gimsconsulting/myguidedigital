@@ -3,10 +3,9 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { authenticateToken } from './auth';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Créer le dossier uploads s'il n'existe pas
 const uploadDir = process.env.UPLOAD_DIR || './uploads';
