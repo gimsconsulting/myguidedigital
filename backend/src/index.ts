@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import helmet from 'helmet';
 import { PrismaClient } from '@prisma/client';
+import { globalLimiter } from './middleware/rateLimiter';
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -202,6 +203,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Rate limiter global — protection anti-DDoS de base
+app.use('/api/', globalLimiter);
 
 // Gérer explicitement les requêtes OPTIONS (preflight) AVANT les routes
 app.options('*', (req: express.Request, res: express.Response) => {

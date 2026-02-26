@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import { body, validationResult, CustomValidator } from 'express-validator';
 import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
-import { loginLimiter, registerLimiter } from '../middleware/rateLimiter';
+import { loginLimiter, registerLimiter, googleAuthLimiter } from '../middleware/rateLimiter';
 import { validateCsrfToken } from '../middleware/csrf';
 import { sendWelcomeEmail, sendTrialExpiredEmail } from '../services/email';
 
@@ -309,7 +309,7 @@ router.post('/login', loginLimiter, [
 });
 
 // Google OAuth - Connexion / Inscription via Google
-router.post('/google', async (req: express.Request, res: express.Response) => {
+router.post('/google', googleAuthLimiter, async (req: express.Request, res: express.Response) => {
   try {
     const { credential } = req.body;
 

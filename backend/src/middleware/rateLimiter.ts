@@ -81,3 +81,45 @@ export const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// Rate limiter pour Google OAuth (anti-brute force sur /api/auth/google)
+export const googleAuthLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: isDevelopment ? 100 : 15, // 15 tentatives par 15 min en production
+  message: {
+    error: 'Trop de tentatives de connexion Google. Veuillez réessayer dans 15 minutes.',
+    retryAfter: 15 * 60,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    console.warn(`⚠️ [RATE LIMIT] Trop de tentatives Google OAuth depuis IP: ${ip}`);
+    res.status(429).json({
+      error: 'Trop de tentatives de connexion Google. Veuillez réessayer dans 15 minutes.',
+      message: 'Trop de tentatives de connexion Google. Veuillez réessayer dans 15 minutes.',
+      retryAfter: 15 * 60,
+    });
+  },
+});
+
+// Rate limiter GLOBAL — protection anti-DDoS de base sur toute l'API
+export const globalLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: isDevelopment ? 500 : 100, // 100 requêtes par minute par IP en production
+  message: {
+    error: 'Trop de requêtes. Veuillez ralentir.',
+    retryAfter: 60,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    console.warn(`🚨 [GLOBAL RATE LIMIT] IP bloquée: ${ip} — ${req.method} ${req.path}`);
+    res.status(429).json({
+      error: 'Trop de requêtes. Veuillez ralentir.',
+      message: 'Trop de requêtes. Veuillez ralentir.',
+      retryAfter: 60,
+    });
+  },
+});
