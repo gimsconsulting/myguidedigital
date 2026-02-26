@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
+import DOMPurify from 'dompurify';
 import LanguageSelector from '@/components/LanguageSelector';
 import { blogApi } from '@/lib/api';
 
@@ -242,7 +243,7 @@ export default function BlogArticlePage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div
             className="prose prose-invert max-w-none text-base leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(article.content) }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderMarkdown(article.content), { ADD_ATTR: ['target', 'rel'], ADD_TAGS: ['figure', 'figcaption'] }) }}
           />
 
           {/* Tags */}

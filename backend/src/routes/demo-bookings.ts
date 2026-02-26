@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
+import rateLimit from 'express-rate-limit';
 import {
   sendDemoConfirmationEmail,
   sendDemoAdminNotificationEmail,
@@ -9,6 +10,33 @@ import {
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+// Rate limiter pour les créneaux disponibles : max 30 requêtes par minute par IP
+const slotsLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 30,
+  message: { error: 'Trop de requêtes. Veuillez patienter quelques instants.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Rate limiter pour la création de réservation : max 5 par heure par IP
+const bookingLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 5,
+  message: { error: 'Trop de réservations. Veuillez réessayer dans une heure.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Rate limiter pour les actions de gestion (annulation/report) : max 10 par heure par IP
+const manageLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 10,
+  message: { error: 'Trop de requêtes. Veuillez réessayer plus tard.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // ═══════════════════════════════════════════════
 // CONFIGURATION DES CRÉNEAUX
@@ -77,7 +105,7 @@ function parseDateString(dateStr: string): Date {
  * GET /available-slots?date=YYYY-MM-DD
  * Récupérer les créneaux disponibles pour une date donnée
  */
-router.get('/available-slots', async (req: express.Request, res: express.Response) => {
+router.get('/available-slots', slotsLimiter, async (req: express.Request, res: express.Response) => {
   try {
     const { date } = req.query;
 
@@ -169,7 +197,7 @@ router.get('/available-slots', async (req: express.Request, res: express.Respons
  * POST /
  * Créer une réservation de démo
  */
-router.post('/', async (req: express.Request, res: express.Response) => {
+router.post('/', bookingLimiter, async (req: express.Request, res: express.Response) => {
   try {
     const {
       firstName,
@@ -317,7 +345,7 @@ router.post('/', async (req: express.Request, res: express.Response) => {
  * GET /manage/:token
  * Récupérer les détails d'une réservation via le token (pour annuler/reporter)
  */
-router.get('/manage/:token', async (req: express.Request, res: express.Response) => {
+router.get('/manage/:token', manageLimiter, async (req: express.Request, res: express.Response) => {
   try {
     const { token } = req.params;
 
@@ -351,7 +379,7 @@ router.get('/manage/:token', async (req: express.Request, res: express.Response)
  * PUT /manage/:token/cancel
  * Annuler une réservation via le token
  */
-router.put('/manage/:token/cancel', async (req: express.Request, res: express.Response) => {
+router.put('/manage/:token/cancel', manageLimiter, async (req: express.Request, res: express.Response) => {
   try {
     const { token } = req.params;
 
@@ -405,7 +433,7 @@ router.put('/manage/:token/cancel', async (req: express.Request, res: express.Re
  * PUT /manage/:token/reschedule
  * Reporter une réservation via le token
  */
-router.put('/manage/:token/reschedule', async (req: express.Request, res: express.Response) => {
+router.put('/manage/:token/reschedule', manageLimiter, async (req: express.Request, res: express.Response) => {
   try {
     const { token } = req.params;
     const { date, startTime } = req.body;

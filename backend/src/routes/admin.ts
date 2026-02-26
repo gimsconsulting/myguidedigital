@@ -916,14 +916,8 @@ router.get('/invoices', authenticateToken, requireAdmin, [
 // ═══════════════════════════════════════════════════════
 
 // GET /api/admin/chatbot-config — Récupérer la config du chatbot
-router.get('/chatbot-config', authenticateToken, async (req: any, res: express.Response) => {
+router.get('/chatbot-config', authenticateToken, requireAdmin, async (req: any, res: express.Response) => {
   try {
-    // Vérifier que l'utilisateur est admin
-    const user = await prisma.user.findUnique({ where: { id: req.userId } });
-    if (!user || user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Accès non autorisé' });
-    }
-
     // Récupérer la config (il n'y en a qu'une seule)
     let config = await prisma.appChatbotConfig.findFirst();
     
@@ -945,14 +939,8 @@ router.get('/chatbot-config', authenticateToken, async (req: any, res: express.R
 });
 
 // PUT /api/admin/chatbot-config — Mettre à jour la config du chatbot
-router.put('/chatbot-config', authenticateToken, async (req: any, res: express.Response) => {
+router.put('/chatbot-config', authenticateToken, requireAdmin, async (req: any, res: express.Response) => {
   try {
-    // Vérifier que l'utilisateur est admin
-    const user = await prisma.user.findUnique({ where: { id: req.userId } });
-    if (!user || user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Accès non autorisé' });
-    }
-
     const { context, isActive } = req.body;
 
     // Récupérer ou créer la config
