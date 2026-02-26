@@ -2,6 +2,7 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import rateLimit from 'express-rate-limit';
+import { body, param, query, validationResult } from 'express-validator';
 import {
   sendDemoConfirmationEmail,
   sendDemoAdminNotificationEmail,
@@ -105,12 +106,16 @@ function parseDateString(dateStr: string): Date {
  * GET /available-slots?date=YYYY-MM-DD
  * Récupérer les créneaux disponibles pour une date donnée
  */
-router.get('/available-slots', slotsLimiter, async (req: express.Request, res: express.Response) => {
+router.get('/available-slots', slotsLimiter, [
+  query('date').notEmpty().withMessage('Le paramètre date est requis').matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Format de date invalide (attendu YYYY-MM-DD)'),
+], async (req: express.Request, res: express.Response) => {
   try {
-    const { date } = req.query;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg, errors: errors.array() });
+    }
 
-    if (!date || typeof date !== 'string') {
-      return res.status(400).json({ message: 'Le paramètre date est requis (format YYYY-MM-DD)' });
+    const { date } = req.query;
     }
 
     const targetDate = parseDateString(date);
@@ -197,8 +202,24 @@ router.get('/available-slots', slotsLimiter, async (req: express.Request, res: e
  * POST /
  * Créer une réservation de démo
  */
-router.post('/', bookingLimiter, async (req: express.Request, res: express.Response) => {
+router.post('/', bookingLimiter, [
+  body('firstName').trim().notEmpty().withMessage('Le prénom est requis').isLength({ max: 100 }).withMessage('Le prénom ne doit pas dépasser 100 caractères').escape(),
+  body('lastName').trim().notEmpty().withMessage('Le nom est requis').isLength({ max: 100 }).withMessage('Le nom ne doit pas dépasser 100 caractères').escape(),
+  body('email').trim().isEmail().withMessage('Email invalide').normalizeEmail().isLength({ max: 255 }),
+  body('phone').optional({ values: 'falsy' }).trim().isLength({ max: 30 }).withMessage('Le téléphone ne doit pas dépasser 30 caractères'),
+  body('companyName').optional({ values: 'falsy' }).trim().isLength({ max: 200 }).withMessage('Le nom de l\'entreprise ne doit pas dépasser 200 caractères').escape(),
+  body('accommodationType').optional({ values: 'falsy' }).trim().isLength({ max: 50 }),
+  body('numberOfUnits').optional({ values: 'falsy' }).isInt({ min: 0, max: 99999 }).withMessage('Nombre de logements invalide'),
+  body('message').optional({ values: 'falsy' }).trim().isLength({ max: 2000 }).withMessage('Le message ne doit pas dépasser 2000 caractères'),
+  body('date').notEmpty().withMessage('La date est requise').isString(),
+  body('startTime').notEmpty().withMessage('Le créneau est requis').isString(),
+], async (req: express.Request, res: express.Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg, errors: errors.array() });
+    }
+
     const {
       firstName,
       lastName,
@@ -211,17 +232,6 @@ router.post('/', bookingLimiter, async (req: express.Request, res: express.Respo
       date,
       startTime,
     } = req.body;
-
-    // Validation
-    if (!firstName || !lastName || !email || !date || !startTime) {
-      return res.status(400).json({ message: 'Les champs nom, prénom, email, date et créneau sont requis' });
-    }
-
-    // Vérifier le format de l'email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: 'Email invalide' });
-    }
 
     const targetDate = parseDateString(date);
     const dayOfWeek = targetDate.getDay();
@@ -433,14 +443,19 @@ router.put('/manage/:token/cancel', manageLimiter, async (req: express.Request, 
  * PUT /manage/:token/reschedule
  * Reporter une réservation via le token
  */
-router.put('/manage/:token/reschedule', manageLimiter, async (req: express.Request, res: express.Response) => {
+router.put('/manage/:token/reschedule', manageLimiter, [
+  param('token').isString().notEmpty().withMessage('Token invalide'),
+  body('date').notEmpty().withMessage('La date est requise').isString(),
+  body('startTime').notEmpty().withMessage('Le créneau est requis').isString(),
+], async (req: express.Request, res: express.Response) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg, errors: errors.array() });
+    }
+
     const { token } = req.params;
     const { date, startTime } = req.body;
-
-    if (!date || !startTime) {
-      return res.status(400).json({ message: 'La date et le créneau sont requis' });
-    }
 
     const booking = await prisma.demoBooking.findUnique({
       where: { cancelToken: token },

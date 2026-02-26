@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
+import { body, validationResult } from 'express-validator';
 import { chatLimiter } from '../middleware/rateLimiter';
 
 const router = express.Router();
@@ -14,13 +15,17 @@ interface ChatMessage {
 
 // Endpoint public : envoyer un message au chatbot de l'application
 // POST /api/app-chat
-router.post('/', chatLimiter, async (req: express.Request, res: express.Response) => {
+router.post('/', chatLimiter, [
+  body('message').trim().notEmpty().withMessage('Le message est requis').isLength({ max: 2000 }).withMessage('Le message ne doit pas dépasser 2000 caractères'),
+  body('conversationHistory').optional().isArray({ max: 20 }).withMessage('L\'historique ne doit pas dépasser 20 messages'),
+], async (req: express.Request, res: express.Response) => {
   try {
-    const { message, conversationHistory } = req.body;
-
-    if (!message || !message.trim()) {
-      return res.status(400).json({ message: 'Le message est requis' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg, errors: errors.array() });
     }
+
+    const { message, conversationHistory } = req.body;
 
     // Vérifier que la clé API OpenAI est configurée
     const openaiApiKey = process.env.OPENAI_API_KEY;
