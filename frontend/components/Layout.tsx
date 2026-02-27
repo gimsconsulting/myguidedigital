@@ -24,12 +24,19 @@ export default function Layout({ children }: LayoutProps) {
   const isAuthPage = pathname === '/login' || pathname === '/register' || pathname === '/forgot-password';
   const isPublicRoute = pathname?.startsWith('/guide') || pathname?.startsWith('/business-card');
   const isHomePage = pathname === '/';
+  // Pages SEO publiques (sitemap, robots.txt)
+  const isSeoRoute = pathname === '/sitemap.xml' || pathname === '/robots.txt';
   const isPublicPage = pathname === '/hote-airbnb' || pathname === '/blog' || pathname?.startsWith('/blog/') || pathname === '/contact' || pathname === '/tarifs' || pathname?.startsWith('/tarifs/') || pathname === '/affiliation' || pathname === '/mentions-legales' || pathname === '/confidentialite' || pathname === '/cgvu' || pathname === '/cookies';
   
   // Pages du site vitrine où afficher le chatbot prospect
   const showPublicChatbot = isHomePage || isPublicPage;
   
   // Pour les pages publiques et d'authentification, utiliser un Layout simplifié SANS i18n
+  // Les routes SEO (sitemap, robots) n'ont pas besoin de Layout du tout
+  if (isSeoRoute) {
+    return <>{children}</>;
+  }
+  
   if (isAuthPage || isPublicRoute || isHomePage || isPublicPage) {
     return (
       <AuthLayout>
